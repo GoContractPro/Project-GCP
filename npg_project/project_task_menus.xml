@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+  
+   <!-- Menus -->
+        
+        <record id="base.menu_project_management_time_tracking" model="ir.ui.menu">
+            <field name="name">Time 7 Tracking</field>
+         	<field eval="5" name="sequence"/>
+            <field name="parent_id" ref="base.menu_main_pm"/>
+        </record>
+        
+        <menuitem id="menu_project_working_hours" parent="base.menu_project_management_time_tracking" name="Working Hourss" action="hr_timesheet.act_hr_timesheet_line_evry1_all_form"/>
+        
+
+        <record id="menu_act_project_management_timesheet_sheet_form" model="ir.ui.menu">
+            <field name="name">My Timesheet</field>
+            <field eval="5" name="sequence"/>
+            <field name="parent_id" ref="base.menu_project_management_time_tracking"/>
+            <field name="icon">STOCK_JUSTIFY_FILL</field>
+            <field name="action" ref="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"/>
+        </record>
+
+		
+        <menuitem id="menu_hr_working_hours" parent="hr_attendance.menu_hr_time_tracking" action="act_hr_timesheet_line_evry1_all_form"/>
+        
+        
+ 
+     </data>
+</openerp>
+ 

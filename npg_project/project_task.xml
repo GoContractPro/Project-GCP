@@ -1,0 +1,103 @@
+<openerp>
+    <data>
+    
+        <record id="view_task_search_form_npg" model="ir.ui.view">
+            <field name="name">project.task.search.form.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_search_form"/>
+            <field name="arch" type="xml">
+	    		<field name="user_id" position="after">
+	            	<field name="task_number" string="Task Number"/>
+	            </field>
+            </field>
+        </record>  
+    
+        <record id="view_task_form_with_pad_npg" model="ir.ui.view">
+            <field name="name">project.task.form.pad.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="pad_project.view_task_form_with_pad"/>
+            <field name="arch" type="xml">
+	            <field name="project_id" position="before">
+	            	<field name="task_number" string="Task Number"/>
+	            </field>
+
+            <xpath expr="//notebook/page[@string='Description']" position="replace">
+            	<page string='Work'>            	 
+            	 	<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+                   		<tree string="Task Work" editable="top">
+                            <field name="name"/>
+                            <field name="hours" widget="float_time" sum="Spent Hours"/>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                        </tree>
+                        </field>
+                        <group>
+                         <group class="oe_subtotal_footer oe_right" name="project_hours" groups="project.group_time_work_estimation_tasks">
+                            <field name="effective_hours" widget="float_time"/>
+                            <label for="remaining_hours" string="Remaining" groups="project.group_time_work_estimation_tasks"/>
+                            <div>
+                                <field name="remaining_hours" widget="float_time" attrs="{'readonly':[('state','in',('done','cancelled'))]}" groups="project.group_time_work_estimation_tasks"/>
+                            </div>
+                            <field name="total_hours" widget="float_time" class="oe_subtotal_footer_separator"/>
+                         </group>
+                        </group>
+                        <div class="oe_clear"/>
+                   </page>      		
+            </xpath>
+		    <xpath expr="//notebook" position="inside">
+		             <page string="Public Notes">
+		             	<group>
+		            	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad"/>
+		            	</group>
+		            </page>
+		            <page string="Developer Notes">
+		            	<group>
+		            	<field name="description_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad"/>
+		            	</group>
+		            </page>
+		   </xpath>
+	    </field>
+
+        </record>
+        
+        <record id="hr_timesheet_line_search" model="ir.ui.view">
+            <field name="name">hr.analytic.timesheet.search</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Timesheet">
+                    <group col='8' colspan='4'>
+                        <filter name="today" icon="terp-go-today" domain="[('date', '=', time.strftime('%%Y-%%m-%%d'))]" string="Today"/>
+                        <separator orientation="vertical"/>
+                        <field name="user_id"/>
+                        <field name="account_id"/>
+                        <field name="date"/>
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Users" icon="terp-personal" domain="[]" context="{'group_by':'user_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Anlytic account" icon="terp-folder-green" domain="[]" context="{'group_by':'account_id'}"/>
+                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+
+        </record>
+        
+        <record id="act_hr_timesheet_line_evry1_all_form" model="ir.actions.act_window">
+            <field name="name">Working Hours</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.analytic.timesheet</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{"search_default_user_id":uid, "search_default_today":1}</field>
+            <field name="search_view_id" ref="hr_timesheet_line_search"/>
+            <field name="help">Through Working Hours you can register your working hours by project every day.</field>
+        </record>
+        
+     
+    </data>
+</openerp>
