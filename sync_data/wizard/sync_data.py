@@ -1,7 +1,10 @@
-from osv import orm,fields
+from osv import orm,fields,osv
+
+from openerp.tools.translate import _
 
 import xmlrpclib
 import logging
+import sys
 
 _logger = logging.getLogger(__name__)
 
@@ -23,9 +26,9 @@ class sync_data(orm.TransientModel):
     _defaults = {
         'name' : 'localhost',
          'port' : 8601,
-         'db_name' : 'npg6m',
+         'db_name' : 'test_sync6',
          'user_name' : 'admin',
-         'password' : 'P@ssw0rd'
+         'password' : 'admin'
     }
     
     
@@ -41,12 +44,18 @@ class sync_data(orm.TransientModel):
         
         user_pool = self.pool.get('res.users')
         for rec in self.browse(cr, uid, ids, context=context):
-            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-            user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-            sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-            user_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'search', [('id', '!=', 1)])
-            users = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'read', user_ids, [])
+            try:
+                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+                user_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'search', [('id', '!=', 1)])
+                users = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'read', user_ids, [])
+            except:
+                raise osv.except_osv(_('Error!'), _('Your error message. %s',e))
+                return
             for user in users:
+                
+                
                 data = {}
                 data['name'] = user.get('name')
                 data['login'] = user.get('login')
@@ -57,8 +66,10 @@ class sync_data(orm.TransientModel):
                 data['menu_id'] = 1
                 data['notification_email_send'] = 'comment'
                 user_pool.create(cr, uid , data, context=context)
-        return True
-    
+                
+        
+        return self.reopen_form(cr,uid,ids,context)
+
     def import_partner(self, cr, uid, ids, context=None):
         """
         This method can imports 'CustomersData' from 6.0 to 7.0 AND Performs the 
@@ -72,11 +83,16 @@ class sync_data(orm.TransientModel):
         country_pool = self.pool.get('res.country')
         state_pool = self.pool.get('res.country.state')
         for rec in self.browse(cr, uid, ids, context=context):
-            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-            user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-            sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-            partner_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.partner', 'search', [])
-            partners = sock.execute(rec.db_name, user_id, rec.password, 'res.partner', 'read', partner_ids, [])
+            try:
+                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+                partner_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.partner', 'search', [])
+                partners = sock.execute(rec.db_name, user_id, rec.password, 'res.partner', 'read', partner_ids, [])
+            except:
+                raise osv.except_osv(_('Error!'), _('Your error message. %s',e))
+                return
+            
             for partner in partners:
                  data = {}
                  data['name'] = partner.get('name')
@@ -134,7 +150,7 @@ class sync_data(orm.TransientModel):
                              if state_ids:
                                  add_data['state_id'] = state_ids[0]
                          partner_pool.create(cr, uid , add_data, context=context)
-        return True
+        return self.reopen_form(cr,uid,ids,context)
     
     def import_account(self, cr, uid, ids, context=None):
         """
@@ -148,11 +164,16 @@ class sync_data(orm.TransientModel):
         partner_pool = self.pool.get('res.partner')
         user_pool = self.pool.get('res.users')
         for rec in self.browse(cr, uid, ids, context=context):
-            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-            user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-            sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-            account_ids = sock.execute(rec.db_name, user_id, rec.password, 'account.analytic.account', 'search', [])
-            accounts = sock.execute(rec.db_name, user_id, rec.password, 'account.analytic.account', 'read', account_ids, [])
+            try:
+                
+                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+                account_ids = sock.execute(rec.db_name, user_id, rec.password, 'account.analytic.account', 'search', [])
+                accounts = sock(self,cr,uid,ids,context).execute(rec.db_name, user_id, rec.password, 'account.analytic.account', 'read', account_ids, [])
+            except:
+                raise osv.except_osv(_('Error!'), _('Your error message. %s',e))
+                return
             for account in accounts:
                 data = {}
                 data['name'] = account.get('name')
@@ -179,55 +200,76 @@ class sync_data(orm.TransientModel):
         Returns common project fields's data..
         Add information into project form..
         """
+        analytic_pool = self.pool.get('account.analytic.account')
         project_pool = self.pool.get('project.project')
         partner_pool = self.pool.get('res.partner')
         user_pool = self.pool.get('res.users')
+        task_pool = self.pool.get('project.task')
+        work_pool = self.pool.get('project.task.work')
+        
+         
         for rec in self.browse(cr, uid, ids, context=context):
-            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-            user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-            sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-            project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
-            projects = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'read', project_ids, [])
+            try:
+                """
+                delete all work, task, project before import
+                """
+                work_ids = work_pool.search(cr, uid, [],context=context)
+                work_pool.unlink(cr,uid,work_ids, context=context)
+                task_ids = task_pool.search(cr, uid, [],context=context)
+                task_pool.unlink(cr,uid,task_ids,context=context)
+                project_ids = project_pool.search(cr, uid, [],context=context)
+                project_pool.unlink(cr,uid,project_ids,context=context)
+                analytic_pool.unlink(cr,uid,project_ids,context=context)
+     
             
-            for project in projects:
+                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
+               
                 
-#Check if Project Already Exists
+            except:
+                e = sys.exc_info() 
+                raise osv.except_osv(('Error!'), ('Your error message. %s',e))
+                return            
+            for project_id in project_ids:
+                project = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'read', project_id, [])
+                  
 
-                if  project_pool.search(cr, user_id, [('name','=',  project.get('name'))],context=context):
-                    _logger.warning('Project %s  already exists  ', project.get('name'))
-                    
-# Create Project                   
-                else: 
-                    data = {}
-                    data['name'] = project.get('name')
-                    data['planned_hours'] = project.get('planned_hours')
-                    data['effective_hours'] = project.get('effective_hours')
-                    data['date_start'] = project.get('date_start')
-                    data['date'] = project.get('date')
-                    data['priority'] = project.get('priority')
-                    data['state'] = project.get('state')
-                    if project.get('partner_id', False):
-                             partner_ids = partner_pool.search(cr, user_id, [('name','=', project['partner_id'][1])])
-                             if partner_ids:
-                                 data['partner_id'] = partner_ids[0]
-                    if project.get('parent_id', False):
-                             parent_ids =self.search(cr, user_id, [('name','=', project['parent_id'][1])])
-                             if parent_ids:
-                                 data['parent_id'] = parent_ids[0]
-                    if project.get('user_id', False):
-                             user_ids = user_pool.search(cr, user_id, [('name','=', project['user_id'][1])])
-                             if user_ids:
-                                 data['user_id'] = user_ids[0]
-                    project_id= project_pool.create(cr, uid , data, context=context)
-                    
-                    self.import_attachment(cr, uid, ids, sock, user_id, project_id, 'project.project', context)
-                    
-        return True
+                data = {}
+                data['name'] = project.get('name')
+                data['write_date'] = project.get('write_date')
+                data['create_date'] = project.get('create_date')
+                data['planned_hours'] = project.get('planned_hours')
+                data['effective_hours'] = project.get('effective_hours')
+                data['date_start'] = project.get('date_start')
+                data['date'] = project.get('date')
+                data['priority'] = project.get('priority')
+                data['state'] = project.get('state')
+                if project.get('partner_id', False):
+                         partner_ids = partner_pool.search(cr, user_id, [('name','=', project['partner_id'][1])])
+                         if partner_ids:
+                             data['partner_id'] = partner_ids[0]
+                if project.get('parent_id', False):
+                         parent_ids =self.search(cr, user_id, [('name','=', project['parent_id'][1])])
+                         if parent_ids:
+                             data['parent_id'] = parent_ids[0]
+                if project.get('user_id', False):
+                         user_ids = user_pool.search(cr, user_id, [('name','=', project['user_id'][1])])
+                         if user_ids:
+                             data['user_id'] = user_ids[0]
+                project_id = project_pool.create(cr, uid, data, context=context)
+                
+ #               self.import_attachment(cr, uid, ids, sock,rec, user_id, project_id, project.get('id'), 'project.project', context=context)
+
+                self.import_task(cr, uid, ids, sock, rec, user_id, project_id, project.get('tasks'), context=context)
+   
+        return self.reopen_form(cr,uid,ids,context)
     
 
     
     
-    def import_task(self, cr, uid, ids, context=None):
+    def import_task(self, cr, uid, ids, sock, rec, user_id, project_id, task_ids,  context=None):
         """
         This method can imports 'Task Data' from 6.0 to 7.0 AND Performs the 
         fields matching between these two files's data and model's columns.
@@ -242,97 +284,93 @@ class sync_data(orm.TransientModel):
         task_work_pool = self.pool.get('project.task.work')
         ir_attachment_pool = self.pool.get('ir.attachment')
         
-        for rec in self.browse(cr, uid, ids, context=context):
-            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-            user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-            sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-            
-            _logger.info('Getting Task IDs' )
-#            task_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'search', [('id','=',2847)])
-            task_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'search', [('state','=','open')])
-#            task_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'search', [])
-            tasks = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'read', task_ids, []) 
-                      
-            for task in tasks:
-
-#Check if Task Already Exists 
+        try:
+           
+            for task_id in task_ids:
                 
-#                if  task_pool.search(cr, user_id, [('name','=',  task.get('name'))],context=context):
-#                    _logger.warning('Task %s  already exists Skipping ', task.get('name'))                
-                
-#                else:
-                    data = {}
-                    
-                    _logger.info('Importing Task %s %s' , task.get('id'), task.get('name', ''))
-                    
-                    if task.get('name', False):
-                        data['name'] = task.get('name', '')
-                    else:
-                        data['name'] = '/'
-                    data['description'] = task.get('description')
-                    data['planned_hours'] = task.get('planned_hours')
-                    data['date_deadline'] = task.get('date_dateline')
-                    data['progress'] = task.get('progress')
-                    data['priority'] = task.get('priority')
-                    data['sequence'] = task.get('sequence')
-                    data['date_start'] = task.get('date_start')
-                    data['date_end'] = task.get('date_end')
+    #            task_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'search', [('id','=',2847)])
+    #            task_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'search', [('state','=','open')])
 
-                    data['task_number'] = task.get('id')
-                                      
-                    if task.get('user_id', False):
-							 user_ids = user_pool.search(cr, user_id, [('name','=', task['user_id'][1])])
-							 if user_ids:
-								 data['user_id'] = user_ids[0]
+                task = sock.execute(rec.db_name, user_id, rec.password, 'project.task', 'read', task_id, [])     
+    #Check if Task Already Exists 
+    #            
+    #            if  task_pool.search(cr, user_id, [('name','=',  task.get('name'))],context=context):
+    #                _logger.warning('Task %s  already exists Skipping ', task.get('name'))                
+                
+    #           else:
+                data = {}
+                
+                _logger.info('Importing Task %s %s' , task.get('id'), task.get('name', ''))
+                
+                if task.get('name', False):
+                    data['name'] = task.get('name', '')
+                else:
+                    data['name'] = '/'
+                data['description'] = task.get('description')
+                data['planned_hours'] = task.get('planned_hours')
+                data['date_deadline'] = task.get('date_dateline')
+                data['progress'] = task.get('progress')
+                data['priority'] = task.get('priority')
+                data['sequence'] = task.get('sequence')
+                data['date_start'] = task.get('date_start')
+                data['date_end'] = task.get('date_end')
+                data['project_id'] = project_id
+                data['task_number'] = task.get('id')
+                                  
+                if task.get('user_id', False):
+						 user_ids = user_pool.search(cr, user_id, [('name','=', task['user_id'][1])])
+						 if user_ids:
+							 data['user_id'] = user_ids[0]
                     
-                    if task.get('project_id', False):
-                             project_ids = project_pool.search(cr, user_id, [('name','=', task['project_id'][1])])
-                             if project_ids:
-                                 data['project_id'] = project_ids[0]
-                                 
-                    if task.get('parent_id', False):
-                             parent_ids = self.search(cr, uid, [('name','=', task['parent_id'][1])])
-                             if parent_ids:
-                                 data['parent_id'] = parent_ids[0]
-                                 
-                    
-                    if task.get('state') == 'open':
-                        data['stage_id'] = 4
-                    elif task.get('state') == 'draft':
-                        data['stage_id'] = 1
-                    elif task.get('state') == 'pending':
-                        data['stage_id'] = 2
-                    elif task.get('state') == 'canceled':
-                        data['stage_id'] = 8     
-                    elif task.get('state') == 'done':
-                        data['stage_id'] = 7                                
-                    data['state'] = task.get('state')
-                    
-                    task_id = task_pool.create(cr, uid , data, context=context)  
-                    self.import_attachment(cr, uid, ids, sock, user_id,task_id ,task.get('id'), 'project.task',  context=context)
-                                      
-                    work_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task.work', 'search', [('task_id','=',task.get('id'))])
-                    worksummary = sock.execute(rec.db_name, user_id, rec.password, 'project.task.work', 'read', work_ids, [])
-                    
-                    n = 0
-                    for work in worksummary:  
-                         n = n+1
-                         work_data = {}
-                         work_data['name'] = work.get('name')
-                         work_data['company_id'] = 1
-                         work_data['hours'] = work.get('hours')
-                         work_data['date'] = work.get('date')
-                         work_data['task_id'] = int(task_id)
-                         if work.get('user_id', False):
-                             user_ids = user_pool.search(cr, uid, [('name','=', work['user_id'][1])])
-                             if user_ids:
-                                 work_data['user_id'] = user_ids[0]
-                         project_task_work_id = task_work_pool.create(cr, uid ,work_data, context=context)
-                         
-                    _logger.info('Loaded %s Work Items',n)
-                         
- 
-        return True
+                if task.get('parent_id', False):
+                         parent_ids = self.search(cr, uid, [('name','=', task['parent_id'][1])])
+                         if parent_ids:
+                             data['parent_id'] = parent_ids[0]
+                             
+                
+                if task.get('state') == 'open':
+                    data['stage_id'] = 4
+                elif task.get('state') == 'draft':
+                    data['stage_id'] = 1
+                elif task.get('state') == 'pending':
+                    data['stage_id'] = 2
+                elif task.get('state') == 'canceled':
+                    data['stage_id'] = 8     
+                elif task.get('state') == 'done':
+                    data['stage_id'] = 7                                
+                data['state'] = task.get('state')
+                
+                task_id = task_pool.create(cr, uid , data, context=context)  
+                self.import_attachment(cr, uid, ids, sock, rec, user_id, task_id ,task.get('id'), 'project.task',  context=context)
+                                  
+                work_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task.work', 'search', [('task_id','=',task.get('id'))])
+                worksummary = sock.execute(rec.db_name, user_id, rec.password, 'project.task.work', 'read', work_ids, [])
+                
+                n = 0
+                for work in worksummary:  
+                     n = n+1
+                     work_data = {}
+                     work_data['name'] = work.get('name')
+                     work_data['company_id'] = 1
+                     work_data['hours'] = work.get('hours')
+                     work_data['date'] = work.get('date')
+                     work_data['task_id'] = int(task_id)
+                     if work.get('user_id', False):
+                         user_ids = user_pool.search(cr, uid, [('name','=', work['user_id'][1])])
+                         if user_ids:
+                             work_data['user_id'] = user_ids[0]
+                     project_task_work_id = task_work_pool.create(cr, uid ,work_data, context=context)
+                     
+                _logger.info('Loaded %s Work Items',n)
+                     
+        except:
+            e = sys.exc_info()
+            raise osv.except_osv(('Error!'), (e))
+            return 
+        return self.reopen_form(cr,uid,ids,context)
+    
+    
+    
     
     def import_hr_expense(self, cr, uid, ids, context=None):
         
@@ -343,11 +381,16 @@ class sync_data(orm.TransientModel):
 
         
         for rec in self.browse(cr, uid, ids, context=context):
-            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-            user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-            sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-            expense_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.expense', 'search', [])
-            expenses = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.expense', 'read', expense_ids, [])
+            try:
+                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+                expense_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.expense', 'search', [])
+                expenses = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.expense', 'read', expense_ids, [])
+            except:
+                e = sys.exc_info()
+                raise osv.except_osv(('Error!'), (e))
+                return                
             for expense in expenses:
                 
                 _logger.info('Importing Hr Expense %s %s' , expense.get('id'), expense.get('name', ''))
@@ -379,7 +422,7 @@ class sync_data(orm.TransientModel):
                 hr_expense_id = hr_expense_pool.create(cr, uid , data, context=context)
                 
                 
-                self.import_attachment(cr, uid, ids, sock, user_id, hr_expense_id, expense.get('id'),'hr.expense.expense', context=context)
+                self.import_attachment(cr, uid, ids, sock, rec, user_id, hr_expense_id, expense.get('id'),'hr.expense.expense', context=context)
                 
                 line_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.line', 'search', ['expense_id','=',expense.get('id')])
                 lines = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.line', 'read', line_ids, [])
@@ -387,27 +430,42 @@ class sync_data(orm.TransientModel):
                 for line in lines:
                     data = {}
                     data['name'] = line.get('name')
-                    data['state'] = line.get('state')
-                    data['date'] = line.get('date')
+                    data['date_value'] = line.get('date_value')
+                    data['expense_id'] = line.get('expense_id')
+                    data['unit_amount'] = line.get('unit_amount')
+                    data['unit_quantity'] = line.get('unit_quantity')
+# TODO check if Product Exist if not Create
+                    data['product_id'] = line.get('product_id')
+# TODO check uom exist if not Create                    
+                    data['uom_id'] = line.get('uom_id')
+                    data['description'] = line.get('description')
+# TODO check if analytic_accouont exist if not create
+                    data['analytic_account'] = line.get('analytic_account')
+                    data['ref'] = line.get('ref')
+                    data['sequence'] = line.get('sequence')
+                    
+
 
                 
         return True
     
     
-    def import_attachment(self, cr, uid, ids, sock, user_id, task_id, res_id, res_model,  context=None):
+    def import_attachment(self, cr, uid, ids, sock, rec, user_id, res_id7, res_id6, res_model,  context=None):
 
-        for rec in self.browse(cr, uid, ids, context=context):
-            ir_attachment_pool = self.pool.get('ir.attachment')
-            user_pool = self.pool.get('res.users')
-            partner_pool = self.pool.get('res.partner')
-     
-            attachment_ids = sock.execute(rec.db_name, user_id, rec.password, 'ir.attachment', 'search', [('res_model','=',res_model),('res_id','=',res_id)])
+
+            try:
+                ir_attachment_pool = self.pool.get('ir.attachment')
+                user_pool = self.pool.get('res.users')
+                partner_pool = self.pool.get('res.partner')
+                attachment_ids = sock.execute(rec.db_name, user_id, rec.password, 'ir.attachment', 'search', [('res_model','=',res_model),('res_id','=',res_id6)])
+            except:
+                e = sys.exc_info()
+                raise osv.except_osv(('Error!'), (e))
+                return                
             for attachment_id in attachment_ids:
                 try:
                     attachment = sock.execute(rec.db_name, user_id, rec.password, 'ir.attachment', 'read', attachment_id, [])
-                
-                    
-            
+  
                     _logger.info('Getting attachment %s', attachment.get('datas_fname' ))
                     
                     attachment_data = {} 
@@ -433,7 +491,7 @@ class sync_data(orm.TransientModel):
                     attachment_data['type'] = attachment.get('type')
                     attachment_data['company_id'] = 1
                     attachment_data['res_model'] = res_model
-                    attachment_data['res_id'] = task_id
+                    attachment_data['res_id'] = res_id7
                     if attachment.get('user_id', False):
                          user_ids = user_pool.search(cr, uid, [('name','=', attachment['user_id'][1])])
                          if user_ids:
@@ -441,13 +499,29 @@ class sync_data(orm.TransientModel):
                     if attachment_data['name']:      
                         ir_attachment_id = ir_attachment_pool.create(cr, uid ,attachment_data, context=context)
                     else:
-                        logger.error('No File Name  attachment skipped')
+                        _logger.error('No File Name  attachment skipped')
                 except:
-                    logger.error('Error Getting attachment %s skipped',attachment_id )
-
-
- 
-                        
-        return   True
+                    e = sys.exc_info()
+                    _logger.error('Error Getting attachment %s skipped',attachment_id, e  )
+                    
+                return
+           
+            return   True 
     
+    def reopen_form(self,cr,uid,ids,context):
+        view_id = self.pool.get('ir.ui.view').search(cr,uid,[('model','=','sync.data')])
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sync.data',
+            'name': 'Sync Data',
+            'res_id': ids[0],
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'target': 'new',
+            'nodestroy': True,
+            'context': context
+            }
+        
+      
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -29,7 +29,7 @@ This module adds a additional PAD in all project kanban views.
     """,
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
-    'depends': ['project', 'pad', 'pad_project'],
+    'depends': ['project', 'pad', 'pad_project','hr_timesheet'],
     'data': ['project_task.xml','task_sequence.xml','project_task_menus.xml'],
     'demo': [],
     'installable': True,

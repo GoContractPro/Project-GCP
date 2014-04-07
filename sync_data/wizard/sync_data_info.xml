@@ -19,7 +19,6 @@
     					<button name="import_partner" string="Import Partner" type="object"/>
 						<button name="import_account" string="Import Account" type="object"/>
 						<button name="import_project" string="Import Project" type="object"/>
-						<button name="import_task" string="Import Task" type="object"/>
 						<button name="import_hr_expense" string="Import Expenses" type="object"/>
 						or
 						<button string="cancel" special="cancel"/>
