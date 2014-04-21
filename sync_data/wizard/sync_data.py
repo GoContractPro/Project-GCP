@@ -43,31 +43,162 @@ class sync_data(orm.TransientModel):
         
         
         user_pool = self.pool.get('res.users')
+        category_pool = self.pool.get('hr.employee.category')
+        job_pool = self.pool.get('hr.job')
+        department_pool = self.pool.get('hr.department')
+        employee_pool = self.pool.get('hr.employee')
+        
         for rec in self.browse(cr, uid, ids, context=context):
             try:
                 sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
                 user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
                 sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+
+# Get parent Categories                
+                category_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'search', [('parent_id', '=', False)])                                
+                hr_categorys = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'read', category_ids, [])
+                
+                children = {}
+# Import Parents                
+                for hr_category in hr_categorys:
+                    
+                    data = {}
+                    data['name'] = hr_category.get('name')
+                    data['complete_name'] = hr_category.get('complete_name')
+                    data['parent_id'] = hr_category.get('parent_id')
+#                    data['child_ids'] = hr_category.get('child_ids')
+                    rec_id = category_pool.create(cr, uid , data, context=context)
+                    children[rec_id] = hr_category.get('child_ids')
+ #import Children                   
+                while children:
+                    for child_ids in children:
+                        rec_ids = children.get(child_ids)
+                        hr_category = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'read', rec_ids, [])
+                        
+                        data = {}
+                        data['name'] = hr_category.get('name')
+                        data['complete_name'] = hr_category.get('complete_name')
+                        data['parent_id'] = rec_id
+                        rec_id=category_pool.create(cr, uid , data, context=context)
+                        children[rec_id] = hr_category.get('child_ids')
+# Get parent Departments                
+                hr_department_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.department', 'search', [('parent_id', '=', False)])
+                hr_departments = sock.execute(rec.db_name, user_id, rec.password, 'hr.department', 'read', hr_department_ids, [])
+                
+                children = {}
+# Import Parents                
+                for hr_department in hr_departments:
+                    
+                    data['complete_name'] = hr_department.get('complete_name')
+                    data['company_id'] = hr_department.get('company_id')
+                    data['note'] = hr_department.get('note') 
+                    if hr_department.get('manager_id', False):
+                         id = employee_pool.search(cr, user_id, [('name','=', hr_department['manager_id'][1])])
+                         if id:
+                             data['manager_id'] = id[0]
+                    
+                    id = department_pool.create(cr, uid , data, context=context)
+                    
+                    children[id] = hr_department.get('child_ids')
+# Import Children                    
+                    while children:
+                        for child_ids in children:
+                            data = {}
+                            data['complete_name'] = hr_department.get('complete_name')
+                            data['company_id'] = hr_department.get('company_id')
+                            data['note'] = hr_department.get('note') 
+                            data['parent_id'] = id
+                            if hr_department.get('manager_id', False):
+                                id = employee_pool.search(cr, user_id, [('name','=', hr_department['manager_id'][1])])
+                                if id:
+                                    data['manager_id'] = id[0]
+
+                            
+                            id = department_pool.create(cr, uid , data, context=context)
+                            
+                            children[id] = hr_department.get('child_ids')
+                                              
+                  
+# Import hr_job  
+                hr_job_ids =   department_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.job', 'search', [])     
+                hr_jobs = sock.execute(rec.db_name, user_id, rec.password, 'hr.job', 'read', hr_job_ids, [])
+
+                for hr_job in hr_jobs:
+                    data = {}
+                    data['name'] = hr_job.get('name')
+                    data['no_of_recruitment'] = hr_job.get('no_of_recruitment')
+                    data['description'] = hr_job.get('description')
+                    data['requirements'] = hr_job.get('requirements')
+                    data['state'] = hr_job.get('state')
+                    if hr_job.get('department_id', False):
+                        id = job_pool.search(cr, user_id, [('name','=', hr_job['department_id'][1])])
+                        if id:
+                            data['department_id'] = id[0]
+                              
+                    job_pool.create(cr, uid , data, context=context)   
+                
+# Import user                
+                
                 user_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'search', [('id', '!=', 1)])
-                users = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'read', user_ids, [])
+    
+                
+                for user_id in user_ids:
+                    
+                    user = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'read', user_id, [])
+                    
+                    data = {}
+                    data['name'] = user.get('name')
+                    data['login'] = user.get('login')
+                    data['password'] = user.get('password')
+                    data['active'] = user.get('active')
+                    data['email'] = user.get('user_email')
+                    data['company_id'] = 1
+                    data['menu_id'] = 1
+                    data['notification_email_send'] = 'comment'
+                    user_pool.create(cr, uid , data, context=context)
+                    
+    # Import Employee         
+                    
+                    employee  = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee', 'read', user_id, [])
+                    
+                    data = {}
+                    data['name_related'] = employee.get('name_related')
+                    data['country_id'] = 1
+                    data['birthday'] = employee.get('birthday')
+                    data['ssnid'] = employee.get('ssnid')
+                    data['sinid'] = employee.get('sinid')
+                    data['identification_id'] = employee.get('identification_id')
+                    data['otherid'] = employee.get('otherid')
+                    data['gender'] = employee.get('gender')
+                    data['marital'] = employee.get('marital')
+                    if employee.get('department_id', False):
+                        id = employee_pool.search(cr, user_id, [('name','=', employee['department_id'][1])])
+                        if id:
+                            data['department_id'] = id[0]
+    
+                    data['name_related'] = employee.get('name_related')
+     
+                    data['work_phone'] = employee.get('work_phone')
+                    data['mobile_phone'] = employee.get('mobile_phone')
+                    data['work_email'] = employee.get('work_email')
+    
+                    data['parent_id'] = employee.get('parent_id')
+    
+                    data['passport_id'] = employee.get('passport_id')
+                    data['color'] = employee.get('color')
+                    data['city'] = employee.get('city')
+                    data['login'] = employee.get('login')
+                    
+                    employee_pool.create(cr, uid , data, context=context)
+    # TODO search                data['last_login'] = employee.get('last_login')
+    # TODO search                if employee.get('category_ids')
+    # TODO build Parent Child                data['notes'] = employee.get('notes')                
+                    
             except:
-                raise osv.except_osv(_('Error!'), _('Your error message. %s',e))
-                return
-            for user in users:
-                
-                
-                data = {}
-                data['name'] = user.get('name')
-                data['login'] = user.get('login')
-                data['password'] = user.get('password')
-                data['active'] = user.get('active')
-                data['email'] = user.get('user_email')
-                data['company_id'] = 1
-                data['menu_id'] = 1
-                data['notification_email_send'] = 'comment'
-                user_pool.create(cr, uid , data, context=context)
-                
-        
+                e = sys.exc_info()
+                raise osv.except_osv(('Error!'), (e))
+                return 
+       
         return self.reopen_form(cr,uid,ids,context)
 
     def import_partner(self, cr, uid, ids, context=None):
