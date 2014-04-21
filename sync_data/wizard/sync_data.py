@@ -54,97 +54,16 @@ class sync_data(orm.TransientModel):
                 user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
                 sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
 
-# Get parent Categories                
-                category_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'search', [('parent_id', '=', False)])                                
-                hr_categorys = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'read', category_ids, [])
-                
-                children = {}
-# Import Parents                
-                for hr_category in hr_categorys:
-                    
-                    data = {}
-                    data['name'] = hr_category.get('name')
-                    data['complete_name'] = hr_category.get('complete_name')
-                    data['parent_id'] = hr_category.get('parent_id')
-#                    data['child_ids'] = hr_category.get('child_ids')
-                    rec_id = category_pool.create(cr, uid , data, context=context)
-                    children[rec_id] = hr_category.get('child_ids')
- #import Children                   
-                while children:
-                    for child_ids in children:
-                        rec_ids = children.get(child_ids)
-                        hr_category = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'read', rec_ids, [])
-                        
-                        data = {}
-                        data['name'] = hr_category.get('name')
-                        data['complete_name'] = hr_category.get('complete_name')
-                        data['parent_id'] = rec_id
-                        rec_id=category_pool.create(cr, uid , data, context=context)
-                        children[rec_id] = hr_category.get('child_ids')
-# Get parent Departments                
-                hr_department_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.department', 'search', [('parent_id', '=', False)])
-                hr_departments = sock.execute(rec.db_name, user_id, rec.password, 'hr.department', 'read', hr_department_ids, [])
-                
-                children = {}
-# Import Parents                
-                for hr_department in hr_departments:
-                    
-                    data['complete_name'] = hr_department.get('complete_name')
-                    data['company_id'] = hr_department.get('company_id')
-                    data['note'] = hr_department.get('note') 
-                    if hr_department.get('manager_id', False):
-                         id = employee_pool.search(cr, user_id, [('name','=', hr_department['manager_id'][1])])
-                         if id:
-                             data['manager_id'] = id[0]
-                    
-                    id = department_pool.create(cr, uid , data, context=context)
-                    
-                    children[id] = hr_department.get('child_ids')
-# Import Children                    
-                    while children:
-                        for child_ids in children:
-                            data = {}
-                            data['complete_name'] = hr_department.get('complete_name')
-                            data['company_id'] = hr_department.get('company_id')
-                            data['note'] = hr_department.get('note') 
-                            data['parent_id'] = id
-                            if hr_department.get('manager_id', False):
-                                id = employee_pool.search(cr, user_id, [('name','=', hr_department['manager_id'][1])])
-                                if id:
-                                    data['manager_id'] = id[0]
 
-                            
-                            id = department_pool.create(cr, uid , data, context=context)
-                            
-                            children[id] = hr_department.get('child_ids')
-                                              
-                  
-# Import hr_job  
-                hr_job_ids =   department_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.job', 'search', [])     
-                hr_jobs = sock.execute(rec.db_name, user_id, rec.password, 'hr.job', 'read', hr_job_ids, [])
-
-                for hr_job in hr_jobs:
-                    data = {}
-                    data['name'] = hr_job.get('name')
-                    data['no_of_recruitment'] = hr_job.get('no_of_recruitment')
-                    data['description'] = hr_job.get('description')
-                    data['requirements'] = hr_job.get('requirements')
-                    data['state'] = hr_job.get('state')
-                    if hr_job.get('department_id', False):
-                        id = job_pool.search(cr, user_id, [('name','=', hr_job['department_id'][1])])
-                        if id:
-                            data['department_id'] = id[0]
-                              
-                    job_pool.create(cr, uid , data, context=context)   
-                
+               
 # Import user                
                 
                 user_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'search', [('id', '!=', 1)])
     
                 
-                for user_id in user_ids:
+                for rec_id in user_ids:
                     
-                    user = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'read', user_id, [])
+                    user = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'read', rec_id, [])
                     
                     data = {}
                     data['name'] = user.get('name')
@@ -159,7 +78,7 @@ class sync_data(orm.TransientModel):
                     
     # Import Employee         
                     
-                    employee  = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee', 'read', user_id, [])
+                    employee  = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee', 'read', rec_id, [])
                     
                     data = {}
                     data['name_related'] = employee.get('name_related')
@@ -171,10 +90,10 @@ class sync_data(orm.TransientModel):
                     data['otherid'] = employee.get('otherid')
                     data['gender'] = employee.get('gender')
                     data['marital'] = employee.get('marital')
-                    if employee.get('department_id', False):
-                        id = employee_pool.search(cr, user_id, [('name','=', employee['department_id'][1])])
-                        if id:
-                            data['department_id'] = id[0]
+#                    if employee.get('department_id', False):
+#                        id = employee_pool.search(cr, user_id, [('name','=', employee['department_id'][1])])
+#                        if id:
+#                           data['department_id'] = id[0]
     
                     data['name_related'] = employee.get('name_related')
      
@@ -340,7 +259,11 @@ class sync_data(orm.TransientModel):
         
          
         for rec in self.browse(cr, uid, ids, context=context):
-            try:
+            try:                
+                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
                 """
                 delete all work, task, project before import
                 """
@@ -353,10 +276,7 @@ class sync_data(orm.TransientModel):
                 analytic_pool.unlink(cr,uid,project_ids,context=context)
      
             
-                sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
-                user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
-                sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
-                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
+
                
                 
             except:
@@ -654,5 +574,88 @@ class sync_data(orm.TransientModel):
             'context': context
             }
         
-      
+    
+    def import_hr_configuration(self,cr,uid,ids,context):   
+    # Get parent Categories                
+                category_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'search', [('parent_id', '=', False)])                                
+                hr_categories = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'read', category_ids, [])
+                
+                children = {}
+# Import Parents                
+                for hr_category in hr_categories:
+                    
+                    data = {}
+                    data['name'] = hr_category.get('name')
+                    data['complete_name'] = hr_category.get('complete_name')
+                    data['parent_id'] = hr_category.get('parent_id')
+#                    data['child_ids'] = hr_category.get('child_ids')
+                    rec_id = category_pool.create(cr, uid , data, context=context)
+                    children[rec_id] = hr_category.get('child_ids')
+ #import Children                   
+                    while children:
+                        for child_ids in children:
+                            rec_ids = children.get(child_ids)
+                            hr_category = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee.category', 'read', rec_ids, [])
+                            
+                            data = {}
+                            data['name'] = hr_category.get('name')
+                            data['complete_name'] = hr_category.get('complete_name')
+                            data['parent_id'] = rec_id
+                            rec_id=category_pool.create(cr, uid , data, context=context)
+                            children[rec_id] = hr_category.get('child_ids')
+# Get parent Departments                
+                hr_department_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.department', 'search', [('parent_id', '=', False)])
+                hr_departments = sock.execute(rec.db_name, user_id, rec.password, 'hr.department', 'read', hr_department_ids, [])
+                
+                children = {}
+# Import Parents                
+                for hr_department in hr_departments:
+                    
+                    data['complete_name'] = hr_department.get('complete_name')
+                    data['company_id'] = hr_department.get('company_id')
+                    data['note'] = hr_department.get('note') 
+                    if hr_department.get('manager_id', False):
+                         id = employee_pool.search(cr, user_id, [('name','=', hr_department['manager_id'][1])])
+                         if id:
+                             data['manager_id'] = id[0]
+                    
+                    id = department_pool.create(cr, uid , data, context=context)
+                    
+                    children[id] = hr_department.get('child_ids')
+# Import Children                    
+                    while children:
+                        for child_ids in children:
+                            data = {}
+                            data['complete_name'] = hr_department.get('complete_name')
+                            data['company_id'] = hr_department.get('company_id')
+                            data['note'] = hr_department.get('note') 
+                            data['parent_id'] = id
+                            if hr_department.get('manager_id', False):
+                                id = employee_pool.search(cr, user_id, [('name','=', hr_department['manager_id'][1])])
+                                if id:
+                                    data['manager_id'] = id[0]
+
+                            
+                            id = department_pool.create(cr, uid , data, context=context)
+                            
+                            children[id] = hr_department.get('child_ids')
+                                              
+                  
+# Import hr_job  
+                hr_job_ids =   department_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.job', 'search', [])     
+                hr_jobs = sock.execute(rec.db_name, user_id, rec.password, 'hr.job', 'read', hr_job_ids, [])
+
+                for hr_job in hr_jobs:
+                    data = {}
+                    data['name'] = hr_job.get('name')
+                    data['no_of_recruitment'] = hr_job.get('no_of_recruitment')
+                    data['description'] = hr_job.get('description')
+                    data['requirements'] = hr_job.get('requirements')
+                    data['state'] = hr_job.get('state')
+                    if hr_job.get('department_id', False):
+                        id = job_pool.search(cr, user_id, [('name','=', hr_job['department_id'][1])])
+                        if id:
+                            data['department_id'] = id[0]
+                              
+                    job_pool.create(cr, uid , data, context=context)     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
