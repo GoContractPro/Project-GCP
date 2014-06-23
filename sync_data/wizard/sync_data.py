@@ -314,7 +314,7 @@ class sync_data(orm.TransientModel):
                 analytic_pool.unlink(cr,uid,project_ids,context=context)
      
 #                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('id', '=' , 94)])
-                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('id', '=' , 94)])
+                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
                                        
                 for project_id in project_ids:
                                        
