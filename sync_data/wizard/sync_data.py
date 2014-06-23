@@ -32,7 +32,37 @@ class sync_data(orm.TransientModel):
     }
     
     
-    def import_user(self, cr, uid, ids, context=None):
+    def set_users_active(self, cr, uid, ids,args = None, context=None):
+        
+        user_pool = self.pool.get('res.users')
+        employee_pool = self.pool.get('hr.employee')
+        
+        user_ids = user_pool.search(cr,uid,[('active','=',False)])
+        employee_ids = employee_pool.search(cr,uid,[('active','=',False)])
+        
+        data = {}
+        data['active'] = True
+        
+        for id in user_ids:
+            user_pool.write(cr,uid,id,data)
+        for id in employee_ids:
+            employee_pool.write(cr,uid,id,data) 
+            
+        return self.reopen_form(cr,uid,ids,context)   
+    
+    def import_inactive_user(self, cr, uid, ids, context=None):
+        
+        #rgs = "[('active', '=', False)]"
+        self.import_user(cr, uid, ids, False, context)
+        return self.reopen_form(cr,uid,ids,context)
+        
+    def import_active_user(self, cr, uid, ids, context=None):
+        
+        #args = "[('active', '=', True)]"
+        self.import_user(cr, uid, ids, True, context)
+        return self.reopen_form(cr,uid,ids,context)
+        
+    def import_user(self, cr, uid, ids, args, context=None):
         """
         This method can imports 'UserData' from 6.0 to 7.0 AND Performs the 
         fields matching between these two files's data and model's columns.
@@ -40,7 +70,7 @@ class sync_data(orm.TransientModel):
         Returns common User fields's data..
         Add information into user form..
         """
-        
+        if args == None: args = []
         
         user_pool = self.pool.get('res.users')
         category_pool = self.pool.get('hr.employee.category')
@@ -56,10 +86,10 @@ class sync_data(orm.TransientModel):
                 sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
 
 
-               
+                 
 # Import user                
                 
-                user_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'search', [('id', '!=', 1)])
+                user_ids = sock.execute(rec.db_name, user_id, rec.password, 'res.users', 'search', [('id', '!=', 1),('active', '=', args )])
     
                 
                 for rec_id in user_ids:
@@ -83,7 +113,7 @@ class sync_data(orm.TransientModel):
                         user_pool.create(cr, uid , data, context=context)
                     
     # Import Employee         
-                employee_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee', 'search', [('id', '!=', 1)])
+                employee_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee', 'search', [('id', '!=', 1),('active', '=', args )])
                 
                 for employee_id in employee_ids:
                 
@@ -103,6 +133,7 @@ class sync_data(orm.TransientModel):
                     data['identification_id'] = employee.get('identification_id')
                     data['otherid'] = employee.get('otherid')
                     data['gender'] = employee.get('gender')
+                    data['active'] = employee.get('active')
                  #   data['marital'] = employee.get('marital')[1]
 #                    if employee.get('department_id', False):
 #                        id = employee_pool.search(cr, user_id, [('name','=', employee['department_id'][1])])
@@ -114,8 +145,10 @@ class sync_data(orm.TransientModel):
                     data['work_phone'] = employee.get('work_phone')
                     data['mobile_phone'] = employee.get('mobile_phone')
                     data['work_email'] = employee.get('work_email')
-    
-                    data['parent_id'] = employee.get('parent_id')
+                    if employee.get('parent_id'):
+                        parent_id = employee_pool.search(cr,uid,[('name','=',employee.get('parent_id')[1])])
+                        if parent_id:
+                            data['parent_id'] = parent_id[0]
     
                     data['passport_id'] = employee.get('passport_id')
                     data['color'] = employee.get('color')
@@ -313,8 +346,8 @@ class sync_data(orm.TransientModel):
                 project_pool.unlink(cr,uid,project_ids,context=context)
                 analytic_pool.unlink(cr,uid,project_ids,context=context)
      
-#                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('id', '=' , 94)])
-                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
+                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('id', '=' , 92)])
+#                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
                                        
                 for project_id in project_ids:
                                        
@@ -356,7 +389,32 @@ class sync_data(orm.TransientModel):
         return self.reopen_form(cr,uid,ids,context)
     
 
-    
+    def update_parent_task(self, cr, uid, ids, context= None):
+        
+        if context == None: context = {}
+        
+        for rec in self.browse(cr, uid, ids, context=context):
+            sock = self.get_sock(cr, uid, ids, context)
+            task_pool = self.pool.get('project.task')
+            
+            task_ids = sock['sock'].execute(rec.db_name, sock['user_id'], rec.password, 'project.task', 'search', [('parent_ids','!=','False')])
+               
+            data ={}   
+                                        
+            for task_id in task_ids:
+                task = sock['sock'].execute(rec.db_name, sock['user_id'], rec.password, 'project.task', 'read', task_id, [])  
+                
+                parent_ids = task_pool.search(cr, uid, [('task_number','in', task['parent_ids'])])
+                
+                task_id_local = task_pool.search(cr, uid, [('task_number','=', task_id)])
+                if task_id_local:
+                    task_pool.write(cr,uid,task_id_local,{'parent_ids':[(6,0,parent_ids)]},context)
+                else:
+                    _logger.info('Task %s %s not found' , task.get('id'), task.get('name', ''))
+                
+        return self.reopen_form(cr,uid,ids,context)     
+            
+            
     
     def import_task(self, cr, uid, ids, sock, rec, user_id, project_id, task_ids,  context=None):
         """
@@ -742,7 +800,7 @@ class sync_data(orm.TransientModel):
 
     
         
-        return
+        return self.reopen_form(cr,uid,ids,context)
     
     def get_sock(self,cr,uid,ids, context = None):
         

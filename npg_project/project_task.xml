@@ -44,15 +44,16 @@
                         <div class="oe_clear"/>
                    </page>      		
             </xpath>
-		    <xpath expr="//notebook" position="inside">
-		             <page string="Public Notes">
-		             	<group>
-		            	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad"/>
-		            	</group>
-		            </page>
+		    <xpath expr="//notebook/page[@string='Work']" position="after">
+
 		            <page string="Developer Notes">
 		            	<group>
-		            	<field name="description_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad"/>
+		            	<field name="description_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/>
+		            	</group>
+		            </page>
+           		   <page string="Public Notes">
+		             	<group>
+		            	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/>
 		            	</group>
 		            </page>
 		   </xpath>

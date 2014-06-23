@@ -15,11 +15,14 @@
 	    				<field name="password" required="1"/>
 	    			</group>
 	    			<footer>
-    					<button name="import_user" string="Import User" type="object"/>
+    					<button name="import_active_user" string="Sync User" type="object"/>
+    					<button name="import_inactive_user" string="Sync inactive User" type="object"/>
+    					<button name="set_users_active" string="Set users active" type="object"/>
     					<button name="import_partner" string="Import Partner" type="object"/>
 		<!--				<button name="import_account" string="Import Account" type="object"/> -->
 						<button name="import_project" string="Import Project" type="object"/>
-						<button name="import_hr_expense" string="Import Expenses" type="object"/>
+						<button name="update_parent_task" string="Sync Parent Task" type="object"/>
+ 						<button name="import_hr_expense" string="Import Expenses" type="object"/>
 						<button name="import_product" String="Import Products" type="object"/>
 						or
 						<button string="cancel" special="cancel"/>
