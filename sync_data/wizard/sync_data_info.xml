@@ -20,6 +20,7 @@
 		<!--				<button name="import_account" string="Import Account" type="object"/> -->
 						<button name="import_project" string="Import Project" type="object"/>
 						<button name="import_hr_expense" string="Import Expenses" type="object"/>
+						<button name="import_product" String="Import Products" type="object"/>
 						or
 						<button string="cancel" special="cancel"/>
 	    			</footer>	

@@ -24,11 +24,11 @@ class sync_data(orm.TransientModel):
     }
     
     _defaults = {
-        'name' : 'localhost',
-         'port' : 8601,
-         'db_name' : 'test_sync6',
+        'name' : '173.203.197.238',
+         'port' : 25384,
+         'db_name' : 'npgcore603',
          'user_name' : 'admin',
-         'password' : 'admin'
+         'password' : ''
     }
     
     
@@ -47,6 +47,7 @@ class sync_data(orm.TransientModel):
         job_pool = self.pool.get('hr.job')
         department_pool = self.pool.get('hr.department')
         employee_pool = self.pool.get('hr.employee')
+        product_pool = self.pool.get('product.product')
         
         for rec in self.browse(cr, uid, ids, context=context):
             try:
@@ -74,7 +75,12 @@ class sync_data(orm.TransientModel):
                     data['company_id'] = 1
                     data['menu_id'] = 1
                     data['notification_email_send'] = 'comment'
-                    user_pool.create(cr, uid , data, context=context)
+                    
+                    user_ids = user_pool.search(cr, user_id, [('login','=', user.get('login'))])
+                    if user_ids:     
+                        user_pool.write(cr,uid,user_ids,data)
+                    else:
+                        user_pool.create(cr, uid , data, context=context)
                     
     # Import Employee         
                 employee_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.employee', 'search', [('id', '!=', 1)])
@@ -89,7 +95,7 @@ class sync_data(orm.TransientModel):
                          if user_ids:
                              data['user_id'] = user_ids[0]
                     data['name'] = employee.get('name')
-                    data['name_related'] = employee.get('name_related')
+ #                   data['name_related'] = employee.get('name_related')
                     data['country_id'] = 1
                     data['birthday'] = employee.get('birthday')
                     data['ssnid'] = employee.get('ssnid')
@@ -97,19 +103,19 @@ class sync_data(orm.TransientModel):
                     data['identification_id'] = employee.get('identification_id')
                     data['otherid'] = employee.get('otherid')
                     data['gender'] = employee.get('gender')
-                    data['marital'] = employee.get('marital')
+                 #   data['marital'] = employee.get('marital')[1]
 #                    if employee.get('department_id', False):
 #                        id = employee_pool.search(cr, user_id, [('name','=', employee['department_id'][1])])
 #                        if id:
 #                           data['department_id'] = id[0]
     
-                    data['name_related'] = employee.get('name_related')
+#                    data['name_related'] = employee.get('name_related')
      
                     data['work_phone'] = employee.get('work_phone')
                     data['mobile_phone'] = employee.get('mobile_phone')
                     data['work_email'] = employee.get('work_email')
     
-#                  data['parent_id'] = employee.get('parent_id')
+                    data['parent_id'] = employee.get('parent_id')
     
                     data['passport_id'] = employee.get('passport_id')
                     data['color'] = employee.get('color')
@@ -117,12 +123,16 @@ class sync_data(orm.TransientModel):
                     data['image_small'] = employee.get('photo')
                     if employee.get('product_id', False):
                          product_id = product_pool.search(cr, uid, [('name','=', employee['product_id'][1])])
-                         if user_ids:
-                             data['user_id'] = user_ids[0]
+                         if product_id:
+                             data['product_id'] = product_id[0]
+    # check if employee exist 
+                    employee_id = employee_pool.search(cr,uid,[('name','=',employee.get('name'))])
+                    if employee_id:
+                            
+                        employee_pool.write(cr,uid,employee_id,data)          
                     
-                    
-                    
-                    employee_pool.create(cr, uid , data, context=context)
+                    else:
+                        employee_pool.create(cr, uid , data, context=context)
     # TODO search                data['last_login'] = employee.get('last_login')
     # TODO search                if employee.get('category_ids')
     # TODO build Parent Child                data['notes'] = employee.get('notes')                
@@ -691,8 +701,119 @@ class sync_data(orm.TransientModel):
                     
                     
     def import_product(self, cr, uid, ids, context=None):
+        
+        model = 'product.product' 
+        
+        sock= self.get_sock(cr, uid, ids, context)
+         
+        #try:
+        import_record_ids= self.get_import_record_ids(cr, uid, ids, sock, model, [])         
+        local_model = self.pool.get(model)
+        hour_uom_id = self.pool.get('product.uom').search(cr,uid,[('name','=','Hour')])
+        
+        
+        for id in import_record_ids:
+        
+            rec_ids = []
+            rec_ids.append(id)
+            import_rec = self.get_import_record_vals(cr, uid, ids, sock, model,  rec_ids, context)
+            data = self.get_record_vals(cr, uid, ids, sock, import_rec, local_model , context)
+            
+  
+            if data['type'] == 'service':
+                
+                data['uom_id'] = hour_uom_id
+                data['uom_po_id'] = hour_uom_id
+                data['uos'] = hour_uom_id  
+                
+            prod_id = local_model.search(cr,uid,[('name','=',name('name'))])
+            
+            if prod_id:     
+                
+                product_pool.write(cr,uid,prod_id,data)
+            else:
+                product_pool.create(cr, uid , data, context=context)
+            
+    #except:
+    #    e = sys.exc_info()
+    #    raise osv.except_osv(('Error!'), (e))
+    #    return 
     
-        pass
+
+    
         
         return
+    
+    def get_sock(self,cr,uid,ids, context = None):
+        
+        if context == None : context = {}
+        sock = {}
+        for rec in self.browse(cr, uid, ids, context=context):
+            sock_comman = xmlrpclib.ServerProxy('http://' +rec.name + ':' + str(rec.port) +'/xmlrpc/common')
+            sock['user_id'] = sock_comman.login(rec.db_name, rec.user_name, rec.password)
+            sock['sock'] = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
+        return sock
+    
+    def get_import_record_ids(self, cr,uid, ids, sock, model, args=None, context = None):
+        if context == None : context = {}
+        if args == None: args = [] 
+               
+        for rec in self.browse(cr, uid,ids, context=context):
+            
+            record_ids = sock['sock'].execute(rec.db_name, sock['user_id'], rec.password, model, 'search', args)
+            
+            return record_ids
+        return False
+    
+    
+    def get_import_record_vals(self, cr,uid ,ids , sock, model, import_ids, context = None):
+        if context == None : context = {}
+        
+        for rec in self.browse(cr, uid, ids, context=context):
+            record = sock['sock'].execute(rec.db_name, sock['user_id'], rec.password, model, 'read', import_ids, [])
+            
+            return record
+        return False
+    
+    def get_record_vals(self ,cr, uid, ids, sock, import_record, local_model, context = None ):
+        if context == None : context = {}
+        vals = {}
+        for column in local_model._columns:
+            import_val = import_record.get(column)
+            if import_val:
+                if col_obj._type == 'many2one':
+                    relation = self.pool.get(col_obj._obj)
+                    name = import_val[1]
+                    local_rec_id = rel.search(cr,uid,[('name','=',name)])
+                    if local_rec_id:
+                        vals[column] = local_rec_id
+                    else:
+                        import_ids =[]
+                        import_ids.append(import_val[0])
+                        vals[column] = self.create_related_record(cr, uid,sock, relation, import_ids, context)                  
+                        e = 'Related Record missing in model {} for record value {}'.format(col_obj._obj,name)
+                        _logger.info(e)
+                if col_obj_type == 'one2many':
+                    pass    
+                    
+                else:    
+                    vals[column] = import_val
+        return vals
+        
+    def create_related_record(self,cr, uid, ids, sock, model, import_ids, context = None):
+        
+        if context == None : context = {}
+        
+        local_model = self.pool.get(model)
+        import_record = self.get_import_model(cr, uid, model, sock ,import_ids)
+        
+        if import_record:
+            vals = self.get_update_record_vals(cr, uid, ids, sock,import_record, local_model,  context)
+            
+            return product_pool.create(cr, uid , vals, context=context)
+
+        
+        return False
+    
+        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
