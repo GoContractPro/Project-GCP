@@ -16,10 +16,12 @@
 	    			</group>
 	    			<footer>
     					<button name="import_active_user" string="Sync User" type="object"/>
+    					<button name="set_users_active" string="Set ALL Users Active" type="object"/>
     					<button name="import_inactive_user" string="Sync inactive User" type="object"/>
-    					<button name="set_users_active" string="Set users active" type="object"/>
+      					<button name="set_users_inactive" string="Set Users Inactive" type="object"/>
     					<button name="import_partner" string="Import Partner" type="object"/>
 		<!--				<button name="import_account" string="Import Account" type="object"/> -->
+						<button name="delete_pojects_tasks" string="Delete Pojects" type="object"/>
 						<button name="import_project" string="Import Project" type="object"/>
 						<button name="update_parent_task" string="Sync Parent Task" type="object"/>
  						<button name="import_hr_expense" string="Import Expenses" type="object"/>

@@ -1,3 +1,6 @@
+# -*- encoding: utf-8 -*-
+##############################################################################
+
 from osv import orm,fields,osv
 
 from openerp.tools.translate import _
@@ -47,9 +50,33 @@ class sync_data(orm.TransientModel):
             user_pool.write(cr,uid,id,data)
         for id in employee_ids:
             employee_pool.write(cr,uid,id,data) 
-            
-        return self.reopen_form(cr,uid,ids,context)   
+                       
+        return self.reopen_form(cr,uid,ids,context) 
     
+    def set_users_inactive(self, cr, uid, ids,args = None, context=None):
+        
+        user_pool = self.pool.get('res.users')
+        employee_pool = self.pool.get('hr.employee')
+        
+        for rec in self.browse(cr, uid, ids, context=context):
+        
+            sock= self.get_sock(cr, uid, ids, context)
+            
+            
+            user_ids = sock['sock'].execute(rec.db_name, sock['user_id'], rec.password, 'res.users', 'search', [('active','=',False)])
+            users = sock['sock'].execute(rec.db_name, sock['user_id'], rec.password, 'res.users', 'read', user_ids)
+            
+            
+            for user in users:
+                user_id = user_pool.search(cr, uid, [('login','=', user.get('login'))])[0]
+                employee_id = employee_pool.search(cr,uid,[('user_id','=',user_id)])
+                
+                val = {}
+                val['active'] = False
+                user_pool.write(cr,uid,user_id,val,context)
+                employee_pool.write(cr,uid,employee_id, val, context)
+          
+        
     def import_inactive_user(self, cr, uid, ids, context=None):
         
         #rgs = "[('active', '=', False)]"
@@ -106,7 +133,7 @@ class sync_data(orm.TransientModel):
                     data['menu_id'] = 1
                     data['notification_email_send'] = 'comment'
                     
-                    user_ids = user_pool.search(cr, user_id, [('login','=', user.get('login'))])
+                    user_ids = user_pool.search(cr, uid, [('login','=', user.get('login'))])
                     if user_ids:     
                         user_pool.write(cr,uid,user_ids,data)
                     else:
@@ -310,6 +337,23 @@ class sync_data(orm.TransientModel):
                              data['user_id'] = user_ids[0]
                 account_pool.create(cr, uid , data, context=context)
         return True
+    
+    def delete_pojects_tasks(self,cr,uid,ids,context=None):
+        
+        analytic_pool = self.pool.get('account.analytic.account')
+        project_pool = self.pool.get('project.project')
+        task_pool = self.pool.get('project.task')
+        work_pool = self.pool.get('project.task.work')
+        
+        work_ids = work_pool.search(cr, uid, [],context=context)
+        work_pool.unlink(cr,uid,work_ids, context=context)
+        task_ids = task_pool.search(cr, uid, [],context=context)
+        task_pool.unlink(cr,uid,task_ids,context=context)
+        project_ids = project_pool.search(cr, uid, [],context=context)
+        project_pool.unlink(cr,uid,project_ids,context=context)
+        analytic_pool.unlink(cr,uid,project_ids,context=context)
+        
+        return self.reopen_form(cr,uid,ids,context)
         
     def import_project(self, cr, uid, ids, context=None):
         """
@@ -333,59 +377,55 @@ class sync_data(orm.TransientModel):
                 user_id = sock_comman.login(rec.db_name, rec.user_name, rec.password)
                 sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
                 
-                """
-                delete all work, task, project before import
-                """
-                _logger.info('Deleting Project Items')
-                
-                work_ids = work_pool.search(cr, uid, [],context=context)
-                work_pool.unlink(cr,uid,work_ids, context=context)
-                task_ids = task_pool.search(cr, uid, [],context=context)
-                task_pool.unlink(cr,uid,task_ids,context=context)
-                project_ids = project_pool.search(cr, uid, [],context=context)
-                project_pool.unlink(cr,uid,project_ids,context=context)
-                analytic_pool.unlink(cr,uid,project_ids,context=context)
-     
-                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('id', '=' , 92)])
-#                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
+ 
+#                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('state', '=' , 'open')])
+                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
                                        
                 for project_id in project_ids:
-                                       
+                    
                     project = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'read', project_id, [])
-                    
-                    _logger.info('Loading Project %s',project.get('name'))  
+                           
+                    project_found =  project_pool.search(cr,uid,[('name','=',project.get('name'))])
+                    if project_found:
+                        _logger.info(' Project %s Already Exist',project.get('name'))
+                        project_id_local = project_found[0]
+                    else:
+                        _logger.info('Loading Project %s',project.get('name'))
+                        
+                        data = {}
+                        data['name'] = project.get('name')
+                        data['write_date'] = project.get('write_date')
+                        data['create_date'] = project.get('create_date')
+                        data['planned_hours'] = project.get('planned_hours')
+                        data['effective_hours'] = project.get('effective_hours')
+                        data['date_start'] = project.get('date_start')
+                        data['date'] = project.get('date')
+                        data['priority'] = project.get('priority')
+                        data['state'] = project.get('state')
+                        if project.get('partner_id', False):
+                                 partner_ids = partner_pool.search(cr, user_id, [('name','=', project['partner_id'][1])])
+                                 if partner_ids:
+                                     data['partner_id'] = partner_ids[0]
+                        if project.get('parent_id', False):
+                                 parent_ids =self.search(cr, user_id, [('name','=', project['parent_id'][1])])
+                                 if parent_ids:
+                                     data['parent_id'] = parent_ids[0]
+                        if project.get('user_id', False):
+                                 user_ids = user_pool.search(cr, user_id, [('name','=', project['user_id'][1])])
+                                 if user_ids:
+                                     data['user_id'] = user_ids[0]
+                        project_id_local = project_pool.create(cr, uid, data, context=context)
+               
+                        
+                    #self.import_attachment(cr, uid, ids, sock,rec, user_id, project_id_local, project.get('id'), 'project.project', context=context)
     
-                    data = {}
-                    data['name'] = project.get('name')
-                    data['write_date'] = project.get('write_date')
-                    data['create_date'] = project.get('create_date')
-                    data['planned_hours'] = project.get('planned_hours')
-                    data['effective_hours'] = project.get('effective_hours')
-                    data['date_start'] = project.get('date_start')
-                    data['date'] = project.get('date')
-                    data['priority'] = project.get('priority')
-                    data['state'] = project.get('state')
-                    if project.get('partner_id', False):
-                             partner_ids = partner_pool.search(cr, user_id, [('name','=', project['partner_id'][1])])
-                             if partner_ids:
-                                 data['partner_id'] = partner_ids[0]
-                    if project.get('parent_id', False):
-                             parent_ids =self.search(cr, user_id, [('name','=', project['parent_id'][1])])
-                             if parent_ids:
-                                 data['parent_id'] = parent_ids[0]
-                    if project.get('user_id', False):
-                             user_ids = user_pool.search(cr, user_id, [('name','=', project['user_id'][1])])
-                             if user_ids:
-                                 data['user_id'] = user_ids[0]
-                    project_id = project_pool.create(cr, uid, data, context=context)
+                    self.import_task(cr, uid, ids, sock, rec, user_id, project_id_local, project.get('tasks'), context=context)
                     
-                    self.import_attachment(cr, uid, ids, sock,rec, user_id, project_id, project.get('id'), 'project.project', context=context)
-    
-                    self.import_task(cr, uid, ids, sock, rec, user_id, project_id, project.get('tasks'), context=context)
             except:
                 e = sys.exc_info() 
                 raise osv.except_osv(('Error!'), ('Your error message. %s',e))
-                return    
+                return     
+              
         return self.reopen_form(cr,uid,ids,context)
     
 
@@ -468,13 +508,7 @@ class sync_data(orm.TransientModel):
 						 user_ids = user_pool.search(cr, user_id, [('name','=', task['user_id'][1])])
 						 if user_ids:
 							 data['user_id'] = user_ids[0]
-                    
-                if task.get('parent_id', False):
-                         parent_ids = self.search(cr, uid, [('name','=', task['parent_id'][1])])
-                         if parent_ids:
-                             data['parent_id'] = parent_ids[0]
                              
-                
                 if task.get('state') == 'open':
                     data['stage_id'] = 4
                 elif task.get('state') == 'draft':
@@ -488,7 +522,7 @@ class sync_data(orm.TransientModel):
                 data['state'] = task.get('state')
                 
                 task_id = task_pool.create(cr, uid , data, context=context)  
-                self.import_attachment(cr, uid, ids, sock, rec, user_id, task_id ,task.get('id'), 'project.task',  context=context)
+                #self.import_attachment(cr, uid, ids, sock, rec, user_id, task_id ,task.get('id'), 'project.task',  context=context)
                                   
                 work_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.task.work', 'search', [('task_id','=',task.get('id'))])
                 worksummary = sock.execute(rec.db_name, user_id, rec.password, 'project.task.work', 'read', work_ids, [])
@@ -506,7 +540,13 @@ class sync_data(orm.TransientModel):
                          user_ids = user_pool.search(cr, uid, [('name','=', work['user_id'][1])])
                          if user_ids:
                              work_data['user_id'] = user_ids[0]
-                     project_task_work_id = task_work_pool.create(cr, uid ,work_data, context=context)
+                       
+                     try:             
+                         project_task_work_id = task_work_pool.create(cr, uid ,work_data, context=context)
+                     except:
+                             e = 'unable to create work' + sys.exc_info()
+                             raise osv.except_osv(_('Error!'), _(e))
+                         
                      
                 _logger.info('Loaded %s Work Items',n)
                      
@@ -537,62 +577,86 @@ class sync_data(orm.TransientModel):
             except:
                 e = sys.exc_info()
                 raise osv.except_osv(('Error!'), (e))
-                return                
-            for expense in expenses:
-                
-                _logger.info('Importing Hr Expense %s %s' , expense.get('id'), expense.get('name', ''))
-                data = {}
-                data['name'] = expense.get('name')
-                data['state'] = expense.get('state')
-                data['date'] = expense.get('date')
-                data['date_valid'] = expense.get('date_valid')
-                data['date_confirm'] = expense.get('date_confirm')
-                data['quantity'] = expense.get('quantity')
-                data['type'] = expense.get('type')
-                
-                if expense.get('user_id', False):
-                         user_ids = user_pool.search(cr, user_id, [('name','=', expense['user_id'][1])])
-                         if user_ids:
-                             data['user_id'] = user_ids[0]
-                if expense.get('user_valid', False):
-                         user_ids = user_pool.search(cr, user_id, [('name','=', expense['user_valid'][1])])
-                         if user_ids:
-                             data['user_valid'] = user_ids[0]             
-                if expense.get('employee_id', False):
-                         employee_ids = employee_pool.search(cr, user_id, [('name','=', expense['employee_id'][1])])
-                         if employee_ids:
-                             data['employee_id'] = employee_ids[0]
-                if expense.get('department_id', False):
-                         department_ids = employee_pool.search(cr, user_id, [('name','=', expense['department_id'][1])])
-                         if department_ids:
-                             data['department_id'] = department_ids[0]
-                hr_expense_id = hr_expense_pool.create(cr, uid , data, context=context)
-                
-                
-                self.import_attachment(cr, uid, ids, sock, rec, user_id, hr_expense_id, expense.get('id'),'hr.expense.expense', context=context)
-                
-                line_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.line', 'search', ['expense_id','=',expense.get('id')])
-                lines = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.line', 'read', line_ids, [])
-
-                for line in lines:
-                    data = {}
-                    data['name'] = line.get('name')
-                    data['date_value'] = line.get('date_value')
-                    data['expense_id'] = line.get('expense_id')
-                    data['unit_amount'] = line.get('unit_amount')
-                    data['unit_quantity'] = line.get('unit_quantity')
-# TODO check if Product Exist if not Create
-                    data['product_id'] = line.get('product_id')
-# TODO check uom exist if not Create                    
-                    data['uom_id'] = line.get('uom_id')
-                    data['description'] = line.get('description')
-# TODO check if analytic_accouont exist if not create
-                    data['analytic_account'] = line.get('analytic_account')
-                    data['ref'] = line.get('ref')
-                    data['sequence'] = line.get('sequence')
+                return      
+            
+            try:          
+                for expense in expenses:
                     
+                    _logger.info('Importing Hr Expense %s %s' , expense.get('id'), expense.get('name', ''))
+                    data = {}
+                    data['name'] = expense.get('name')
+                    data['state'] = expense.get('state')
+                    data['date'] = expense.get('date')
+                    data['date_valid'] = expense.get('date_valid')
+                    data['date_confirm'] = expense.get('date_confirm')
+                    
+                    if expense.get('user_id', False):
+                             user_ids = user_pool.search(cr, user_id, [('name','=', expense['user_id'][1])])
+                             if user_ids:
+                                 data['user_id'] = user_ids[0]
+                    if expense.get('user_valid', False):
+                             user_ids = user_pool.search(cr, user_id, [('name','=', expense['user_valid'][1])])
+                             if user_ids:
+                                 data['user_valid'] = user_ids[0]             
+                    if expense.get('employee_id', False):
+                             employee_ids = employee_pool.search(cr, user_id, [('name','=', expense['employee_id'][1])])
+                             if employee_ids:
+                                 data['employee_id'] = employee_ids[0]
+                    if expense.get('department_id', False):
+                             department_ids = employee_pool.search(cr, user_id, [('name','=', expense['department_id'][1])])
+                             if department_ids:
+                                 data['department_id'] = department_ids[0]
+                                 
+                    hr_expense_id = hr_expense_pool.create(cr, uid , data, context=context)
+                    
+                    self.import_attachment(cr, uid, ids, sock, rec, user_id, hr_expense_id, expense.get('id'),'hr.expense.expense', context=context)
+        
+                    line_ids = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.line', 'search', [('expense_id','=',expense.get('id'))])
+                    lines = sock.execute(rec.db_name, user_id, rec.password, 'hr.expense.line', 'read', line_ids, [])
+                    
+                    lines_pool = self.pool.get('hr.expense.line')
+                    
+  
 
+                    for line in lines:
+                        try:
+                            
+                            
+                            linedata = {}
+                            
+                            if line.get('product_id'):
+                                product = sock.execute(rec.db_name, user_id, rec.password, 'product.product', 'read', line.get('product_id')[0], [])
+                                linedata['product_id'] = self.related_id(cr, uid, lines_pool._columns['product_id']._obj, product['name'] , context) 
+                            else:
+                                product = False
+                                
+                            if line.get('uom_id'):   
+                                linedata['uom_id'] = self.related_id(cr, uid,lines_pool._columns['uom_id']._obj, line.get('uom_id')[1], context)
 
+                            linedata['name'] = line.get('name')
+                            linedata['date_value'] = line.get('date_value')
+                            linedata['expense_id'] = hr_expense_id
+                            linedata['unit_amount'] = line.get('unit_amount')
+                            linedata['unit_quantity'] = line.get('unit_quantity')
+                            
+                            linedata['description'] = line.get('description')
+            # TODO check if analytic_accouont exist if not create
+            #                  data['analytic_account'] = line.get('analytic_account')
+                            linedata['ref'] = line.get('ref')
+                            linedata['sequence'] = line.get('sequence')
+                            
+            
+                            lines_pool.create(cr, uid , linedata, context=context)
+                        except:
+                        
+                            e = sys.exc_info() 
+                            raise osv.except_osv(_('Error!'), _(e))
+                            return 
+                        
+            except:
+                e = sys.exc_info()
+                raise osv.except_osv(('Error!'), (e))
+                return    
                 
         return True
     
@@ -873,5 +937,18 @@ class sync_data(orm.TransientModel):
         
         return False
     
+    def related_id(self,cr,uid, model , name, context):
+            
+            val = False
+            if name:
+                 id = self.pool.get(model).search(cr, uid, [('name','=', name)])
+                 if id:
+                     val = id[0]
+                 else:
+                     
+                     val = False
+                     _logger.info('Related Record missing %s %s', model, name)
+            return val          
+                     
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
