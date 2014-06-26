@@ -48,10 +48,11 @@
 
 		            <page string="Developer Notes">
 		            	<group>
-		            	<field name="description_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/>
+		            	<field name="description" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
 		            	</group>
 		            </page>
-           		   <page string="Public Notes">
+		           
+           		   <page string="Public pad">
 		             	<group>
 		            	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/>
 		            	</group>
