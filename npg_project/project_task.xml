@@ -45,7 +45,7 @@
             <xpath expr="//notebook/page[@string='Description']" position="replace">
             	<page string='Work'>            	 
             	 	<field name="work_ids" groups="project.group_tasks_work_on_tasks">
-                   		<tree string="Task Work" editable="top">
+                   		<tree string="Task Work" editable="bottom">
                             <field name="name"/>
                             <field name="hours" widget="float_time" sum="Spent Hours"/>
                             <field name="date"/>
