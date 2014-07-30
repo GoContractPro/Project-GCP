@@ -75,7 +75,8 @@
 		           
            		   <page string="Public pad">
 		             	<group>
-		            	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/>
+		         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
+		         		<field name="pub_descrip" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
 		            	</group>
 		            </page>
 		   </xpath>
@@ -108,6 +109,18 @@
             </field>
 
         </record>
+        
+        <record id="hr_timesheet_line_tree_npg" model="ir.ui.view">
+            <field name="name">hr.analytic.timesheet.tree.npg</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+	            <field name="unit_amount" position="replace">
+	            	<field name="unit_amount" string="Duration" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id)" sum="Total time" />
+	            </field>
+           </field>
+             
+		</record>                  
         
         <record id="act_hr_timesheet_lines_form" model="ir.actions.act_window">
             <field name="name">act.hr.timesheet.lines.form</field>

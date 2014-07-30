@@ -378,8 +378,8 @@ class sync_data(orm.TransientModel):
                 sock = xmlrpclib.ServerProxy('http://' +rec.name + ':' +str(rec.port) +'/xmlrpc/object', allow_none=True)
                 
  
-#                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('state', '=' , 'open')])
-                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
+                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [('state', '=' , 'open')])
+#                project_ids = sock.execute(rec.db_name, user_id, rec.password, 'project.project', 'search', [])
                                        
                 for project_id in project_ids:
                     
