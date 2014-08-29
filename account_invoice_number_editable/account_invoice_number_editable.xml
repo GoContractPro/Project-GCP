@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <!-- Update account customer invoice editable!-->
+        <record model="ir.ui.view" id="invoice_form_editble">
+            <field name="name">account.invoice.form.inherit.editable</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="number" class="oe_inline"  attrs="{'invisible': [('state', '=', 'draft')]}" position="replace">
+                    <field name="internal_number" readonly="0" class="oe_inline" on_change="onchange_internal_number(internal_number)"/>
+                </field>
+            </field>
+        </record>
+        
+        <!-- Update account supplier invoice editable!-->
+        <record id="invoice_supplier_form_editable_number" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.form.inherit.editable</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <field name="number" class="oe_inline"  attrs="{'invisible': [('state', '=', 'draft')]}" position="replace">
+                    <field name="internal_number" readonly="0" class="oe_inline" on_change="onchange_internal_number(internal_number)"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>
