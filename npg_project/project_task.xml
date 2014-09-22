@@ -70,7 +70,12 @@
 	                        <div class="oe_clear"/>
 	                   </page>      		
 	            </xpath>  -->  
-			    <xpath expr="//notebook/page[@string='Description']" position="after">
+	           <xpath expr="//notebook/page[@string='Description']" position="attributes">
+	           			<attribute name="string">Work</attribute>
+	           
+	           </xpath>
+	            
+			    <xpath expr="//notebook/page[@string='Work']" position="after">
 	
 			            <page string="Developer Notes">
 			            	<group>
@@ -78,7 +83,7 @@
 			            	</group>
 			            </page>
 			           
-	           		   <page string="Public pad">
+	           		   <page string="Public Notes">
 			             	<group>
 			         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
 			         		<field name="pub_descrip" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
