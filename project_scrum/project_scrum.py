@@ -327,8 +327,8 @@ class projectScrumProductBacklog(osv.osv):
     
     _columns = {
         'role_id': fields.many2one('project.scrum.role', "As", required=True, readonly=True, states={'draft':[('readonly',False)]}),
-        'name' : fields.char('I want', size=128, required=True, readonly=True, states={'draft':[('readonly',False)]}),
-        'for_then' : fields.char('For', size=128, required=True, readonly=True, states={'draft':[('readonly',False)]}),
+        'name' : fields.text('I want',  required=True, readonly=True, states={'draft':[('readonly',False)]}),
+        'for_then' : fields.text('For',  required=False, readonly=True, states={'draft':[('readonly',False)]}),
         'acceptance_testing': fields.text("Acceptance testing", readonly=True, states={'draft':[('readonly',False)]}),
         
         'description': fields.text("Description"),
@@ -403,9 +403,9 @@ class projectTaskInherit(osv.osv):
                     return False
         return True
 
-    _constraints = [
-        (_check_dates, 'Error! Date of creation must be lower than task date deadline.', ['date_deadline'])
-    ]
+#    _constraints = [
+#        (_check_dates, 'Error! Date of creation must be lower than task date deadline.', ['date_deadline'])
+#    ]
 
     def onchange_backlog_id(self, cr, uid, ids, backlog_id=False):
         if not backlog_id:

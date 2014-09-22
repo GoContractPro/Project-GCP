@@ -33,53 +33,59 @@
             </field>
         </record>  
     
-        <record id="view_task_form_with_pad_npg" model="ir.ui.view">
-            <field name="name">project.task.form.pad.npg</field>
+        <record id="view_task_form_npg" model="ir.ui.view">
+            <field name="name">project.task.form.npg</field>
             <field name="model">project.task</field>
-            <field name="inherit_id" ref="pad_project.view_task_form_with_pad"/>
+            <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
 	            <field name="project_id" position="before">
 	            	<field name="task_number" string="Task Number"/>
 	            </field>
-
-            <xpath expr="//notebook/page[@string='Description']" position="replace">
-            	<page string='Work'>            	 
-            	 	<field name="work_ids" groups="project.group_tasks_work_on_tasks">
-                   		<tree string="Task Work" editable="bottom">
-                            <field name="name"/>
-                            <field name="hours" widget="float_time" sum="Spent Hours"/>
-                            <field name="date"/>
-                            <field name="user_id"/>
-                        </tree>
-                        </field>
-                        <group>
-                         <group class="oe_subtotal_footer oe_right" name="project_hours" groups="project.group_time_work_estimation_tasks">
-                            <field name="effective_hours" widget="float_time"/>
-                            <label for="remaining_hours" string="Remaining" groups="project.group_time_work_estimation_tasks"/>
-                            <div>
-                                <field name="remaining_hours" widget="float_time" attrs="{'readonly':[('state','in',('done','cancelled'))]}" groups="project.group_time_work_estimation_tasks"/>
-                            </div>
-                            <field name="total_hours" widget="float_time" class="oe_subtotal_footer_separator"/>
-                         </group>
-                        </group>
-                        <div class="oe_clear"/>
-                   </page>      		
-            </xpath>
-		    <xpath expr="//notebook/page[@string='Work']" position="after">
-
-		            <page string="Developer Notes">
-		            	<group>
-		            	<field name="description" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
-		            	</group>
-		            </page>
-		           
-           		   <page string="Public pad">
-		             	<group>
-		         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
-		         		<field name="pub_descrip" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
-		            	</group>
-		            </page>
-		   </xpath>
+	            <field name="project_id" position = "attributes">
+	            	<attribute name="required">1 </attribute>
+	            </field>
+<!--	            <page string='Description' position="attributes">
+	            	<attribute name="invisible">1</attribute>
+	            </page>
+ 	           <xpath expr="//notebook/page[@string='Description']" position="after">
+	            	<page string='Work Done'>            	 
+	            	 	<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+	                   		<tree string="Task Work" editable="bottom">
+	                            <field name="name"/>
+	                            <field name="hours" widget="float_time" sum="Spent Hours"/>
+	                            <field name="date"/>
+	                            <field name="user_id"/>
+	                        </tree>
+	                        </field>
+	                        <group>
+	                         <group class="oe_subtotal_footer oe_right" name="project_hours" groups="project.group_time_work_estimation_tasks">
+	                            <field name="effective_hours" widget="float_time"/>
+	                            <label for="remaining_hours" string="Remaining" groups="project.group_time_work_estimation_tasks"/>
+	                            <div>
+	                                <field name="remaining_hours" widget="float_time" attrs="{'readonly':[('state','in',('done','cancelled'))]}" groups="project.group_time_work_estimation_tasks"/>
+	                            </div>
+	                            <field name="total_hours" widget="float_time" class="oe_subtotal_footer_separator"/>
+	                         </group>
+	                        </group>
+	                        <div class="oe_clear"/>
+	                   </page>      		
+	            </xpath>  -->  
+			    <xpath expr="//notebook/page[@string='Description']" position="after">
+	
+			            <page string="Developer Notes">
+			            	<group>
+			            	<field name="description" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
+			            	</group>
+			            </page>
+			           
+	           		   <page string="Public pad">
+			             	<group>
+			         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
+			         		<field name="pub_descrip" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
+			            	</group>
+			            </page>
+			   </xpath>
+            
 	    </field>
 
         </record>

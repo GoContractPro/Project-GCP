@@ -29,6 +29,7 @@ class hr_timesheet_working_hours(osv.osv_memory):
     _columns = {
         'from_date': fields.date('From'),
         'to_date': fields.date('To'),
+        'user_id': fields.many2one('res.users','user_id','User ID')
         }
 
     def open_working_hours(self, cr, uid,ids, context=None):
@@ -38,6 +39,7 @@ class hr_timesheet_working_hours(osv.osv_memory):
         data = self.read(cr, uid, ids, [])[0]
         from_date = data['from_date']
         to_date = data['to_date']
+        user = data['user_id']
         
         if from_date and to_date:
             domain = [('date','>=',from_date), ('date','<=',to_date)]
@@ -45,6 +47,9 @@ class hr_timesheet_working_hours(osv.osv_memory):
             domain = [('date','>=',from_date)]
         elif to_date:
             domain = [('date','<=',to_date)]
+            
+        if user:
+            domain.append(('user_id','=',user[0]))
         result = mod_obj.get_object_reference(cr, uid, 'npg_project', 'act_hr_timesheet_lines_form')
         id = result and result[1] or False
         return {
@@ -55,7 +60,6 @@ class hr_timesheet_working_hours(osv.osv_memory):
               'type': 'ir.actions.act_window',
               'domain': domain,
               }
-    
     
     
     

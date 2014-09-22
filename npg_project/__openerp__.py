@@ -24,12 +24,16 @@
     'version': '1.0',
     'category': 'Project Management',
     'description': """
-This module adds a additional PAD in all project kanban views.
+This module adds 
+        a additional tab for notes in task.
+        working hours by Date form
+        corrects issue with task created without project when project assigned creates analytic reocord
+
 ===================================================
     """,
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
-    'depends': ['project', 'pad', 'pad_project','hr_timesheet'],
+    'depends': ['project', 'hr_timesheet'],
     'data': ['project_task.xml',
              'task_sequence.xml',
              'project_task_menus.xml',
