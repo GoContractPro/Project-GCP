@@ -33,7 +33,7 @@ This module adds
     """,
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
-    'depends': ['project', 'hr_timesheet'],
+    'depends': ['project', 'hr_timesheet','project_gtd'],
     'data': ['project_task.xml',
              'task_sequence.xml',
              'project_task_menus.xml',
