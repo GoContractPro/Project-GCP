@@ -47,12 +47,12 @@
   z-index:5;
   cursor: text;
   position: fixed;
-  top:0px;
+  top: 32px;
   right: 0px;
   float: right;
   padding: 1px 0;
   line-height: 28px;
-  width: 100%;
+  width:400px;
   border: 2px solid #ababab;
   background: #3d3c3c;
   border-top: none;
