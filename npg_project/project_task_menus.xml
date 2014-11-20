@@ -21,9 +21,28 @@
             <field name="action" ref="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"/>
         </record>
         
-       
-
         
+          <!--            Menu items for NPG Portal Group-->
+            
+ <!-- Top menu item -->
+        <menuitem name="NPG Portal"
+            id="npg_portal_menu"
+            groups="npg_group_portal,portal.group_anonymous"
+            sequence="10"/>
+        <menuitem name="Projects" id="npg_portal_projects" groups="npg_group_portal"
+         parent="npg_portal_menu" sequence="40"/>
+
+            	
+        <menuitem name="Messaging" id="npg_portal_messages" parent="npg_portal_menu" sequence="10" groups="npg_group_portal"/>
+          <menuitem name="To-do" id="npg_portal_mail_starfeeds" parent="npg_portal_messages" action="portal.action_mail_star_feeds_portal" sequence="20" groups="base.group_no_one"/>
+           <menuitem name="Inbox" id="npg_portal_inbox" parent="npg_portal_messages"
+            action="portal.action_mail_inbox_feeds_portal" sequence="10" groups="npg_group_portal"/>
+        <menuitem name="Archives" id="npg_portal_mail_archivesfeeds" parent="npg_portal_messages"
+            action="portal.action_mail_archives_feeds_portal" sequence="30" groups="npg_group_portal"/>  	
+            	
+         <menuitem name="Projects" id="npg_portal_services_projects" parent="npg_portal_projects"
+            action="npg_open_view_project" sequence="1" groups="npg_group_portal"/>
+       
      </data>
 </openerp>
  

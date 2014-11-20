@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+       <!-- The NPG portal group -->
+        <record id="npg_group_portal" model="res.groups">
+            <field name="name">NPG Custom Portal</field>
+            <field name="comment">NPG Portal Group to Created/Manage additional permissions for NPG Users</field>
+            <field name="is_portal" eval="True"/>
+            <!-- Insert the template user from auth_signup in the portal members group -->
+            <field name="users" eval="[(4,ref('auth_signup.default_template_user'))]"/>
+        </record>
+        
+        
+         <record id="portal_project.portal_project_rule" model="ir.rule">
+            <field name="name">Project: portal users: public, portal or following</field>
+            <field name="model_id" ref="project.model_project_project"/>
+            <field name="domain_force">['|',
+                                            ('privacy_visibility', 'in', ['public', 'portal']),
+                                            '&amp;',
+                                                ('privacy_visibility', '=', 'followers'),
+                                                ('message_follower_ids', 'in', [user.partner_id.id]),
+                                            ]</field>
+            <field name="groups" eval="[(4, ref('portal.group_portal')), (4, ref('npg_group_portal'))]"/>
+        </record>
+
+        <record id="portal_project.portal_task_rule" model="ir.rule">
+            <field name="name">Project/Task: portal users: public or portal and following</field>
+            <field name="model_id" ref="project.model_project_task"/>
+            <field name="domain_force">['|',
+                                            ('project_id.privacy_visibility', '=', 'public'),
+                                            '&amp;',
+                                                ('project_id.privacy_visibility', 'in', ['portal', 'followers']),
+                                                '|',
+                                                    ('message_follower_ids','in', [user.partner_id.id]),
+                                                    ('user_id', '=', user.id),
+                                        ]</field>
+            <field name="groups" eval="[(4, ref('portal.group_portal')), (4, ref('npg_group_portal'))]"/>
+        </record>
+
+    </data>
+</openerp>
