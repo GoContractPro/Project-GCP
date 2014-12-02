@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+<data>
+       
+       <!-- ********************  Unsubscribe mail Button for res partner *********************** -->
+        
+		 <record id="verts_view_partner_form_unsb_in" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+            	<field name="email" position="replace">
+            		<field name="email"/>
+					<!--<button name="check_mail" type="object" string="Unsubscribe Mail"/>-->
+				</field> 
+         </field>
+        </record>
+   		
+</data>
+</openerp>

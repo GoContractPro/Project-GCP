@@ -1,16 +1,12 @@
-
-
-openerp.npg_project = function(instance){
-	var listview = instance.web.ListView
-	var _super_ = instance.web.form.One2ManyList;
-	listview.List = function(){
-	pad_table_to: function (count) {
+openerp.npg_project = function(instance) {
+    instance.npg_project.view_list = instance.web.form.One2ManyList.extend({
+    pad_table_to: function (count) {
         if (!this.view.is_action_enabled('create')) {
             this._super(count);
         } else {
             this._super(count > 0 ? count - 1 : 0);
         }
-		alert(this.view);
+
         // magical invocation of wtf does that do
         if (this.view.o2m.get('effective_readonly')) {
             return;
@@ -31,7 +27,7 @@ openerp.npg_project = function(instance){
             colspan: columns,
             'class': 'oe_form_field_one2many_list_row_add'
         }).append(
-            $('<a>', {href: '#'}).text(_t("Add an item"))
+            $('<a>', {href: '#'}).text(_t("Add new item"))
                 .mousedown(function () {
                     // FIXME: needs to be an official API somehow
                     if (self.view.editor.is_editing()) {
@@ -59,10 +55,5 @@ openerp.npg_project = function(instance){
             this.$current.prepend($newrow)
         }
     }
-	};
-	
+});
 };
-
-//instance.web.form.One2ManyList = instance.web.ListView.List.extend({
-    
-//});
