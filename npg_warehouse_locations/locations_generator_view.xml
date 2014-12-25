@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	
+		<record id="storage_location_gen_tree" model="ir.ui.view">
+			<field name="name">locations.generator.tree</field>
+            <field name="model">locations.generator</field>
+            <field name="arch" type="xml">
+                <tree string="Storage Locations Generator">
+                    <field name="parent_location"/>
+                </tree>
+            </field>
+		</record>
+		
+		 <record id="storage_location_gen_form" model="ir.ui.view">
+            <field name="name">locations.generator.form</field>
+            <field name="model">locations.generator</field>
+            <field name="arch" type="xml">
+                <form string="Storage Locations Generator" version="7.0">
+                <header>
+                    <button name="button_generate_locations" type="object" string="Genearate Locations" class="oe_highlight"/>
+<!--                   <field name="state" widget="statusbar" statusbar_visible="draft,process,confirm" statusbar_colors='{"draft":"red","process":"blue","confirm":"green"}'/-->
+                </header>
+                <sheet>
+                    <group col="2">
+                        <field name="parent_location" domain="[('usage','&lt;&gt;','view')]" colspan="2"/>
+                        <field name="skip"/>
+                       </group>
+                        <group>
+                        	<table border="3">
+                        		<tr>
+                        			<td>
+                        				<label string="" />
+                        			</td>
+                        			<td>
+                        				<separator string="Code Type" />
+                        			</td>
+                        			<td>
+                        				<separator string="# of Digits" />
+                        			</td>
+                        			<td>
+                        				<separator string="Starting Code" />
+                        			</td>
+                        			<td>
+                        				<separator string="Ending Code" />
+                        			</td>
+                        		</tr>
+                        		<tr>
+                        			<td>
+                        				<label string="Aisle" />
+                        			</td>
+                        			<td>
+                        				<field name="aisle_code_type" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="aisle_no_digits" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="aisle_starting_code" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="aisle_ending_code" nolabel="1"/>
+                        			</td>
+                        		</tr>
+                        		<tr>
+                        			<td>
+                        				<label string="Rack" />
+                        			</td>
+                        			<td>
+                        				<field name="rack_code_type" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="rack_no_digits" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="rack_starting_code" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="rack_ending_code" nolabel="1"/>
+                        			</td>
+                        		</tr>
+                        		<tr>
+                        			<td>
+                        				<label string="Shelf" />
+                        			</td>
+                        			<td>
+                        				<field name="shelf_code_type" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="shelf_no_digits" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="shelf_starting_code" nolabel="1"/>
+                        			</td>
+                        			<td>
+                        				<field name="shelf_ending_code" nolabel="1"/>
+                        			</td>
+                        		</tr>
+                        	</table>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+		<record id="action_location_gen" model="ir.actions.act_window">
+            <field name="name">Storage locations</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">locations.generator</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="storage_location_gen_tree"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to generate warehouse bin locations. 
+              </p><p>
+               Warehouse Bin Locations
+              </p>
+            </field>
+        </record>
+       
+        <menuitem action="action_location_gen" id="menu_storage_location_gen" parent="stock.menu_stock_inventory_control" sequence="2"/>
+        
+	</data>
+</openerp>
