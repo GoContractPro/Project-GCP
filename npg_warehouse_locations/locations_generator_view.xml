@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="Storage Locations Generator">
                     <field name="parent_location"/>
+                    <field name="state"/>
                 </tree>
             </field>
 		</record>
@@ -18,8 +19,11 @@
             <field name="arch" type="xml">
                 <form string="Storage Locations Generator" version="7.0">
                 <header>
-                    <button name="button_generate_locations" type="object" string="Genearate Locations" class="oe_highlight"/>
+                    	<button name="button_confitm_locations" states="draft" type="object" string="Confirm" class="oe_highlight"/>
+                    	<button name="button_generate_locations" states="confirm" type="object" string="Generate Locations" class="oe_highlight"/>
+                    	<button name="button_reset_draft" states="confirm" type="object" string="Reset to draft"/>
 <!--                   <field name="state" widget="statusbar" statusbar_visible="draft,process,confirm" statusbar_colors='{"draft":"red","process":"blue","confirm":"green"}'/-->
+					<field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" statusbar_colors='{"draft":"red","confirm":"blue"}'/>
                 </header>
                 <sheet>
                     <group col="2">
@@ -98,6 +102,7 @@
                         		</tr>
                         	</table>
                         </group>
+                        <button name="button_preview_locations" states="draft" type="object" string="Preview Locations" class="oe_highlight"/>
                         <group string="Locations Preview">
                         	<field name="temp_locs" readonly="1" nolabel="1"/>
                         </group>

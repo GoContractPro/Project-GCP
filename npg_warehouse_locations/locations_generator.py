@@ -30,25 +30,27 @@ class locations_generator(osv.osv):
     _name = "locations.generator"
     _rec_name = "parent_location"
     _columns = {
-                'parent_location':fields.many2one('stock.location', 'Parent Location', select=True,required=True),
-                'aisle_code_type':fields.selection([('char','Character'),('int','integer')],string="Aisle code type",required=True),
-                'aisle_no_digits':fields.selection([(1,'1'),(2,'2')],string="Aisle no of Digits",required=True),#fields.integer("Aisle no of Digits",required=True),
-                'aisle_starting_code':fields.char("Aisle Starting Code",size=2,required=True),
-                'aisle_ending_code':fields.char("Aisle Ending Code",size=2,required=True),
+                'parent_location':fields.many2one('stock.location', 'Parent Location', select=True,required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'aisle_code_type':fields.selection([('char','Character'),('int','integer')],string="Aisle code type",required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'aisle_no_digits':fields.selection([(1,'1'),(2,'2')],string="Aisle no of Digits",required=True,readonly=True, states={'draft': [('readonly', False)]}),#fields.integer("Aisle no of Digits",required=True),
+                'aisle_starting_code':fields.char("Aisle Starting Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'aisle_ending_code':fields.char("Aisle Ending Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
                 
-                'rack_code_type':fields.selection([('char','Character'),('int','integer')],string="Rack code type",required=True),
-                'rack_no_digits':fields.selection([(1,'1'),(2,'2')],string="Rack no of Digits",required=True),#fields.integer("Rack no of Digits",required=True),
-                'rack_starting_code':fields.char("Rack Starting Code",size=2,required=True),
-                'rack_ending_code':fields.char("Rack Ending Code",size=2,required=True),
+                'rack_code_type':fields.selection([('char','Character'),('int','integer')],string="Rack code type",required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'rack_no_digits':fields.selection([(1,'1'),(2,'2')],string="Rack no of Digits",required=True,readonly=True, states={'draft': [('readonly', False)]}),#fields.integer("Rack no of Digits",required=True),
+                'rack_starting_code':fields.char("Rack Starting Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'rack_ending_code':fields.char("Rack Ending Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
                 
-                'shelf_code_type':fields.selection([('char','Character'),('int','integer')],string="Shelf code type",required=True),
-                'shelf_no_digits':fields.selection([(1,'1'),(2,'2')],string="Shelf no of Digits",required=True),#fields.integer("Shelf no of Digits",required=True),
-                'shelf_starting_code':fields.char("Shelf Starting Code",size=2,required=True),
-                'shelf_ending_code':fields.char("Shelf Ending Code",size=2,required=True),
+                'shelf_code_type':fields.selection([('char','Character'),('int','integer')],string="Shelf code type",required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'shelf_no_digits':fields.selection([(1,'1'),(2,'2')],string="Shelf no of Digits",required=True,readonly=True, states={'draft': [('readonly', False)]}),#fields.integer("Shelf no of Digits",required=True),
+                'shelf_starting_code':fields.char("Shelf Starting Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'shelf_ending_code':fields.char("Shelf Ending Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
                 
-                'skip':fields.boolean("Skip Existings"),
+                'skip':fields.boolean("Skip Existings",readonly=True, states={'draft': [('readonly', False)]}),
                 
-                'temp_locs' : fields.text("Locations")
+                'temp_locs' : fields.text("Locations"),
+                
+                'state': fields.selection([('draft',"Draft"),('confirm',"Locations confirmed"),('done',"Generated"),],"State"),
                 
                 }
     
@@ -62,7 +64,9 @@ class locations_generator(osv.osv):
                 'shelf_code_type':'char',
                 'shelf_no_digits':1,
                 
-                'skip':True
+                'skip':True,
+                
+                'state':'draft'
                  }
 
     def _check_codes(self, cr, uid, ids, context=None):
@@ -184,7 +188,21 @@ class locations_generator(osv.osv):
             ['aisle_code_type','rack_code_type', 'shelf_code_type']),
         ]
 
+    def button_confitm_locations(self,cr, uid, ids, context={}):
+        for gen in self.browse(cr, uid, ids, context):
+            gen.write({'state':'confirm'})
+        return True
+    
+    def button_reset_draft(self,cr, uid, ids, context={}):
+        for gen in self.browse(cr, uid, ids, context):
+            gen.write({'state':'draft'})
+        return True
+    
     def button_generate_locations(self,cr, uid, ids, context={}):
+        locations = self.button_preview_locations(cr,uid,ids,context)
+        return True
+
+    def button_preview_locations(self,cr, uid, ids, context={}):
         alpha_codes = list(string.uppercase)
         twoLetterSequence  = ['-'+l for l in string.uppercase] + [ "%c%c" % (x, y) for x in range(ord('A'), ord('Z')+1) for y in range(ord('A'), ord('Z')+1)]
         for gen in self.browse(cr, uid, ids, context):
@@ -252,7 +270,7 @@ class locations_generator(osv.osv):
                         
             temp_locs = ', '.join(locations)
             self.write(cr,uid,gen.id,{'temp_locs':temp_locs})
-        return True
+        return locations
 locations_generator()  
 
 
