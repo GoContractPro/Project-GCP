@@ -26,11 +26,11 @@
 					<field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" statusbar_colors='{"draft":"red","confirm":"blue"}'/>
                 </header>
                 <sheet>
-                    <group col="2">
+                    <group col="4">
                         <field name="parent_location" domain="[('usage','&lt;&gt;','view')]" colspan="2"/>
                         <field name="skip"/>
                        </group>
-                        <group>
+                       	<group>
                         	<table border="3">
                         		<tr>
                         			<td>
@@ -102,11 +102,22 @@
                         		</tr>
                         	</table>
                         </group>
+                        <notebook>
+                        	<page string="Locations Preview">
                         <button name="button_preview_locations" states="draft" type="object" string="Preview Locations" class="oe_highlight"/>
                         <group string="Locations Preview">
                         	<field name="temp_locs" readonly="1" nolabel="1"/>
                         </group>
+                        </page>
+                        <page string="Generated locations" attrs="{'invisible':[('state','!=','done')]}">
+                        	<field name="generated_locations"/>
+                        </page>
+                        </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+	                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+	                    <field name="message_ids" widget="mail_thread"/>
+	                </div>
                 </form>
             </field>
         </record>

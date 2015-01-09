@@ -29,8 +29,9 @@ import string
 class locations_generator(osv.osv):
     _name = "locations.generator"
     _rec_name = "parent_location"
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
     _columns = {
-                'parent_location':fields.many2one('stock.location', 'Parent Location', select=True,required=True,readonly=True, states={'draft': [('readonly', False)]}),
+                'parent_location':fields.many2one('stock.location', 'Parent Location', select=True,required=True,readonly=True, states={'draft': [('readonly', False)]},track_visibility='onchange'),
                 'aisle_code_type':fields.selection([('char','Character'),('int','integer')],string="Aisle code type",required=True,readonly=True, states={'draft': [('readonly', False)]}),
                 'aisle_no_digits':fields.selection([(1,'1'),(2,'2')],string="Aisle no of Digits",required=True,readonly=True, states={'draft': [('readonly', False)]}),#fields.integer("Aisle no of Digits",required=True),
                 'aisle_starting_code':fields.char("Aisle Starting Code",size=2,required=True,readonly=True, states={'draft': [('readonly', False)]}),
@@ -50,7 +51,9 @@ class locations_generator(osv.osv):
                 
                 'temp_locs' : fields.text("Locations"),
                 
-                'state': fields.selection([('draft',"Draft"),('confirm',"Locations confirmed"),('done',"Generated"),],"State"),
+                'state': fields.selection([('draft',"Draft"),('confirm',"Locations confirmed"),('done',"Generated"),],"State",track_visibility='onchange'),
+                
+                'generated_locations':fields.one2many('stock.location','gen_id',string="Locations", readonly=True)
                 
                 }
     
@@ -198,8 +201,25 @@ class locations_generator(osv.osv):
             gen.write({'state':'draft'})
         return True
     
+    def unlink(self, cr, uid, ids, context=None):
+        for gen in self.browse(cr, uid, ids, context=context):
+            if gen.state !=  'draft':
+                raise osv.except_osv(_('Warning!'),_('You cannot delete a location generate record which is not in draft state!'))
+        return super(locations_generator, self).unlink(cr, uid, ids, context)
+    
     def button_generate_locations(self,cr, uid, ids, context={}):
         locations = self.button_preview_locations(cr,uid,ids,context)
+        if locations:
+            loc_pool = self.pool.get('stock.location')
+            for gen in self.browse(cr, uid, ids, context):
+                parent_loc = gen.parent_location.id
+                for loc_name in locations:
+                    if gen.skip:
+                        exist = loc_pool.search(cr,uid,[('name','=',loc_name)])
+                        if exist: continue
+                        
+                    loc_id = loc_pool.create(cr,uid,{'name':loc_name,'location_id':parent_loc,'gen_id':gen.id})
+                gen.write({'state':'done'})
         return True
 
     def button_preview_locations(self,cr, uid, ids, context={}):
@@ -273,4 +293,10 @@ class locations_generator(osv.osv):
         return locations
 locations_generator()  
 
+class stock_location(osv.osv):
+    
+    _inherit = "stock.location"
 
+    _columns = {
+                'gen_id' : fields.many2one('locations.generator')
+                }
