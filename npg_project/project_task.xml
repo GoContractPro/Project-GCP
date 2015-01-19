@@ -36,17 +36,17 @@
         <record id="view_task_form_npg" model="ir.ui.view">
             <field name="name">project.task.form.npg</field>
             <field name="model">project.task</field>
-            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="inherit_id" ref="timesheet_task.view_task_form_hr_timesheet"/>
             <field name="arch" type="xml">
 				<field name="project_id" position="before">
-				<field name="task_number" string="Task Number"/>
+						<field name="task_number" string="Task Number"/>
 				</field>
 				<field name="project_id" position = "attributes">
 				 	<attribute name="required">1 </attribute>
 				</field>
 				
 				<xpath expr="//notebook/page[@string='Description']" position="attributes">
-							<attribute name="string">Work</attribute>
+					<attribute name="string">Work</attribute>
 				</xpath>
 				
 				<xpath expr="//notebook/page/field[@name='description']" position="replace">
@@ -72,56 +72,8 @@
 
         </record>
         
-        <record id="hr_timesheet_line_date_search" model="ir.ui.view">
-            <field name="name">hr.analytic.timesheet.date.search</field>
-            <field name="model">hr.analytic.timesheet</field>
-            <field name="type">search</field>
-            <field name="arch" type="xml">
-                <search string="Timesheet">
-                    <group col='8' colspan='4'>
-                        <field name="user_id"/>
-                        <field name="account_id"/>
-                        <field name="search_from" filter_domain="[('date','&gt;=',self)]"/>
-						<field name="search_to" filter_domain="[('date','&lt;=',self)]"/>
-                    </group>
-                    <newline/>
-                    <group expand="0" string="Group By...">
-                        <filter string="Users" icon="terp-personal" domain="[]" context="{'group_by':'user_id'}"/>
-                        <separator orientation="vertical"/>
-                        <filter string="Anlytic account" icon="terp-folder-green" domain="[]" context="{'group_by':'account_id'}"/>
-                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
-                        <separator orientation="vertical"/>
-                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
-                    </group>
-                </search>
-            </field>
+ 
 
-        </record>
-        
-        <record id="hr_timesheet_line_tree_npg" model="ir.ui.view">
-            <field name="name">hr.analytic.timesheet.tree.npg</field>
-            <field name="model">hr.analytic.timesheet</field>
-            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
-            <field name="arch" type="xml">
-	            <field name="unit_amount" position="replace">
-	            	<field name="unit_amount" string="Duration" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id)" sum="Total time" />
-	            </field>
-           </field>
-             
-		</record>                  
-        
-        <record id="act_hr_timesheet_lines_form" model="ir.actions.act_window">
-            <field name="name">act.hr.timesheet.lines.form</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">hr.analytic.timesheet</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="context">{"search_default_user_id":uid, "search_default_today":1}</field>
-            <field name="search_view_id" ref="hr_timesheet_line_date_search"/>
-            <field name="help">Through Working Hours you can register your working hours by project every day.</field>
-        </record>
-        
-        
         
 <!--        Project module enhancement by Verts-->
         <record model="ir.actions.act_window" id="project_gtd.open_gtd_task">
@@ -194,6 +146,66 @@
 	    </field>
 
         </record>
+        
+        <record id="hr_timesheet_line_form_npg" model="ir.ui.view">
+	        <field name="name">hr.analytic.timesheet.form.npg</field>
+	        <field name="model">hr.analytic.timesheet</field>
+	        <field name="arch" type="xml">
+	            <form string="Timesheet Work" version="7.0">
+	                <sheet>
+	                <group>
+	                        
+	                        <field name="user_id"
+	                            on_change="on_change_user_id(user_id)"
+	                            required="1" />
+	                        
+	                        <field name="name"
+	                            default_focus="1" />
+	                        
+	                        <field name="hours"
+	                        	 sum="Work Planned" widget="float_time"/>
+	                        
+	                        <field name="unit_amount"
+	                            on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, parent.id, to_invoice)"
+	                            sum="Total time" widget="float_time" />
+				
+							<field name="date_start"
+	                            on_change="on_change_start_time(date_time)" />                                        
+	                        
+	                        <field name="date"
+	                            on_change="on_change_date(date)" 
+	                            invisible='0'
+	                            readonly="1"/>
+	                        
+	                        <field name="journal_id"
+	                            invisible="1" />
+	                        
+	                        <field domain="[('type','=','normal')]"
+	                            name="account_id" invisible="1" />
+	                        
+	                        <field name="product_id"
+	                            on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, parent.id, to_invoice)"
+	                            required="1"
+	                            domain="[('type','=','service')]"
+	                            invisible="1" />
+	                        
+	                        <field name="product_uom_id"
+	                            on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, parent.id, to_invoice)"
+	                            invisible="1" />
+	                        
+	                        <field name="amount" sum="Total cost"
+	                            invisible="1" />
+	                        
+	                        <field name="general_account_id"
+	                            invisible="1" />
+	                        
+	                        <field name="to_invoice" />
+	                    </group>
+	                    </sheet>
+	                    </form>
+
+               		 </field>
+       			 </record>
    
      
      
