@@ -71,6 +71,14 @@ class locations_generator(osv.osv):
                 
                 'state':'draft'
                  }
+    
+    def print_report(self, cr, uid, ids, context=None):
+        datas = {
+                 'model': 'locations.generator',
+                 'ids': ids,
+                 'form': self.read(cr, uid, ids[0], context=context),
+        }
+        return {'type': 'ir.actions.report.xml', 'report_name': 'generate_location_label', 'datas': datas, 'nodestroy': True}
 
     def _check_codes(self, cr, uid, ids, context=None):
         alpha_codes = list(string.uppercase)

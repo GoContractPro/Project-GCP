@@ -22,6 +22,7 @@
                     	<button name="button_confitm_locations" states="draft" type="object" string="Confirm" class="oe_highlight"/>
                     	<button name="button_generate_locations" states="confirm" type="object" string="Generate Locations" class="oe_highlight"/>
                     	<button name="button_reset_draft" states="confirm" type="object" string="Reset to draft"/>
+                    	<button name="print_report" states="done" type="object" string="Print" class="oe_highlight"/>
 <!--                   <field name="state" widget="statusbar" statusbar_visible="draft,process,confirm" statusbar_colors='{"draft":"red","process":"blue","confirm":"green"}'/-->
 					<field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" statusbar_colors='{"draft":"red","confirm":"blue"}'/>
                 </header>

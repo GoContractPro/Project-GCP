@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report id="report_location_label" model="stock.location" name="location_label" string="Location Label" rml="npg_warehouse_locations/report/location_label.rml"/>
+    </data>
+</openerp>

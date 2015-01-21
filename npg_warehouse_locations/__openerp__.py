@@ -33,6 +33,7 @@
     "data"     : [
                   'security/ir.model.access.csv',
                  'locations_generator_view.xml',
+                 'stock_report.xml',
                  ],
     'test': [],    
     'installable': True,
