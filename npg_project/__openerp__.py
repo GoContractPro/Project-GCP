@@ -33,13 +33,13 @@ This module adds
     """,
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
-    'depends': ['project', 'hr_timesheet_sheet','project_gtd'],
+    'depends': ['project', 'hr_timesheet_sheet','project_gtd','timesheet_task'],
     'data': [ 'security/portal_security.xml',
               'security/ir.model.access.csv',
              'project_task.xml',
              'task_sequence.xml',
              'project_task_menus.xml',
-             'wizard/hr_timesheet_working_hours_wizard.xml'],
+             ],
              
     'js': [
         'static/src/js/npg_list_view_button.js',

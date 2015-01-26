@@ -19,13 +19,7 @@ class task(osv.osv):
     
 
     
-class hr_timesheet_line(osv.osv):
-    _inherit = "hr.analytic.timesheet"
-    
-    _columns = {
-                'search_from':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search from"),
-                'search_to':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search to"),
-                 }
+
 
 
     
