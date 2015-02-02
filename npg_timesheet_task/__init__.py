@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2011-2015 NovaPoint Group INC (<http://www.novapointgroup.com>)
-#    Copyright (C) 2004-2010 OpenERP SA (<http://www.openerp.com>)
+#    Author: Nicolas Bessi
+#    Copyright 2013 Camptocamp SA
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +18,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import project_task
 
-import invoice
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

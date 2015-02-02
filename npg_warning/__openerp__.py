@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2014 NovaPoint Group INC (<http://www.novapointgroup.com>)
+#    Copyright (C) 2011 NovaPoint Group INC (<http://www.novapointgroup.com>)
 #    Copyright (C) 2004-2010 OpenERP SA (<http://www.openerp.com>)
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,10 +20,30 @@
 #
 ##############################################################################
 
-
-from openerp.osv import fields, osv
-from openerp import tools
-from openerp.tools.translate import _
-from openerp import netsvc
-from datetime import datetime, timedelta
-
+{
+    'name': 'Warning Popup',
+    'version': '1.0',
+    'category': '',
+    "sequence": 14,
+    'complexity': "easy",
+    'category': 'Generic Modules/Others',
+    'description': """
+        
+        
+    """,
+    'author': 'NovaPoint Group Inc',
+    'website': 'www.novapointgroup.com',
+    'depends': ["base",],
+    'init_xml': [],
+    'data': [
+        "views/view.xml",
+    ],
+    'demo_xml': [],
+    'test': [
+    ],
+    'qweb' : [
+    ],
+    'installable': True,
+    'auto_install': False,
+}
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

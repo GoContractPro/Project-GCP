@@ -33,47 +33,7 @@
             </field>
         </record>  
     
-        <record id="view_task_form_npg" model="ir.ui.view">
-            <field name="name">project.task.form.npg</field>
-            <field name="model">project.task</field>
-            <field name="inherit_id" ref="timesheet_task.view_task_form_hr_timesheet"/>
-            <field name="arch" type="xml">
-				<field name="project_id" position="before">
-						<field name="task_number" string="Task Number"/>
-				</field>
-				<field name="project_id" position = "attributes">
-				 	<attribute name="required">1 </attribute>
-				</field>
-				
-				<xpath expr="//notebook/page[@string='Description']" position="attributes">
-					<attribute name="string">Work</attribute>
-				</xpath>
-				
-				<xpath expr="//notebook/page/field[@name='description']" position="replace">
-				</xpath>
-	            
-				<xpath expr="//notebook/page[@string='Work']" position="after">
-	
-			            <page string="Developer Notes">
-			            	<group>
-			            	<field name="description" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
-			            	</group>
-			            </page>
-			           
-	           		   <page string="Public Notes">
-			             	<group>
-			         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
-			         		<field name="pub_descrip" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
-			            	</group>
-			            </page>
-				</xpath>
-            
-	    </field>
-
-        </record>
-        
- 
-
+  
         
 <!--        Project module enhancement by Verts-->
         <record model="ir.actions.act_window" id="project_gtd.open_gtd_task">
@@ -108,7 +68,7 @@
         </record>
 
         
-        <record id="npg_project.view_task_form_npg" model="ir.ui.view">
+        <record id="view_task_form_npg" model="ir.ui.view">
             <field name="name">project.task.form.npg</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="project.view_task_form2"/>
@@ -120,94 +80,118 @@
 				 	<attribute name="required">1 </attribute>
 				</field>
 				
-				<xpath expr="//notebook/page[@string='Description']" position="attributes">
-							<attribute name="string">Work</attribute>
+				<xpath expr="//notebook/page[@string='Description']" position="replace">
 				</xpath>
 				
-				<xpath expr="//notebook/page/field[@name='description']" position="replace">
-				</xpath>
-	            
-				<xpath expr="//notebook/page[@string='Work']" position="after">
-	
-			            <page string="Developer Notes" groups="base.group_user">
+				<xpath expr="//notebook/page[@string='Delegation']" position="before">
+				
+						<page string="Description" groups="base.group_user">
 			            	<group>
 			            	<field name="description" groups="base.group_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
 			            	</group>
 			            </page>
-			           
-	           		   <page string="Public Notes" groups="base.group_user">
+			    </xpath>x
+				
+				<xpath expr="//notebook/page[@string='Description']" position="before">				
+									           
+	           		   <page string="Public Notes" groups="npg_project.npg_group_portal,project.group_project_user">
 			             	<group>
 			         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
-			         		<field name="pub_descrip" groups="base.group_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
+			         		<field name="pub_descrip" groups="npg_project.npg_group_portal,project.group_project_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
 			            	</group>
 			            </page>
+				
+				</xpath>
+				
+				<xpath expr="//notebook/page[@string='Public Notes']" position="before">
+					<page string="Work">
+						<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+                             <tree string="Task Work" editable="top">
+                                 <field name="name"/>
+                                 <field name="hours" widget="float_time" sum="Spent Hours"/>
+                                 <field name="date"/>
+                                 <field name="user_id"/>
+                             </tree>
+                        </field>
+					</page>
+
 				</xpath>
             
 	    </field>
 
         </record>
-        
-        <record id="hr_timesheet_line_form_npg" model="ir.ui.view">
-	        <field name="name">hr.analytic.timesheet.form.npg</field>
-	        <field name="model">hr.analytic.timesheet</field>
-	        <field name="arch" type="xml">
-	            <form string="Timesheet Work" version="7.0">
-	                <sheet>
-	                <group>
-	                        
-	                        <field name="user_id"
-	                            on_change="on_change_user_id(user_id)"
-	                            required="1" />
-	                        
-	                        <field name="name"
-	                            default_focus="1" />
-	                        
-	                        <field name="hours"
-	                        	 sum="Work Planned" widget="float_time"/>
-	                        
-	                        <field name="unit_amount"
-	                            on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, parent.id, to_invoice)"
-	                            sum="Total time" widget="float_time" />
-				
-							<field name="date_start"
-	                            on_change="on_change_start_time(date_time)" />                                        
-	                        
-	                        <field name="date"
-	                            on_change="on_change_date(date)" 
-	                            invisible='0'
-	                            readonly="1"/>
-	                        
-	                        <field name="journal_id"
-	                            invisible="1" />
-	                        
-	                        <field domain="[('type','=','normal')]"
-	                            name="account_id" invisible="1" />
-	                        
-	                        <field name="product_id"
-	                            on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, parent.id, to_invoice)"
-	                            required="1"
-	                            domain="[('type','=','service')]"
-	                            invisible="1" />
-	                        
-	                        <field name="product_uom_id"
-	                            on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, parent.id, to_invoice)"
-	                            invisible="1" />
-	                        
-	                        <field name="amount" sum="Total cost"
-	                            invisible="1" />
-	                        
-	                        <field name="general_account_id"
-	                            invisible="1" />
-	                        
-	                        <field name="to_invoice" />
-	                    </group>
-	                    </sheet>
-	                    </form>
 
-               		 </field>
-       			 </record>
-   
-     
-     
+     <record model="ir.ui.view" id="npg_project_issue_form_view">
+            <field name="name">Project Issue Tracker Form</field>
+            <field name="model">project.issue</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <form string="Issue" version="7.0">
+                <header>
+                    <button name="case_close" string="Done" type="object"
+                            states="open" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                    <button name="case_close" string="Done" type="object"
+                            states="draft,pending" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                    <button name="case_cancel" string="Cancel Issue" type="object"
+                            states="draft,open,pending" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                    <field name="stage_id" widget="statusbar" clickable="True"/>
+                </header>
+                <sheet string="Issue">
+                    <label for="name" class="oe_edit_only"/>
+                    <h1><field name="name"/></h1>
+                    <label for="categ_ids" class="oe_edit_only"/>
+                    <field name="categ_ids" widget="many2many_tags"/>
+                    <group>
+                        <group groups="npg_project.npg_group_portal,project.group_project_user">
+                            <field name="user_id"/>
+                            <field name="partner_id"  on_change="onchange_partner_id(partner_id, email_from)"/>
+                            <field name="email_from"/>
+                            <label for="project_id" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                            <div groups="npg_project.npg_group_portal,project.group_project_user">
+                                <field name="project_id" on_change="on_change_project(project_id)" class="oe_inline" context="{'default_use_issues':1}"/>
+                                <button name="case_escalate" string="⇒ Escalate" type="object" states="draft,open,pending" class="oe_link"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="id"/>
+                            <field name="version_id" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                            <field name="priority" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                            <label for="task_id" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                            <div groups="npg_project.npg_group_portal,project.group_project_user">
+                                <field name="task_id" on_change="onchange_task_id(task_id)" class="oe_inline" context="{'default_project_id':project_id}"/>
+                                <field name="progress" widget="progressbar" attrs="{'invisible':[('task_id','=',False)]}" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" placeholder="Add an internal note..." groups="npg_project.npg_group_portal,project.group_project_user"/>
+                        </page>
+                        <page string="Extra Info" groups="project.group_project_manager">
+                            <group string="Statistics">
+                                <field name="day_open"/>
+                                <field name="day_close"/>
+                                <field name="working_hours_open" widget="float_time"/>
+                                <field name="working_hours_close" widget="float_time"/>
+                                <field name="inactivity_days"/>
+                                <field name="days_since_creation"/>
+                            </group>
+                            <group string="Status" groups="base.group_no_one">
+                                <field name="active"/>
+                                <field name="state" string="Status"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="npg_project.npg_group_portal,project.group_project_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+        
+
+
     </data>
 </openerp>

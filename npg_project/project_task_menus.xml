@@ -1,28 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
 
         
           <!--            Menu items for NPG Portal Group-->
             
  <!-- Top menu item -->
-        <menuitem name="NPG Portal"
-            id="npg_portal_menu"
-            groups="npg_group_portal,portal.group_anonymous"
-            sequence="10"/>
-        <menuitem name="Projects" id="npg_portal_projects" groups="npg_group_portal"
-         parent="npg_portal_menu" sequence="40"/>
 
-            	
-        <menuitem name="Messaging" id="npg_portal_messages" parent="npg_portal_menu" sequence="10" groups="npg_group_portal"/>
-          <menuitem name="To-do" id="npg_portal_mail_starfeeds" parent="npg_portal_messages" action="portal.action_mail_star_feeds_portal" sequence="20" groups="base.group_no_one"/>
-           <menuitem name="Inbox" id="npg_portal_inbox" parent="npg_portal_messages"
-            action="portal.action_mail_inbox_feeds_portal" sequence="10" groups="npg_group_portal"/>
-        <menuitem name="Archives" id="npg_portal_mail_archivesfeeds" parent="npg_portal_messages"
-            action="portal.action_mail_archives_feeds_portal" sequence="30" groups="npg_group_portal"/>  	
-            	
-         <menuitem name="Projects" id="npg_portal_services_projects" parent="npg_portal_projects"
-            action="npg_open_view_project" sequence="1" groups="npg_group_portal"/>
+	 <record model="ir.actions.act_window" id="npg_project_issue_categ_act">
+        <field name="name">Issues</field>
+        <field name="res_model">project.issue</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,calendar</field>
+        <field name="view_id" eval="False"/>
+        <field name="domain" eval=""/>
+        <field name="search_view_id" ref="project_issue.view_project_issue_filter"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to report a new issue.
+          </p><p>
+            The OpenERP issues tacker allows you to efficiantly manage things
+            like internal requests, software development bugs, customer
+            complaints, project troubles, material breakdowns, etc.
+          </p>
+        </field>
+    </record>
+
+
+      
+    <record model="ir.actions.act_window.view" id="npg_action_crm_tag_form_view">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="npg_project_issue_form_view"/>
+        <field name="act_window_id" ref="npg_project_issue_categ_act"/>
+    </record>      	
+       
+	<menuitem name="To-do" id="npg_portal_mail_starfeeds" parent="portal.portal_menu" action="portal.action_mail_star_feeds_portal" sequence="20" groups="base.group_no_one"/>
+	
+	<menuitem name="Projects" id="npg_portal_services_projects" 
+	    action="npg_open_view_project" sequence="40" groups="npg_group_portal"/>
+	<menuitem name="My Tasks" id="npg_portal_services_mytasks" 
+	    action="project_gtd.open_gtd_task" sequence="50" groups="npg_group_portal"/>
+	<menuitem name="Issues" id="npg_menu_project_issue_track"  
+	    action="npg_project_issue_categ_act" sequence="15"/>
+
+       
+       
+       
+       
        
      </data>
 </openerp>

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2011 NovaPoint Group INC (<http://www.novapointgroup.com>)
+#    Copyright (C) 2011-2015 NovaPoint Group INC (<http://www.novapointgroup.com>)
 #    Copyright (C) 2004-2010 OpenERP SA (<http://www.openerp.com>)
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,22 +21,37 @@
 ##############################################################################
 
 {
-    'name': 'Template Module',
+    'name': 'NPG Timesheet Enhancement',
     'version': '1.0',
     'category': '',
     "sequence": 14,
-    'complexity': "easy",
-    'category': 'Generic Modules/Others',
+    'complexity': "medium",
+    'category': 'Time Sheet',
     'description': """
-        
+NovaPoint Group Inc Enhancements Functionality of Time Sheets Lines
+
+* Calendar views for time Sheet lines
+* Wizard to search for working hours over date range and by user
+* Planed Start Date & Time for planned Task work
+* Time sheet line Statuses
+* Buttons to log starting work, pausing work, finishing work
+* Auto create new time sheet line copy if restarting work on new day
+* Auto sign in attendance when starting any work
+* Auto Pause any work if signed out of attendance
+* Auto Pause any current Timesheet line which is being worked on if starting work non new time sheet line
+* Allow  linking Timesheet entries to any Document 
+
         
     """,
-    'author': 'NovaPoint Group Inc',
+    'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ["base",],
+    'depends': ["base","npg_warning","hr_timesheet"],
     'init_xml': [],
     'data': [
-        "views/view.xml",
+        "views/timesheet_view.xml",
+        "views/menus.xml",
+        "timesheet_workflow.xml",
+        "wizard/hr_timesheet_working_hours_wizard.xml"
     ],
     'demo_xml': [],
     'test': [

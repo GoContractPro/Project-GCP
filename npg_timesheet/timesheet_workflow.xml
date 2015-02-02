@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+    <!-- Activities -->
+    <record model="workflow" id="wkf_time_sheet">
+        <field name="name">time.sheet.line</field>
+        <field name="osv">hr.analytic.timesheet</field>
+        <field name="on_create">True</field>
+    </record>
+
+    <record model="workflow.activity" id="time_sheet_line_act_planned">
+        <field name="wkf_id" ref="wkf_time_sheet"/>
+        <field name="flow_start">True</field>
+        <field name="name">planned</field>
+        <field name="kind">function</field>
+        <field name="action">action_planned()</field>
+    </record>
+    <record model="workflow.activity" id="time_sheet_line_act_start">
+        <field name="wkf_id" ref="wkf_time_sheet"/>
+        <field name="name">working</field>
+        <field name="kind">function</field>
+        <field name="action">action_start_working()</field>
+    </record>
+    <record model="workflow.activity" id="time_sheet_line_act_cancel">
+        <field name="wkf_id" ref="wkf_time_sheet"/>
+        <field name="name">cancel</field>
+        <field name="kind">function</field>
+        <field name="action">action_cancel()</field>
+    </record>
+    <record model="workflow.activity" id="time_sheet_line_act_pause">
+        <field name="wkf_id" ref="wkf_time_sheet"/>
+        <field name="name">pause</field>
+        <field name="kind">function</field>
+        <field name="action">action_pause()</field>
+    </record>
+    <record model="workflow.activity" id="time_sheet_line_act_resume">
+        <field name="wkf_id" ref="wkf_time_sheet"/>
+        <field name="name">resume</field>
+        <field name="kind">function</field>
+        <field name="action">action_resume()</field>
+    </record>
+    <record model="workflow.activity" id="time_sheet_line_act_done">
+        <field name="wkf_id" ref="wkf_time_sheet"/>
+        <field name="name">done</field>
+        <field name="kind">function</field>
+        <field name="flow_stop">True</field>
+        <field name="action">action_done()</field>
+    </record>
+
+    <!-- Transition -->
+    <record model="workflow.transition" id="time_sheet_line_trans_planned_start">
+        <field name="act_from" ref="time_sheet_line_act_planned"/>
+        <field name="act_to" ref="time_sheet_line_act_start"/>
+        <field name="signal">button_start_working</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_trans_start_done">
+        <field name="act_from" ref="time_sheet_line_act_start"/>
+        <field name="act_to" ref="time_sheet_line_act_done"/>
+        <field name="signal">button_done</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_trans_draft_cancel">
+        <field name="act_from" ref="time_sheet_line_act_planned"/>
+        <field name="act_to" ref="time_sheet_line_act_cancel"/>
+        <field name="signal">button_cancel</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_trans_cancel_planned">
+        <field name="act_from" ref="time_sheet_line_act_cancel"/>
+        <field name="act_to" ref="time_sheet_line_act_planned"/>
+        <field name="signal">button_planned</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_trans_start_cancel">
+        <field name="act_from" ref="time_sheet_line_act_start"/>
+        <field name="act_to" ref="time_sheet_line_act_cancel"/>
+        <field name="signal">button_cancel</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_trans_start_pause">
+        <field name="act_from" ref="time_sheet_line_act_start"/>
+        <field name="act_to" ref="time_sheet_line_act_pause"/>
+        <field name="signal">button_pause</field>
+    </record>
+
+    <record model="workflow.transition" id="time_sheet_line_trans_pause_resume">
+        <field name="act_from" ref="time_sheet_line_act_pause"/>
+        <field name="act_to" ref="time_sheet_line_act_resume"/>
+        <field name="signal">button_resume</field>
+    </record>
+
+    <record model="workflow.transition" id="time_sheet_line_trans_resume_pause">
+        <field name="act_from" ref="time_sheet_line_act_resume"/>
+        <field name="act_to" ref="time_sheet_line_act_pause"/>
+        <field name="signal">button_pause</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_trans_resume_cancel">
+        <field name="act_from" ref="time_sheet_line_act_resume"/>
+        <field name="act_to" ref="time_sheet_line_act_cancel"/>
+        <field name="signal">button_cancel</field>
+    </record>
+    <record model="workflow.transition" id="time_sheet_line_tran_resume_done">
+        <field name="act_from" ref="time_sheet_line_act_resume"/>
+        <field name="act_to" ref="time_sheet_line_act_done"/>
+        <field name="signal">button_done</field>
+    </record>
+
+</data>
+</openerp>

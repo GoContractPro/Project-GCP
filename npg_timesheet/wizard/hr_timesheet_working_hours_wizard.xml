@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+      <record id="view_hr_timesheet_hours_open" model="ir.ui.view">
+        <field name="name">hr_timesheet_hours_open.form</field>
+        <field name="model">hr.timesheet.working.hours</field>
+        <field name="arch" type="xml">
+            <form string="Working Hours Wizard" version="7.0">
+            
+               <group string="Select your working hours for date range" col="4">
+                        <field name="from_date"/>
+                        <field name="to_date"/> 
+                        <field name="user_id" />
+               </group>
+               
+               <footer>
+                    <button name="open_working_hours" string="Open" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+               </footer>
+           </form>
+        </field>
+    </record>
+
+    <record id="action_hr_timesheet_hours_open" model="ir.actions.act_window">
+        <field name="name">Working Hours Search</field>
+        <field name="res_model">hr.timesheet.working.hours</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_hr_timesheet_hours_open"/>
+        <field name="target">new</field>
+        <field name="help">Working Hours  opens task hours in date range. </field>
+    </record>
+
+    <menuitem action="action_hr_timesheet_hours_open" id="menu_act_working_hours_wizard"
+     	name="Working Hours by Date" parent="hr_attendance.menu_hr_time_tracking" sequence="1"/>
+         
+        
+   		
+
+    </data>
+</openerp>
