@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+<data>
+       
+       <!-- ********************  Unsubscribe mail Button for res partner *********************** -->
+        
+		 <record id="verts_view_partner_form_unsb_in" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+             <field name="email" position="replace">
+            		<field name="email"/>
+			       <button name="check_mail" type="object" string="Unsubscribe Mail"/>
+			 </field> 
+			 <field name="website" position="after">
+            		<field name="inv_email" invisible="1"/>
+            		<field name="stamp_time" invisible="1"/>
+            		<field name="email_valid"/>   
+			 </field> 
+			 <xpath expr="//notebook/page[@string='History']" position="after">
+			 	<page string="Email open status">
+			 		<field name="email_status">
+			 			<tree editable="bottom">
+			 				<field name="email_opened"/> 
+			 				<field name="date_open"/> 
+			 			</tree>
+			 		</field>
+			 	</page>
+			 	<page string="Website Visit status">
+			 		<field name="website_visit_status">
+			 			<tree editable="bottom">
+			 				<field name="website_visit"/> 
+			 				<field name="date_visit"/> 
+			 			</tree>
+			 		</field>
+			 	</page>
+			 </xpath>
+         </field>
+        </record>
+        
+         <record id="view_res_partner_filter_inherit_email_invalid" model="ir.ui.view">
+            <field name="name">res.partner.select.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter" />
+            <field name="arch" type="xml">
+		          <field name="name"  position="after">
+		            <field name="email_valid" />
+		            <filter string="Invalid Email" name="email_valid" domain="[('email_valid','=',1)]" help="Invalid Email"/>
+		           </field>
+	        </field>
+        </record>
+   		
+</data>
+</openerp>
