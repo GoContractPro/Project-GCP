@@ -23,23 +23,7 @@ from openerp import SUPERUSER_ID
 from datetime import datetime, timedelta, date
 import time
 
-
-
 from openerp.tools.translate import _
-
-TASK_WATCHERS = [
-    'work_ids',
-    'remaining_hours',
-    'effective_hours',
-    'planned_hours'
-]
-TIMESHEET_WATCHERS = [
-    'unit_amount',
-    'product_uom_id',
-    'account_id',
-    'task_id'
-]
-
 
 class project_task_timesheet(osv.osv):
     
@@ -303,7 +287,7 @@ class project_task_timesheet(osv.osv):
          where a.id = d.id""")
     
 
-class taskline(osv.osv):
+class task(osv.osv):
     _inherit = "project.task"
     _name = "project.task"
 
@@ -404,10 +388,8 @@ class taskline(osv.osv):
     }
     
 
-        
-
     def write(self, cr, uid, ids, vals, context=None):
-        res = super(taskline, self).write(
+        res = super(ProjectTask, self).write(
             cr, uid, ids, vals, context=context)
         if vals.get('project_id'):
             ts_obj = self.pool.get('project.task.timesheet')
@@ -416,10 +398,9 @@ class taskline(osv.osv):
                 cr, uid, vals['project_id'], context=context)
             account_id = project.analytic_account_id.id
             for task in self.browse(cr, uid, ids, context=context):
-                ts_obj.write(cr, uid, [w.id for w in task.work_ids],
+                ts_obj.write(cr, uid, [ts.id for ts in task.sheet_ids],
                              {'account_id': account_id}, context=context)
         return res
-    
 
 ''' 
 class AccountAnalyticLine(osv.osv):
