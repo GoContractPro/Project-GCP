@@ -7,7 +7,7 @@ class task(osv.osv):
     _name = "project.task"
     _inherit = ["project.task"]
     _columns = {
-    'task_number':fields.integer('Task Number'),
+    'task_number':fields.char('Task Number', size=32),
 	'pub_descrip': fields.text('Public Notes'),
     }
 

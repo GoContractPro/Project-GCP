@@ -14,20 +14,27 @@
 				<notebook position="inside">
 				   <page string="Time Sheet">	            
 	            
-	         	 	<field name ="sheet_ids" context="{'default_task_id': active_id}">
-	           		  	<tree >
+	         	 	<field name ="sheet_ids" context="{'default_task_id': active_id,'task_project':project_id}">
+	           		  	<tree editable="bottom">
 	           		  		<field name="state" invisible="1"/>
 	           				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
 			                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-pause"/>
 			                <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
 			                <button name="button_done" string="Finished" states="working" icon="terp-check"/>
 			                <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
-
-		            		<field name="user_id"/>
 		            		<field name="name" default_focus="1" />
+		            		<field name="user_id" on_change="on_change_user_id(user_id)"/>
                             <field name="plan_time_amt" sum="Work Planned" widget="float_time" />
-		            		<field name="unit_amount" 
+		            		<field name="unit_amount"  on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice,context)"
 	                          sum="Total time" widget="float_time" string="Duration"/>
+<!--		            		<field name="task_id" invisible="1" on_change="on_change_task_id(task_id,context)" /-->
+							<field name="account_id" invisible="1"/>
+							<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice,context)"
+				       			required="1" domain="[('type','=','service')]" invisible="1" />
+							<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice,context)"
+				       invisible="1" />
+							<field name="to_invoice" invisible="1"/> 
+								<field name="journal_id" invisible="1" />
 	            		</tree> 
 	            	</field>
 
@@ -49,7 +56,7 @@
                 <button name="button_done" string="Finished" states="working" icon="terp-check"/>
                 <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
          		
-         		<field name="task_id" on_change="on_change_task_id( context)" /> 
+         		<field name="task_id" on_change="on_change_task_id(task_id, context)" /> 
          		   
 				<field name="user_id"  on_change="on_change_user_id(user_id)" required="1" />
 	  			<field name="name" default_focus="1" />
@@ -63,7 +70,7 @@
 				<field domain="[('type','=','normal')]" name="account_id" invisible="1" />
 		 		<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
 				       required="1" domain="[('type','=','service')]" invisible="1" />
-				<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id,  to_invoice)"
+				<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
 				       invisible="1" />
 				<field name="amount" sum="Total cost" invisible="1" />
 				<field name="general_account_id" invisible="1" />
