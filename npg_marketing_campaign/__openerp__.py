@@ -24,8 +24,18 @@
     "version" : "1.0",
     "author" : "NovaPoint Group INC and VERTS Team,",
     "description" : """
+                
+                ***********************************************************************
+                ***Important this module requires installation of  python packages  ****
+                ***             pyDNS and validate_email                            ****
+                ***    https://pypi.python.org/pypi/validate_email                    ***
+                *************************************************************************
+                
+                
                 * This module update the field Auto Opt Out in partner form for Unsubscribe Email.
-                * This module update the fields Invalid Email and Stamp Time in partner form for Undelivered Email.    
+                * This module update the fields Invalid Email and Stamp Time in partner form for Undelivered Email.
+                * This module Udates the fields  Email Opened and Web Link Clicked on Marketing Follow up
+                    
                 """,
     "website"  : "http://www.verts.co.in",
     "depends"  : ["base","mail","marketing_campaign"],
