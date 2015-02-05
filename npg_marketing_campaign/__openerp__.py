@@ -20,15 +20,15 @@
 ##############################################################################
 
 {
-    "name" : "Verts Unsubscribe Mail ",
+    "name" : "NPG Marketing Campaign ",
     "version" : "1.0",
-    "author" : "VERTS Team",
+    "author" : "NovaPoint Group INC and VERTS Team,",
     "description" : """
                 * This module update the field Auto Opt Out in partner form for Unsubscribe Email.
                 * This module update the fields Invalid Email and Stamp Time in partner form for Undelivered Email.    
                 """,
     "website"  : "http://www.verts.co.in",
-    "depends"  : ["base","mail",],
+    "depends"  : ["base","mail","marketing_campaign"],
     "category" : "Generic Modules",
     "init_xml" : [],
     "demo_xml" : [],

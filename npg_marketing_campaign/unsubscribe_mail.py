@@ -54,9 +54,17 @@ class res_partner(osv.osv):
               'website_visit_status' : fields.one2many('website.visit.status','partner_id', "Website Visited"),
               }
     
-    def unsubscribe_mail(self,cr,uid,email):
-        if email:
-            cr.execute('update res_partner set opt_out=%s where email=%s',(True,email))
+    def unsubscribe_mail(self,cr,uid,args=None,context=None):
+        if args is None:
+            args = {}
+        if context is None:
+            context = {}
+    
+        if args.get('partner_id'):
+            self.write(cr,uid,[args.get('partner_id')],{'opt_out':True}, context)
+            return True
+        if args.get('email'):
+            cr.execute('update res_partner set opt_out=%s where email=%s',(True,args.get('email')))
             return True
         else:
             return False
@@ -88,5 +96,18 @@ class res_partner(osv.osv):
         return res
 
 res_partner()
+
+class marketing_campaign_workitem(osv.osv):
+    _inherit = "marketing.campaign.workitem"
+    
+    _columns = {
+               'email_opened':fields.datetime("Open Email"),
+               'weblink_clicked':fields.datetime("Open Weblink")
+               }
+    def update_campain_click_status(self,cr,uid,args = None , context = None):
+ # TODO add code  here to update click time Stamps from PHP will search base on 
+ # agruments passed for partner_id and 'activity_id.name'       
+        return True
+ 
 
     
