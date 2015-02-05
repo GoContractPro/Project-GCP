@@ -129,14 +129,16 @@ class project_task_timesheet(osv.osv):
     
     def on_change_unit_amount(
             self, cr, uid, sheet_id, prod_id, unit_amount, company_id,
-            unit=False, journal_id=False, task_id=False, to_invoice=False,
-            project_id=False, context=None):
+            unit=False, journal_id=False, to_invoice=False,
+            context={}):
         hat_obj = self.pool.get("hr.analytic.timesheet")
         
         res = hat_obj.on_change_unit_amount(
             cr, uid, sheet_id, prod_id, unit_amount, company_id, unit,
             journal_id, context=context)
-        
+        print "context",context
+        project_id = context.get('task_project')
+        task_id = context.get('task_id')
         if 'value' in res and (task_id or project_id):
             if task_id:
                 task_obj = self.pool['project.task']
@@ -149,18 +151,22 @@ class project_task_timesheet(osv.osv):
                 res['value']['account_id'] = p.analytic_account_id.id
                 if p.to_invoice and not to_invoice:
                     res['value']['to_invoice'] = p.to_invoice.id
+        print res
         return res   
         
         
         
-    def on_change_task_id(self, cr, uid, ids , task_id, context = None):
-        
+    def on_change_task_id(self, cr, uid, ids , task_id, context = {}):
+        proj = context.get('task_project')
+        print "context", context
+        print "task", task_id
+        if not (task_id or proj):return {}
+        prj = self.pool.get('project.project').browse(cr,uid,proj,context=context)
+        if prj.analytic_account_id:
+            return {'value': {'account_id': prj.analytic_account_id.id} }
         res = self.pool.get('project.task').browse(cr,uid,task_id,context=context)
-
-
-        if  res.project_id.account_id.id:
-                    return {'value': {'account_id': res.project_id.analytic_account_id.id} }
-                    
+        if res.project_id.analytic_account_id:
+            return {'value': {'account_id': res.project_id.analytic_account_id.id} }
         return {}
 
     
@@ -287,7 +293,7 @@ class project_task_timesheet(osv.osv):
          where a.id = d.id""")
     
 
-class task(osv.osv):
+class project_task(osv.osv):
     _inherit = "project.task"
     _name = "project.task"
 
@@ -325,7 +331,7 @@ class task(osv.osv):
         # direct access to database. So when modify a line the
         # _store_set_values as it uses cursor directly to update tasks
         # project triggers on task are not called
-        res = super(taskline, self)._store_set_values(
+        res = super(project_task, self)._store_set_values(
             cr, uid, ids, field_list, context=context)
         for row in self.browse(cr, SUPERUSER_ID, ids, context=context):
             if row.project_id:
@@ -389,7 +395,7 @@ class task(osv.osv):
     
 
     def write(self, cr, uid, ids, vals, context=None):
-        res = super(ProjectTask, self).write(
+        res = super(project_task, self).write(
             cr, uid, ids, vals, context=context)
         if vals.get('project_id'):
             ts_obj = self.pool.get('project.task.timesheet')
