@@ -25,16 +25,17 @@
 		            		<field name="name" default_focus="1" />
 		            		<field name="user_id" on_change="on_change_user_id(user_id)"/>
                             <field name="plan_time_amt" sum="Work Planned" widget="float_time" />
-		            		<field name="unit_amount"  on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice,context)"
+		            		<field name="unit_amount"  on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 	                          sum="Total time" widget="float_time" string="Duration"/>
 <!--		            		<field name="task_id" invisible="1" on_change="on_change_task_id(task_id,context)" /-->
 							<field name="account_id" invisible="1"/>
-							<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice,context)"
+							<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 				       			required="1" domain="[('type','=','service')]" invisible="1" />
-							<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice,context)"
+							<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 				       invisible="1" />
 							<field name="to_invoice" invisible="1"/> 
 								<field name="journal_id" invisible="1" />
+								<field name="company_id" invisible="1" />
 	            		</tree> 
 	            	</field>
 
@@ -62,20 +63,20 @@
 	  			<field name="name" default_focus="1" />
 				<field name="plan_date_start" on_change="on_change_plan_date_start(plan_date_start,context)" /> 
 				<field name="plan_time_amt" sum="Work Planned" widget="float_time" />
-				<field name="unit_amount" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+				<field name="unit_amount" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
                           sum="Total time" widget="float_time" string="Duration"/>
 				<field name="date" on_change="on_change_date(date)" invisible='1' readonly="1"/>
 				<field name="account_id" />
 				<field name="journal_id" invisible="1" />
 				<field domain="[('type','=','normal')]" name="account_id" invisible="1" />
-		 		<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+		 		<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 				       required="1" domain="[('type','=','service')]" invisible="1" />
-				<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+				<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 				       invisible="1" />
 				<field name="amount" sum="Total cost" invisible="1" />
 				<field name="general_account_id" invisible="1" />
 				<field name="to_invoice" /> 
-
+				<field name="company_id" invisible="1" />
 				</tree>
 			</field>
         </record>
@@ -104,21 +105,22 @@
 		  			<field name="name" default_focus="1" />
 					<field name="plan_date_start" on_change="on_change_plan_date_start(plan_date_start,context)" /> 
 					<field name="plan_time_amt" sum="Work Planned" widget="float_time" />
-					<field name="unit_amount" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+					<field name="unit_amount" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 	                          sum="Total time" widget="float_time" string="Duration"/>
 					<field name="date" on_change="on_change_date(date)" invisible='1' readonly="1"/>
 					<field name="journal_id" invisible="0" />
 					<field name="account_id" />
 					<field domain="[('type','=','normal')]" name="account_id" invisible="1" />
-			 		<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+			 		<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
 					       required="1" domain="[('type','=','service')]" invisible="1" />
-					<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id,  to_invoice)"
+					<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id,  to_invoice,context)"
 					       invisible="1" />
 					<field name="amount" sum="Total cost" invisible="1" />
 					<field name="general_account_id" invisible="1" />
 					<field name="to_invoice" /> 
 					<field name="public_note" />
 					<field name="internal_note" />
+					<field name="company_id" invisible="1" />
 				</group>
 			</sheet> 
 			</form>

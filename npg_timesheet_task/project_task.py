@@ -129,15 +129,16 @@ class project_task_timesheet(osv.osv):
     
     def on_change_unit_amount(
             self, cr, uid, sheet_id, prod_id, unit_amount, company_id,
-            unit=False, journal_id=False, task_id=False, to_invoice=False,
+            unit=False, journal_id=False, to_invoice=False,
             context={}):
         hat_obj = self.pool.get("hr.analytic.timesheet")
         
         res = hat_obj.on_change_unit_amount(
             cr, uid, sheet_id, prod_id, unit_amount, company_id, unit,
             journal_id, context=context)
-        
+        print "context",context
         project_id = context.get('task_project')
+        task_id = context.get('task_id')
         if 'value' in res and (task_id or project_id):
             if task_id:
                 task_obj = self.pool['project.task']
