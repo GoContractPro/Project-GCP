@@ -15,8 +15,6 @@ access_project_gtd_npg_portal,project_gtd_timebox,project_gtd.model_project_gtd_
 access_project_gtd_context_npg_portal,project_gtd_context,project_gtd.model_project_gtd_context,npg_group_portal,1,0,0,0
 access_project_category_npg_portal,project_category,project.model_project_category,npg_group_portal,1,0,0,0
 access_account_analytic_account_npg_portal,account_analytic_account,analytic.model_account_analytic_account,npg_group_portal,1,0,0,0
-access_sale_order_npg_portal,sale.order,sale.model_sale_order,npg_group_portal,1,0,0,0
-access_sale_order_line_npg_portal,sale.order.line,sale.model_sale_order_line,npg_group_portal,1,0,0,0
 access_account_invoice_npg_portal,account.invoice,account.model_account_invoice,npg_group_portal,1,0,0,0
 access_account_invoice_tax_npg_portal,account.invoice.tax,account.model_account_invoice_tax,npg_group_portal,1,0,0,0
 access_account_invoice_line_npg_portal,account.invoice.line,account.model_account_invoice_line,npg_group_portal,1,0,0,0
@@ -27,7 +25,6 @@ access_account_move_npg_portal,account.move,account.model_account_move,npg_group
 access_account_move_line_npg_portal,account.move.line,account.model_account_move_line,npg_group_portal,1,0,0,0
 access_account_move_reconcile_npg_portal,account.move.reconcile,account.model_account_move_reconcile,npg_group_portal,1,0,0,0
 access_account_fiscalyear_npg_portal,account.sequence.fiscalyear,account.model_account_sequence_fiscalyear,npg_group_portal,1,0,0,0
-access_sale_shop_npg_portal,sale.shop,sale.model_sale_shop,npg_group_portal,1,0,0,0
 access_product_list_npg_portal,product.pricelist,product.model_product_pricelist,npg_group_portal,1,0,0,0
 access_res_partner_npg_portal,res.partner,base.model_res_partner,npg_group_portal,1,0,0,0
 access_account_tax_npg_portal,account.tax,account.model_account_tax,npg_group_portal,1,0,0,0
