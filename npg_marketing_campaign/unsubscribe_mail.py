@@ -4,7 +4,7 @@ from osv import fields, osv
 from tools.translate import _
 from tools import html2plaintext
 from base.res.res_partner import format_address
-import datetime
+from datetime import datetime, timedelta
 import time
 import smtplib
 from validate_email import validate_email
@@ -13,6 +13,7 @@ from validate_email import validate_email
 class email_status(osv.osv):
     _name = "email.status"
     _columns = {
+                'marketing_workitem_id':fields.many2one('marketing.campaign.workitem',"Marketing Workitem"),
                 'partner_id':fields.many2one('res.partner'),
                 'email_opened':fields.boolean('Email Opened'),
                 'date_time':fields.datetime("Open Time"),
@@ -23,10 +24,11 @@ email_status()
 class website_visit_status(osv.osv):
     _name = "website.visit.status"
     _columns = {
+                'marketing_workitem_id':fields.many2one('marketing.campaign.workitem',"Marketing Workitem"),
                 'partner_id':fields.many2one('res.partner'),
                 'website_visit':fields.boolean('Website Visited'),
                 'date_time':fields.datetime("Open Time"),
-                'date_visit' : fields.char("Visit Time",size=64),
+                'date_visit' : fields.datetime("Visit Time"),
                 }
     
 website_visit_status()
@@ -75,23 +77,17 @@ class res_partner(osv.osv):
                 self.unsubscribe_mail(cr,uid,val.email,context)
         return True
     
-    def update_email_status(self,cr,uid,email,opened,date_time=None):
-        partner_id =[]
+    def update_email_status(self,cr,uid,partner_id = False, workitem_id=False):
         res = 'Partner not found'
-        if email:
-            partner_id = self.search(cr,uid,[('email','=',email)])
         if partner_id:
-            self.pool.get('email.status').create(cr,uid,{'partner_id':partner_id[0],'email_opened':opened,'date_open':date_time})
+            self.pool.get('email.status').create(cr,uid,{'partner_id':partner_id,'marketing_workitem_id':workitem_id, 'email_opened':True,'date_open':time.strftime('%Y-%m-%d %H:%M:%S')})
             res = "Record updated"
         return res
-
-    def update_website_visit_status(self,cr,uid,email,visit,date_time=None):
-        partner_id =[]
+    
+    def update_website_visit_status(self,cr,uid,partner_id = False, workitem_id=False):
         res = 'Partner not found'
-        if email:
-            partner_id = self.search(cr,uid,[('email','=',email)])
         if partner_id:
-            self.pool.get('website.visit.status').create(cr,uid,{'partner_id':partner_id[0],'website_visit':visit,'date_visit':date_time})
+            self.pool.get('website.visit.status').create(cr,uid,{'partner_id':partner_id,'marketing_workitem_id':workitem_id, 'website_visit':True,'date_visit':time.strftime('%Y-%m-%d %H:%M:%S')})
             res = "Record updated"
         return res
 
@@ -102,7 +98,7 @@ class marketing_campaign_workitem(osv.osv):
     
     _columns = {
                'email_opened':fields.datetime("Open Email"),
-               'weblink_clicked':fields.datetime("Open Weblink")
+               'weblink_clicked':fields.datetime("Open Weblink"),
                }
     def update_campain_click_status(self,cr,uid,args = None , context = None):
  # TODO add code  here to update click time Stamps from PHP will search base on 

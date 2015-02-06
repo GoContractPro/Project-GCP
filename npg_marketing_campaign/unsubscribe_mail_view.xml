@@ -30,6 +30,7 @@
 			 	<page string="Website Visit status">
 			 		<field name="website_visit_status">
 			 			<tree editable="bottom">
+			 				<field name="marketing_workitem_id"/> 
 			 				<field name="website_visit"/> 
 			 				<field name="date_visit"/> 
 			 			</tree>
