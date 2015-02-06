@@ -11,7 +11,7 @@
             <field name="arch" type="xml">
              <field name="email" position="replace">
             		<field name="email"/>
-			       <button name="check_mail" type="object" string="Unsubscribe Mail"/>
+<!--			       <button name="check_mail" type="object" string="Unsubscribe Mail"/-->
 			 </field> 
 			 <field name="website" position="after">
             		<field name="inv_email" invisible="1"/>

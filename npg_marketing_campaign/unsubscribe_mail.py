@@ -17,7 +17,7 @@ class email_status(osv.osv):
                 'partner_id':fields.many2one('res.partner'),
                 'email_opened':fields.boolean('Email Opened'),
                 'date_time':fields.datetime("Open Time"),
-                'date_open' : fields.char("Email Open Time",size=64),
+                'date_open' : fields.datetime("Email Open Time"),
                 }
 email_status()
     
