@@ -83,28 +83,20 @@
 				<xpath expr="//notebook/page[@string='Description']" position="replace">
 				</xpath>
 				
-				<xpath expr="//notebook/page[@string='Delegation']" position="before">
-				
-						<page string="Description" groups="base.group_user">
-			            	<group>
-			            	<field name="description" groups="base.group_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
-			            	</group>
-			            </page>
-			    </xpath>x
-				
-				<xpath expr="//notebook/page[@string='Description']" position="before">				
+				<!--xpath expr="//notebook/page[@string='Description']" position="before">				
 									           
 	           		   <page string="Public Notes" groups="npg_project.npg_group_portal,project.group_project_user">
 			             	<group>
-			         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
-			         		<field name="pub_descrip" groups="npg_project.npg_group_portal,project.group_project_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
+			          	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
+			         	<!-- 	<field name="pub_descrip" groups="npg_project.npg_group_portal,project.group_project_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> 
 			            	</group>
 			            </page>
 				
-				</xpath>
+				</xpath-->
+			         	
+				<xpath expr="//notebook/page[@string='Delegation']" position="before">
 				
-				<xpath expr="//notebook/page[@string='Public Notes']" position="before">
-					<page string="Work">
+   					<!--page string="Work">
 						<field name="work_ids" groups="project.group_tasks_work_on_tasks">
                              <tree string="Task Work" editable="top">
                                  <field name="name"/>
@@ -113,8 +105,39 @@
                                  <field name="user_id"/>
                              </tree>
                         </field>
-					</page>
-
+					</page-->
+					
+                	<page string="Work log"  groups="project.group_project_user">
+                		<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+                				<form string="Task Work">
+				                    <group col="4">
+				                        <field colspan="4" name="name"/>
+				                        <field name="date"/>
+				                        <field name="hours" widget="float_time"/>
+				                        <field name="user_id" options='{"no_open": True}' context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'base.group_partner_manager', 'project.group_project_user']}"/>
+				                        <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+				                    </group>
+				                    <newline/>
+				                     <field name="wrk_dtl" nolabel="1" placeholder="Work Details..."/>
+               					</form>
+                                <tree string="Task Work">
+                                    <field name="name"/>
+                                    <field name="hours" widget="float_time" sum="Spent Hours"/>
+                                    <field name="date"/>
+                                    <field name="user_id" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'project.group_project_user']}"/>
+                                </tree>
+                            </field>
+                	</page>
+                	<page string="Work Details"  groups="project.group_project_user">
+                		<group string="Work Details">
+                		  <field name="work_details" nolabel="1"/>
+                		</group>
+                	</page>
+					<page string="Description" groups="base.group_user">
+			            	<group>
+			            	<field name="description" groups="base.group_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
+			            	</group>
+			            </page>
 				</xpath>
             
 	    </field>
