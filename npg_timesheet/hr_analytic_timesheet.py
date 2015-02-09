@@ -65,6 +65,8 @@ class hr_analytic_timesheet(osv.osv):
         'res_id': fields.integer('Resource ID', readonly=True, help="The record id this is attached to"),
         'search_from':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search from"),
         'search_to':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search to"),
+        
+        'date_finished': fields.datetime('Finished Date'),
         }
     
     _defaults = {
@@ -88,6 +90,12 @@ class hr_analytic_timesheet(osv.osv):
         """
         return self.write(cr, uid, ids, {'state': 'planned'}, context=context)
 
+    def _check_working(self, cr, uid, ids, context=None):
+        """ Check working lines and pause them.
+        @return: True
+        """
+        return True
+
     def action_start_working(self, cr, uid, ids, context=None):
         """ Sets state to working and writes starting date.
         @return: True
@@ -102,7 +110,7 @@ class hr_analytic_timesheet(osv.osv):
         """ Sets state to done, writes finish date and calculates delay.
         @return: True
         """
-        time_now = time.time()
+        time_now = datetime.now()
         obj_line = self.browse(cr, uid, ids[0])
 
         start_time = self.get_latest_status_log(cr,uid,ids[0],context=context)    
@@ -110,7 +118,7 @@ class hr_analytic_timesheet(osv.osv):
         work_time_hours = work_time_hours#round(work_time_hours/.25)*.25
         amount = obj_line.unit_amount + work_time_hours
         
-        date_finished = datetime.strptime(time_now,'%Y-%m-%d %H:%M:%S')
+        date_finished = datetime.strftime(time_now,'%Y-%m-%d %H:%M:%S')
         
         self.create_status_log(cr, uid,  ids[0],'done', context)
         self.write(cr, uid, ids, {'state':'done', 'date_finished': date_finished,'unit_amount':amount}, context=context)

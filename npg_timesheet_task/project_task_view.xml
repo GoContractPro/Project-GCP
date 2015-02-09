@@ -16,13 +16,14 @@
 	            
 	         	 	<field name ="sheet_ids" context="{'default_task_id': active_id,'task_project':project_id}">
 	           		  	<tree editable="bottom">
-	           		  		<field name="state" invisible="1"/>
+	           		  		<field name="state" invisible="0"/>
 	           				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
-			                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-pause"/>
+			                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-play"/>
 			                <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
 			                <button name="button_done" string="Finished" states="working" icon="terp-check"/>
 			                <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
-		            		<field name="name" default_focus="1" />
+			                		
+			                <field name="name" default_focus="1" />
 		            		<field name="user_id" on_change="on_change_user_id(user_id)"/>
                             <field name="plan_time_amt" sum="Work Planned" widget="float_time" />
 		            		<field name="unit_amount"  on_change="on_change_unit_amount(product_id, unit_amount, company_id, product_uom_id,journal_id, to_invoice,context)"
@@ -50,9 +51,9 @@
             <field name="model">project.task.timesheet</field>
             <field name="arch" type="xml">
          	<tree editable="top" string="Task Work Activities"> 
-         						<field name="state"/>
+         						<field name="state" readonly="1"/>
 				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
-                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-pause"/>
+                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-play"/>
                 <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
                 <button name="button_done" string="Finished" states="working" icon="terp-check"/>
                 <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>

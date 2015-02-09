@@ -24,9 +24,9 @@
 				<field name="amount" sum="Total cost" invisible="1" />
 				<field name="general_account_id" invisible="1" />
 				<field name="to_invoice" /> 
-				<field name="state"/>
+				<field name="state" readonly="1"/>
 				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
-                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-pause"/>
+                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-play"/>
                 <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
                 <button name="button_done" string="Finished" states="working" icon="terp-check"/>
                 <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
@@ -65,9 +65,9 @@
             <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
             <field name="arch" type="xml">
                 <field name="date" position="before">
-                <field name="state"/>
+                <field name="state" readonly="1"/>
 				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
-                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-pause"/>
+                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-play"/>
                 <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
                 <button name="button_done" string="Finished" states="working" icon="terp-check"/>
                 <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
