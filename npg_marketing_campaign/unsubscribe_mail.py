@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import time
 import smtplib
 from validate_email import validate_email
+from openerp import tools
 
 
 class email_status(osv.osv):
@@ -104,6 +105,31 @@ class marketing_campaign_workitem(osv.osv):
  # TODO add code  here to update click time Stamps from PHP will search base on 
  # agruments passed for partner_id and 'activity_id.name'       
         return True
+    
+class marketing_campaign_activity(osv.osv):
+    _inherit = "marketing.campaign.activity"
+    
+    def _process_wi_email(self, cr, uid, activity, workitem, context=None):
+        if context is None:
+            context = {}
+        context.update({'workitem_id':workitem.id})
+        return self.pool.get('email.template').send_mail(cr, uid,
+                                            activity.email_template_id.id,
+                                            workitem.res_id, context=context)
  
 
-    
+
+class email_template(osv.osv):
+    "Templates for sending email"
+    _inherit = "email.template"
+
+    def generate_email(self, cr, uid, template_id, res_id, context=None):
+        if context is None:
+            context = {}
+        values = super(email_template, self).generate_email(cr, uid, template_id, res_id, context=context)
+        workitem_id = context.get('workitem_id')
+        if workitem_id:
+            work_item = "Work Item : " + str(workitem_id)
+            values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
+        return values
+            
