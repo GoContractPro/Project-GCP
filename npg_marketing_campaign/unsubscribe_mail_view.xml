@@ -52,5 +52,19 @@
 	        </field>
         </record>
    		
+        <!-- Email Template -->
+		<record model="ir.ui.view" id="npg_marketing_email_template_form_inherit">
+			<field name="name">npg.marketing.email.template.form.inherit</field>
+			<field name="model">email.template</field>
+			<field name="inherit_id" ref="email_template.email_template_form" />
+			<field name="arch" type="xml">
+				<field name="body_html" position="before">
+					<field name="header_html" width="250" height="300" nolabel="1" colspan="2" placeholder="Email contents (in raw HTML format) for Mail body header"/>
+				</field>
+				<field name="body_html" position="after">
+					<field name="footer_html" width="250" height="300" nolabel="1" colspan="2" placeholder="Email contents (in raw HTML format) for Mail body footer"/>
+				</field>
+			</field>
+		</record>
 </data>
 </openerp>

@@ -122,14 +122,95 @@ class marketing_campaign_activity(osv.osv):
 class email_template(osv.osv):
     "Templates for sending email"
     _inherit = "email.template"
+    
+    _columns = {
+                'header_html': fields.text('Header', translate=True, help="Rich-text/HTML for header Part of mail body"),
+                'footer_html': fields.text('Footer', translate=True, help="Rich-text/HTML for Footer Part of mail body"),
+                }
+
+    #===========================================================================
+    # def generate_email(self, cr, uid, template_id, res_id, context=None):
+    #     if context is None:
+    #         context = {}
+    #     values = super(email_template, self).generate_email(cr, uid, template_id, res_id, context=context)
+    #     workitem_id = context.get('workitem_id')
+    #     if workitem_id:
+    #         work_item = "Work Item : " + str(workitem_id)
+    #         values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
+    #     return values
+    #===========================================================================
+            
 
     def generate_email(self, cr, uid, template_id, res_id, context=None):
+        """Generates an email from the template for given (model, res_id) pair.
+
+           :param template_id: id of the template to render.
+           :param res_id: id of the record to use for rendering the template (model
+                          is taken from template definition)
+           :returns: a dict containing all relevant fields for creating a new
+                     mail.mail entry, with one extra key ``attachments``, in the
+                     format [(report_name, data)] where data is base64 encoded.
+        """
         if context is None:
             context = {}
-        values = super(email_template, self).generate_email(cr, uid, template_id, res_id, context=context)
+        report_xml_pool = self.pool.get('ir.actions.report.xml')
+        template = self.get_email_template(cr, uid, template_id, res_id, context)
+        ctx = context.copy()
+        if template.lang:
+            ctx['lang'] = template._context.get('lang')
+        values = {}
+        for field in ['subject', 'body_html', 'email_from',
+                      'email_to', 'email_recipients', 'email_cc', 'reply_to']:
+            values[field] = self.render_template(cr, uid, getattr(template, field),
+                                                 template.model, res_id, context=ctx) \
+                                                 or False
+        if template.header_html:
+            values['body_html'] = tools.append_content_to_html(values['body_html'], template.header_html)
+            
+        if template.user_signature:
+            signature = self.pool.get('res.users').browse(cr, uid, uid, context).signature
+            if signature:
+                values['body_html'] = tools.append_content_to_html(values['body_html'], signature)
+                
+        if template.header_html:
+            values['body_html'] = tools.append_content_to_html(values['body_html'], template.footer_html)
+                   
         workitem_id = context.get('workitem_id')
         if workitem_id:
             work_item = "Work Item : " + str(workitem_id)
             values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
-        return values
             
+            
+        if values['body_html']:
+            values['body'] = tools.html_sanitize(values['body_html'])
+
+        values.update(mail_server_id=template.mail_server_id.id or False,
+                      auto_delete=template.auto_delete,
+                      model=template.model,
+                      res_id=res_id or False)
+
+        attachments = []
+        # Add report in attachments
+        if template.report_template:
+            report_name = self.render_template(cr, uid, template.report_name, template.model, res_id, context=ctx)
+            report_service = 'report.' + report_xml_pool.browse(cr, uid, template.report_template.id, context).report_name
+            # Ensure report is rendered using template's language
+            service = netsvc.LocalService(report_service)
+            (result, format) = service.create(cr, uid, [res_id], {'model': template.model}, ctx)
+            # TODO in trunk, change return format to binary to match message_post expected format
+            result = base64.b64encode(result)
+            if not report_name:
+                report_name = report_service
+            ext = "." + format
+            if not report_name.endswith(ext):
+                report_name += ext
+            attachments.append((report_name, result))
+
+        attachment_ids = []
+        # Add template attachments
+        for attach in template.attachment_ids:
+            attachment_ids.append(attach.id)
+
+        values['attachments'] = attachments
+        values['attachment_ids'] = attachment_ids
+        return values
