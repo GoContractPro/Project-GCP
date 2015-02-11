@@ -31,8 +31,57 @@
 	            	<field name="task_number" string="Task Number"/>
 	            </field>
             </field>
-        </record>  
+        </record>
+          
+        <record id="hr_timesheet_line_date_search" model="ir.ui.view">
+           <field name="name">hr.analytic.timesheet.date.search</field>
+           <field name="model">hr.analytic.timesheet</field>
+           <field name="type">search</field>
+           <field name="arch" type="xml">
+               <search string="Timesheet">
+                   <group col='8' colspan='4'>
+                       <field name="user_id"/>
+                       <field name="account_id"/>
+                       <field name="search_from" filter_domain="[('date','&gt;=',self)]"/>
+					<field name="search_to" filter_domain="[('date','&lt;=',self)]"/>
+                   </group>
+                   <newline/>
+                   <group expand="0" string="Group By...">
+                       <filter string="Users" icon="terp-personal" domain="[]" context="{'group_by':'user_id'}"/>
+                       <separator orientation="vertical"/>
+                       <filter string="Anlytic account" icon="terp-folder-green" domain="[]" context="{'group_by':'account_id'}"/>
+                       <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                       <separator orientation="vertical"/>
+                       <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                   </group>
+               </search>
+           </field>
+   	
+   	</record>
+    	
+         <record id="hr_timesheet_line_tree_npg" model="ir.ui.view">
+            <field name="name">hr.analytic.timesheet.tree.npg</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+	            <field name="unit_amount" position="replace">
+	            	<field name="unit_amount" string="Duration" 
+	            	on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id)" sum="Total time" />
+	            </field>
+           </field>
+             
+		</record>    
     
+    	<record id="act_hr_timesheet_lines_form" model="ir.actions.act_window">
+            <field name="name">Time Sheet Lines</field>
+            <field name="res_model">hr.analytic.timesheet</field>
+            <field name="view_id" ref="hr_timesheet.hr_timesheet_line_tree" />
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,calendar,gantt</field>     
+            <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
+            <field name="search_view_id" ref="hr_timesheet_line_date_search"/>
+            <field name="help">Through Working Hours you can register your working hours by task every day.</field>
+        </record>        
   
         
 <!--        Project module enhancement by Verts-->
@@ -191,6 +240,15 @@
             </field>
         </record>
         
+   <record model="ir.actions.act_window" id="project_gtd.open_gtd_task">
+        <field name="name">My Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="search_view_id" ref="project_gtd.view_task_gtd_search"/>
+        <field name="context">{'set_editable':True,'set_visible':True,'gtd':True,'user_invisible':True, "search_default_open": 1}</field>
+        <field name="domain">[('user_id','=',uid)]</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,kanban,calendar,gantt,graph</field>
+    </record>
 
 
     </data>

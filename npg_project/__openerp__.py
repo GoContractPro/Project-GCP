@@ -24,13 +24,11 @@
     'version': '1.0',
     'category': 'Project Management',
     'description': """
-This module adds 
+        This module adds 
         A additional tab for notes in task.
         A new npg projects portal user group 
         Makes Project required field on Task
-        Modifies mails to move link for document in OERP to top of email so not hidden when signature folders in 
-        email client
-
+        
 ===================================================
     """,
     'author': 'NovaPoint Group LLC',

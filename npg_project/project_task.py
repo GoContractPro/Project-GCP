@@ -17,6 +17,13 @@ class task(osv.osv):
             vals['task_number'] = self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/'
         return super(task, self).create(cr, uid, vals, context=context)
     
+class hr_timesheet_line(osv.osv):
+    _inherit = "hr.analytic.timesheet"
+    
+    _columns = {
+                'search_from':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search from"),
+                'search_to':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search to"),
+                 }
 
     
 

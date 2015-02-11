@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="0">
-
+    
+       <record id="base.menu_project_management_time_tracking" model="ir.ui.menu">
+            <field name="name">Time Tracking</field>
+         	<field eval="1" name="sequence"/>
+            <field name="parent_id" ref="base.menu_main_pm"/>
+        </record>
         
+        <menuitem id="menu_project_working_hours" parent="base.menu_project_management_time_tracking" 
+        	name="Working Hours" action="act_hr_timesheet_lines_form"/>
+             
+        <record id="menu_act_project_management_timesheet_sheet_form" model="ir.ui.menu">
+            <field name="name">Current Timesheet</field>
+            <field eval="5" name="sequence"/>
+            <field name="parent_id" ref="base.menu_project_management_time_tracking"/>
+            <field name="icon">STOCK_JUSTIFY_FILL</field>
+            <field name="action" ref="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"/>
+        </record>
+       
           <!--            Menu items for NPG Portal Group-->
             
- <!-- Top menu item -->
 
 	 <record model="ir.actions.act_window" id="npg_project_issue_categ_act">
         <field name="name">Issues</field>
