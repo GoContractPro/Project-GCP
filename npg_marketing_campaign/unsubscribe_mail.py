@@ -164,21 +164,26 @@ class email_template(osv.osv):
             values[field] = self.render_template(cr, uid, getattr(template, field),
                                                  template.model, res_id, context=ctx) \
                                                  or False
-        if template.header_html:
-            values['body_html'] = tools.append_content_to_html(values['body_html'], template.header_html)
+        for field in ['header_html', 'footer_html',]:
+            values[field] = self.render_template(cr, uid, getattr(template, field),
+                                                 'marketing.campaign.workitem', context.get('workitem_id'), context=ctx) \
+                                                 or False                                                 
+                                                 
+        if values['header_html']:
+            values['body_html'] = tools.append_content_to_html( values['header_html'],values['body_html'])
             
         if template.user_signature:
             signature = self.pool.get('res.users').browse(cr, uid, uid, context).signature
             if signature:
                 values['body_html'] = tools.append_content_to_html(values['body_html'], signature)
                 
-        if template.header_html:
-            values['body_html'] = tools.append_content_to_html(values['body_html'], template.footer_html)
+        if values['footer_html']:
+            values['body_html'] = tools.append_content_to_html(values['body_html'], values['footer_html'])
                    
-        workitem_id = context.get('workitem_id')
-        if workitem_id:
-            work_item = "Work Item : " + str(workitem_id)
-            values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
+  #      workitem_id = context.get('workitem_id')
+  #      if workitem_id:
+  #          work_item = "Work Item : " + str(workitem_id)
+  #          values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
             
             
         if values['body_html']:
