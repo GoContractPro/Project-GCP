@@ -33,8 +33,6 @@
         <field name="help">Working Hours  opens task hours in date range. </field>
     </record>
          
-    <menuitem action="action_hr_timesheet_hours_open" id="menu_act_working_hours_wizard"
-     	name="Working Hours by Date" parent="base.menu_project_management_time_tracking" sequence="1"/>
 
     </data>
 </openerp>

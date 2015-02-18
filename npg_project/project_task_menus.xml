@@ -2,34 +2,27 @@
 <openerp>
     <data noupdate="0">
     
-       <record id="base.menu_project_management_time_tracking" model="ir.ui.menu">
-            <field name="name">Time Tracking</field>
-         	<field eval="1" name="sequence"/>
-            <field name="parent_id" ref="base.menu_main_pm"/>
-        </record>
-        
-        <menuitem id="menu_project_working_hours" parent="base.menu_project_management_time_tracking" 
-        	name="Working Hours" action="act_hr_timesheet_lines_form"/>
-             
-        <record id="menu_act_project_management_timesheet_sheet_form" model="ir.ui.menu">
-            <field name="name">Current Timesheet</field>
-            <field eval="5" name="sequence"/>
-            <field name="parent_id" ref="base.menu_project_management_time_tracking"/>
-            <field name="icon">STOCK_JUSTIFY_FILL</field>
-            <field name="action" ref="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"/>
-        </record>
-       
-          <!--            Menu items for NPG Portal Group-->
-            
+<!--  Over Write Existing Windows Actions -->
 
-	 <record model="ir.actions.act_window" id="npg_project_issue_categ_act">
+    <record model="ir.actions.act_window" id="npg_my_tasks">
+        <field name="name">My Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="search_view_id" ref="project_gtd.view_task_gtd_search"/>
+        <field name="context">{'set_editable':False,'set_visible':True,'gtd':True,'user_invisible':True, "search_default_open": 1}</field>
+        <field name="domain">[('user_id','=',uid)]</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,form,calendar,gantt,graph</field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="npg_project_portal_issues">
         <field name="name">Issues</field>
         <field name="res_model">project.issue</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">kanban,tree,calendar</field>
-        <field name="view_id" eval="False"/>
-        <field name="domain" eval=""/>
         <field name="search_view_id" ref="project_issue.view_project_issue_filter"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="project_issue.project_issue_kanban_view" />
+        <field name="view_mode">kanban,tree,form,calendar</field>
         <field name="help" type="html">
           <p class="oe_view_nocontent_create">
             Click to report a new issue.
@@ -40,30 +33,161 @@
           </p>
         </field>
     </record>
-
-
-      
-    <record model="ir.actions.act_window.view" id="npg_action_crm_tag_form_view">
-        <field name="sequence" eval="3"/>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="npg_project_issue_form_view"/>
-        <field name="act_window_id" ref="npg_project_issue_categ_act"/>
-    </record>      	
-       
-	<menuitem name="To-do" id="npg_portal_mail_starfeeds" parent="portal.portal_menu" action="portal.action_mail_star_feeds_portal" sequence="20" groups="base.group_no_one"/>
+    
+   	<record id="act_hr_timesheet_lines_form" model="ir.actions.act_window">
+          <field name="name">Time Sheet Lines</field>
+          <field name="res_model">hr.analytic.timesheet</field>
+          <field name="view_id" ref="hr_timesheet.hr_timesheet_line_tree" />
+          <field name="view_type">form</field>
+          <field name="view_mode">tree,form,calendar,gantt</field>     
+          <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
+          <field name="search_view_id" ref="hr_timesheet_line_date_search"/>
+          <field name="help">Through Working Hours you can register your working hours by task every day.</field>
+	</record>   
 	
-	<menuitem name="Projects" id="npg_portal_services_projects" 
-	    action="npg_open_view_project" sequence="40" groups="npg_group_portal"/>
-	<menuitem name="My Tasks" id="npg_portal_services_mytasks" 
-	    action="project_gtd.open_gtd_task" sequence="50" groups="npg_group_portal"/>
-	<menuitem name="Issues" id="npg_menu_project_issue_track"  
-	    action="npg_project_issue_categ_act" sequence="15"/>
+	 	
+	<record id="npg_open_view_project" model="ir.actions.act_window">
+	    <field name="name">Projects</field>
+	    <field name="res_model">project.project</field>
+	    <field name="view_type">form</field>
+	    <field name="domain">[]</field>
+	    <field name="view_mode">kanban,gantt</field>
+	    <field name="view_id" ref="npg_view_project_kanban"/>
+	    <field name="search_view_id" ref="project.view_project_project_filter"/>
+	    <field name="context">{}</field>
+	    <field name="help" type="html">
+	        <p class="oe_view_nocontent_create">
+	          Click to start a new project.
+	        </p>
+	    </field>
+    </record>
+	     
+     <record model="ir.actions.act_window" id="open_gtd_task">
+        <field name="name">My Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="search_view_id" ref="project_gtd.view_task_gtd_search"/>
+        <field name="context">{'set_editable':True,'set_visible':True,'gtd':True,'user_invisible':True, "search_default_open": 1}</field>
+        <field name="domain">[('user_id','=',uid)]</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,kanban,calendar,gantt,graph</field>
+    </record>
+    
+	<record id="action_view_task" model="ir.actions.act_window">
+	     <field name="name">Tasks List</field>
+	     <field name="res_model">project.task</field>
+	     <field name="view_mode">tree,form,kanban,calendar,gantt,graph</field>
+	     <field name="context">{"search_default_open": 1,"search_default_group_project_id":True}</field>
+	     <field name="search_view_id" ref="project.view_task_search_form"/>
+	     <field name="help" type="html">
+	       <p class="oe_view_nocontent_create">
+	         Click to create a new task.
+	       </p><p>
+	         OpenERP's project management allows you to manage the pipeline
+	         of tasks in order to get things done efficiently. You can
+	         track progress, discuss on tasks, attach documents, etc.
+	       </p>
+	     </field>
+	 </record>
 
-       
-       
-       
-       
-       
+<!--  Over Write Existing Project Menus -->
+    <menuitem action="open_gtd_task" id="menu_open_gtd_timebox_tree" 
+		parent="project.menu_project_management" sequence="1"/>
+
+	<menuitem action="action_view_task" id="menu_action_view_task" 
+		parent="project.menu_project_management" sequence="2"/>
+
+    <menuitem action="project.open_view_project_all" id="menu_projects" 
+    	name="Projects" parent="project.menu_project_management" sequence="3"/>
+
+	<menuitem action="project_long_term.act_project_phase_list" id="menu_project_phase_list" 
+		parent="project.menu_project_management" sequence="100"/>
+
+<!-- Time Tracking Menus -->
+
+       <record id="npg_menu_project_management_time_tracking" model="ir.ui.menu">
+            <field name="name">Time Tracking</field>
+         	<field eval="1" name="sequence"/>
+            <field name="parent_id" ref="base.menu_main_pm"/>
+        </record>
+        
+        <menuitem action="action_hr_timesheet_hours_open" id="menu_act_working_hours_wizard"
+     		name="Working Hours by Date" parent="npg_menu_project_management_time_tracking" sequence="1"/>
+        
+        <menuitem id="menu_project_working_hours" parent="npg_menu_project_management_time_tracking" 
+        	name="Working Hours" action="act_hr_timesheet_lines_form"/>
+             
+        <record id="menu_act_project_management_timesheet_sheet_form" model="ir.ui.menu">
+            <field name="name">Current Timesheet</field>
+            <field eval="5" name="sequence"/>
+            <field name="parent_id" ref="npg_menu_project_management_time_tracking"/>
+            <field name="icon">STOCK_JUSTIFY_FILL</field>
+            <field name="action" ref="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"/>
+        </record>
+            
+ <!-- NPG Project Portal Menus -->
+
+
+
+<!--  Portal Top Menu Bar Menus -->
+
+	<menuitem name="NPG Portal" id="npg_portal_menu"
+	    groups="npg_group_portal,portal.group_anonymous"
+	    sequence="10"/>
+	    
+	<menuitem name="My Tasks" id="npg_menu_project_my_tasks" 
+	 	action="npg_my_tasks" 
+	 	groups="npg_group_portal"
+	 	sequence="20" />
+	    
+	 <menuitem name="Issues" id="npg_menu_project_issue_track"  
+	    action="npg_project_portal_issues"  
+	    groups="npg_group_portal"
+     	sequence="30"/> 
+            
+<!--  Portal Message Menu Items -->
+
+       <menuitem name="Messaging" id="npg_portal_messages"
+        	parent="npg_portal_menu" 
+       		sequence="10" 
+       		groups="npg_group_portal"/>
+
+			<menuitem name="Inbox" id="npg_portal_inbox" 
+				parent="npg_portal_messages"
+	            action="portal.action_mail_inbox_feeds_portal" 
+	            sequence="10" 
+	            groups="npg_group_portal"/>
+	            
+	        <menuitem name="To: me" id="npg_portal_to_me_messages"  
+	        	parent="npg_portal_messages"
+	        	action="mail.action_mail_to_me_feeds"
+				sequence="20"
+				groups="npg_group_portal"/>
+         
+			<menuitem name="To-do" id="npg_portal_mail_starfeeds" 
+				parent="npg_portal_messages" 
+	         	action="portal.action_mail_star_feeds_portal" 
+	         	sequence="30" 
+	         	groups="npg_group_portal"/>
+	
+			<menuitem name="Archives" id="npg_portal_mail_archivesfeeds" 
+				parent="npg_portal_messages"
+	            action="portal.action_mail_archives_feeds_portal" 
+	            sequence="40" 
+	            groups="npg_group_portal"/> 
+           
+ <!-- Portal Project Menu Items --> 
+        <menuitem name="Project" id="npg_portal_projects"
+        	parent="npg_portal_menu" 
+       		sequence="10" 
+       		groups="npg_group_portal"/> 
+           	
+			<menuitem name="My Projects" id="npg_portal_services_projects" 
+				parent="npg_portal_projects"
+				action="npg_open_view_project" 
+				sequence="20" 
+				groups="npg_group_portal"/>
+
+
      </data>
 </openerp>
  
