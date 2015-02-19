@@ -4,16 +4,6 @@
     
 <!--  Over Write Existing Windows Actions -->
 
-    <record model="ir.actions.act_window" id="npg_my_tasks">
-        <field name="name">My Tasks</field>
-        <field name="res_model">project.task</field>
-        <field name="search_view_id" ref="project_gtd.view_task_gtd_search"/>
-        <field name="context">{'set_editable':False,'set_visible':True,'gtd':True,'user_invisible':True, "search_default_open": 1}</field>
-        <field name="domain">[('user_id','=',uid)]</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">kanban,tree,form,calendar,gantt,graph</field>
-    </record>
-    
     <record model="ir.actions.act_window" id="npg_project_portal_issues">
         <field name="name">Issues</field>
         <field name="res_model">project.issue</field>
@@ -34,7 +24,7 @@
         </field>
     </record>
     
-   	<record id="act_hr_timesheet_lines_form" model="ir.actions.act_window">
+   	<record id="npg_act_hr_timesheet_lines_form" model="ir.actions.act_window">
           <field name="name">Time Sheet Lines</field>
           <field name="res_model">hr.analytic.timesheet</field>
           <field name="view_id" ref="hr_timesheet.hr_timesheet_line_tree" />
@@ -44,15 +34,14 @@
           <field name="search_view_id" ref="hr_timesheet_line_date_search"/>
           <field name="help">Through Working Hours you can register your working hours by task every day.</field>
 	</record>   
-	
-	 	
-	<record id="npg_open_view_project" model="ir.actions.act_window">
+
+ 	
+	<record id="npg_portal_view_projects" model="ir.actions.act_window">
 	    <field name="name">Projects</field>
 	    <field name="res_model">project.project</field>
 	    <field name="view_type">form</field>
 	    <field name="domain">[]</field>
 	    <field name="view_mode">kanban,gantt</field>
-	    <field name="view_id" ref="npg_view_project_kanban"/>
 	    <field name="search_view_id" ref="project.view_project_project_filter"/>
 	    <field name="context">{}</field>
 	    <field name="help" type="html">
@@ -61,8 +50,9 @@
 	        </p>
 	    </field>
     </record>
-	     
-     <record model="ir.actions.act_window" id="open_gtd_task">
+
+	      
+     <record model="ir.actions.act_window" id="npg_my_tasks">
         <field name="name">My Tasks</field>
         <field name="res_model">project.task</field>
         <field name="search_view_id" ref="project_gtd.view_task_gtd_search"/>
@@ -71,7 +61,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,kanban,calendar,gantt,graph</field>
     </record>
-    
+ <!--    
 	<record id="action_view_task" model="ir.actions.act_window">
 	     <field name="name">Tasks List</field>
 	     <field name="res_model">project.task</field>
@@ -88,9 +78,11 @@
 	       </p>
 	     </field>
 	 </record>
+	 
+	  -->	
 
-<!--  Over Write Existing Project Menus -->
-    <menuitem action="open_gtd_task" id="menu_open_gtd_timebox_tree" 
+<!--  Over Write Existing Project Menus
+    <menuitem action="npg_my_tasks" id="menu_open_gtd_timebox_tree" 
 		parent="project.menu_project_management" sequence="1"/>
 
 	<menuitem action="action_view_task" id="menu_action_view_task" 
@@ -100,8 +92,9 @@
     	name="Projects" parent="project.menu_project_management" sequence="3"/>
 
 	<menuitem action="project_long_term.act_project_phase_list" id="menu_project_phase_list" 
-		parent="project.menu_project_management" sequence="100"/>
-
+		parent="project.menu_project_management" sequence="100"/> 
+ -->
+ 
 <!-- Time Tracking Menus -->
 
        <record id="npg_menu_project_management_time_tracking" model="ir.ui.menu">
@@ -114,7 +107,7 @@
      		name="Working Hours by Date" parent="npg_menu_project_management_time_tracking" sequence="1"/>
         
         <menuitem id="menu_project_working_hours" parent="npg_menu_project_management_time_tracking" 
-        	name="Working Hours" action="act_hr_timesheet_lines_form"/>
+        	name="Working Hours" action="npg_act_hr_timesheet_lines_form"/>
              
         <record id="menu_act_project_management_timesheet_sheet_form" model="ir.ui.menu">
             <field name="name">Current Timesheet</field>
@@ -176,14 +169,14 @@
 	            groups="npg_group_portal"/> 
            
  <!-- Portal Project Menu Items --> 
-        <menuitem name="Project" id="npg_portal_projects"
+        <menuitem name="Project" id="npg_portal_project"
         	parent="npg_portal_menu" 
        		sequence="10" 
        		groups="npg_group_portal"/> 
            	
-			<menuitem name="My Projects" id="npg_portal_services_projects" 
+			<menuitem name="My Projects" id="npg_portal_projects_view" 
 				parent="npg_portal_projects"
-				action="npg_open_view_project" 
+				action="npg_portal_view_projects" 
 				sequence="20" 
 				groups="npg_group_portal"/>
 
