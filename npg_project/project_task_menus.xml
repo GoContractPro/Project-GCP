@@ -63,7 +63,8 @@
     </record>
     
     
- <!--  Over Write Existing Project Menus todo not working
+ <!-- new Project Menus todo not working -->
+ 
 	<record id="npg_action_view_task" model="ir.actions.act_window">
 	     <field name="name">Tasks List</field>
 	     <field name="res_model">project.task</field>
@@ -81,20 +82,24 @@
 	     </field>
 	 </record>
 	 
+	<menuitem name="NPG Project Menus" id="npg_project_menus"
+        	parent="base.menu_main_pm"
+       		sequence="0" 
+       		groups="npg_group_portal"/>
 	 	
-    <menuitem action="npg_my_tasks" id="menu_open_gtd_timebox_tree" 
-		parent="project.menu_project_management" sequence="60"/>
+    <menuitem action="npg_my_tasks" id="npg_my_task_menus" 
+		parent="npg_project_menus" sequence="60"/>
 
-	<menuitem action="npg_action_view_task" id="menu_action_view_task" 
-		parent="project.menu_project_management" sequence="70"/>
+	<menuitem action="npg_action_view_task" id="npg_menu_action_view_task" 
+		parent="npg_project_menus" sequence="70"/>
 
-    <menuitem action="project.open_view_project_all" id="menu_projects" 
-    	name="Projects" parent="project.menu_project_management" sequence="80"/>
+    <menuitem action="project.open_view_project_all" id="npg_menu_projects" 
+    	name="Projects" parent="npg_project_menus" sequence="80"/>
 
-	<menuitem action="project_long_term.act_project_phase_list" id="menu_project_phase_list" 
-		parent="project.menu_project_management" sequence="100"/> 
+	<menuitem action="project_long_term.act_project_phase_list" id="npg_menu_project_phase_list" 
+		parent="npg_project_menus" sequence="100"/> 
 		
-		 --> 
+		 
 
  
 <!-- Time Tracking Menus -->
