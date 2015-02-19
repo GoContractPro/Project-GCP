@@ -61,8 +61,10 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,kanban,calendar,gantt,graph</field>
     </record>
- <!--    
-	<record id="action_view_task" model="ir.actions.act_window">
+    
+    
+ <!--  Over Write Existing Project Menus todo not working
+	<record id="npg_action_view_task" model="ir.actions.act_window">
 	     <field name="name">Tasks List</field>
 	     <field name="res_model">project.task</field>
 	     <field name="view_mode">tree,form,kanban,calendar,gantt,graph</field>
@@ -79,21 +81,21 @@
 	     </field>
 	 </record>
 	 
-	  -->	
-
-<!--  Over Write Existing Project Menus
+	 	
     <menuitem action="npg_my_tasks" id="menu_open_gtd_timebox_tree" 
-		parent="project.menu_project_management" sequence="1"/>
+		parent="project.menu_project_management" sequence="60"/>
 
-	<menuitem action="action_view_task" id="menu_action_view_task" 
-		parent="project.menu_project_management" sequence="2"/>
+	<menuitem action="npg_action_view_task" id="menu_action_view_task" 
+		parent="project.menu_project_management" sequence="70"/>
 
     <menuitem action="project.open_view_project_all" id="menu_projects" 
-    	name="Projects" parent="project.menu_project_management" sequence="3"/>
+    	name="Projects" parent="project.menu_project_management" sequence="80"/>
 
 	<menuitem action="project_long_term.act_project_phase_list" id="menu_project_phase_list" 
 		parent="project.menu_project_management" sequence="100"/> 
- -->
+		
+		 --> 
+
  
 <!-- Time Tracking Menus -->
 
