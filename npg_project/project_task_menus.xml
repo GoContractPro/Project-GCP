@@ -176,7 +176,7 @@
 	            groups="npg_group_portal"/> 
            
  <!-- Portal Project Menu Items --> 
-        <menuitem name="Project" id="npg_portal_project"
+        <menuitem name="Project" id="npg_portal_projects"
         	parent="npg_portal_menu" 
        		sequence="10" 
        		groups="npg_group_portal"/> 
