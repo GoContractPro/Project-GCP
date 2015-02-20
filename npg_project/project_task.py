@@ -16,65 +16,8 @@ class task(osv.osv):
         if vals.get('task_number',0) == 0:
             vals['task_number'] = self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/'
                     
-        if vals.get('work_ids'):
-            desc = ''
-            al = []
-            for wrk in vals.get('work_ids'):
-                time_spent = ''
-                hrs = wrk[2]['hours']   #wline.hours
-                h = math.floor(hrs)
-                m = (hrs-h)*60
-                wdtl = ""
-                wdtl += 'Date : ' + wrk[2]['date'] #wline.date
-                wdtl += '\tTime Spent : ' + str(int(h))+':'+str(int(m))
-                wdtl += '\tDone by : ' + self.pool.get('res.users').browse(cr,uid,wrk[2]['user_id']).name #wline.user_id.name
-                wdtl += '\nSummary : ' + wrk[2]['name'] or '' #(wline.name or '')
-                wdtl += wline.work_note and ('\nWork Detail : ' + wline.work_note) or ''
-                al.append(wdtl)
-            desc = "\n\n===================================================\n\n".join(al)
-            if vals.get('description'):
-                vals['description'] += '\n' + desc
-            else: vals['description'] = desc
-        
         return super(task, self).create(cr, uid, vals, context=context)
     
-    def write(self, cr, uid, ids, vals, context=None):
-        if len(ids) >1 : return super(task, self).write(cr, uid, ids, vals, context=context)
-         
-        if vals.get('work_ids'):
-            desc = ''
-            al = []
-            prev_obj = self.browse(cr,uid,ids[0],context)
-            for wrk in vals.get('work_ids'):
-                wrk_line = wrk[2]
-                if not wrk_line : continue
-                wdtl = ""
-                if wrk_line.get('hours'):
-                    time_spent = ''
-                    hrs = wrk_line['hours']   #wline.hours
-                    h = math.floor(hrs)
-                    m = (hrs-h)*60
-                    
-                    wdtl += 'Update Date : ' + time.strftime('%Y-%m-%d') #wline.date
-                    wdtl += '\tTime Spent : ' + str(int(h))+':'+str(int(m))
-                    
-                wdtl += '\tUpdated by : ' + self.pool.get('res.users').browse(cr,uid,uid).name #wline.user_id.name
-                summ = ''
-                if wrk_line.get('name'):
-                    summ = wrk_line['name'] or '' 
-#                 else:
-#                     summ = self.pool.get('').
-                wdtl += '\nSummary : ' + summ
-                wdtl += wline.work_note and ('\nWork Detail : ' + wline.work_note) or ''
-                al.append(wdtl)
-            desc = "\n\n===================================================\n\n".join(al)
-            if vals.get('description'):
-                vals['description'] += '\n\n===================================================\n\n' + desc
-            else: 
-                old_desc = prev_obj.description or ''
-                vals['description'] = old_desc + '\n\n===================================================\n\n' + desc
-        return super(task, self).write(cr, uid, ids, vals, context=context)
-
     
 class hr_timesheet_line(osv.osv):
     _inherit = "hr.analytic.timesheet"
