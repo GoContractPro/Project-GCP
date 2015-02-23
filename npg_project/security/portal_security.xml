@@ -32,6 +32,11 @@
             <field name="groups" eval="[(4, ref('npg_group_portal'))]"/>
         </record>
         
+        <record id="npg_project_enhanced" model="res.groups">
+            <field name="name">NPG Enhanced Menu</field>
+            <field name="comment">NPG  Group to Allow access to Enchance Project Menu</field>
+            <field name="is_portal" eval="False"/>
+         </record>
 
     </data>
 </openerp>

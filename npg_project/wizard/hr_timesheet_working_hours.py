@@ -50,8 +50,8 @@ class hr_timesheet_working_hours(osv.osv_memory):
             
         if user:
             domain.append(('user_id','=',user[0]))
-        result = mod_obj.get_object_reference(cr, uid, 'timesheet_task', 'act_hr_timesheet_lines_form')
-        id = result and result[1] or False
+#        result = mod_obj.get_object_reference(cr, uid, 'timesheet_task', 'act_hr_timesheet_lines_form')
+#        id = result and result[1] or False
         return {
               'name': _('Working Time by date'),
               'view_type': 'form',

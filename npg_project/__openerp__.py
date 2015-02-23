@@ -38,10 +38,12 @@
 
     'data': [ 'security/portal_security.xml',
               'security/ir.model.access.csv',
-             'project_task.xml',
              'task_sequence.xml',
              'wizard/hr_timesheet_working_hours_wizard.xml',
-             'project_task_menus.xml',             
+             'views/project_task_views.xml',
+             'views/issues_views.xml',
+             'views/project_view.xml',
+             'views/project_task_menus.xml',             
              ],
              
     'js': [

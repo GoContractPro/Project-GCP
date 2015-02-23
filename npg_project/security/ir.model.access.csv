@@ -42,4 +42,6 @@ access_ir_config_parameter,ir.config.parameter,base.model_ir_config_parameter,np
 access_res_partner_npg_portal,res.partner,base.model_res_partner,npg_group_portal,1,0,0,0
 access_res_groups_npg_portal,res.groups,base.model_res_groups,npg_group_portal,1,0,0,0
 access_project_scrum_release,project.scrum.release,project_scrum.model_project_scrum_release,npg_group_portal,1,0,0,0
-access_project_phase, project.phase,project_long_term.model_project_phase,npg_group_portal,1,0,0,0
+access_project_phase,project.phase,project_long_term.model_project_phase,npg_group_portal,1,0,0,0
+access_product_uom,product.uom,product.model_product_uom,npg_group_portal,1,0,0,0
+access_email_template,email.template,email_template.model_email_template,npg_group_portal,1,0,0,0
