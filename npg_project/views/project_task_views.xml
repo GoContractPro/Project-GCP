@@ -74,7 +74,63 @@
              
 		</record>    
 
-        
+               <record id="view_task_form_npg" model="ir.ui.view">
+            <field name="name">project.task.form.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+				<field name="project_id" position="before">
+					<field name="task_number" string="Task Number"/>
+				</field>
+				<field name="project_id" position="attributes">
+				 	<attribute name="required">1 </attribute>
+				</field>
+				
+				<xpath expr="//notebook/page[@string='Delegation']" position="before">				
+									           
+	           		   <page string="Notes"  groups="project.group_project_user">
+			             	<group>
+
+			            	<field name="pub_descrip" groups="project.group_project_user"  nolabel="1"/>
+			            	</group>
+			            </page>
+				
+				</xpath>
+
+
+				<xpath expr="//notebook/page[@string='Description']" position="replace">
+				</xpath>
+				
+				<xpath expr="//notebook/page[@string='Notes']" position="before">
+				
+					<page string="Description" groups="project.group_project_user,npg_project.npg_group_portal">
+			            	<group>
+			            	<field name="description"  attrs="{'readonly':[('state','=','done')]}" nolabel="1"/>
+			            	</group>
+			        </page>
+			    </xpath>
+				
+
+				
+				<xpath expr="//notebook/page[@string='Description']" position="before">
+					<page string="Work">
+						<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+						
+                             <tree string="Task Work" editable="bottom">
+                                 <field name="name"/>
+                                 <field name="hours" widget="float_time" sum="Spent Hours"/>
+                                 <field name="date"/>
+                                 <field name="user_id"/>
+                             </tree>
+
+                        </field>
+					</page>
+
+				</xpath>
+		</field>
+    </record>
+ <!--  
+  
         <record id="view_task_form_npg" model="ir.ui.view">
             <field name="name">project.task.form.npg</field>
             <field name="model">project.task</field>
@@ -103,9 +159,7 @@
 									           
 	           		   <page string="Public Notes" groups="npg_project.npg_group_portal,project.group_project_user">
 			             	<group>
-			         <!--  	<field name="public_pad" attrs="{'readonly':[('state','=','done')]}" widget="pad" nolabel = "1"/> -->
-			         <!--  <field name="pub_descrip" groups="npg_project.npg_group_portal,project.group_project_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/> --> 
-			            	<field name="pub_descrip" 
+			                  	<field name="pub_descrip" 
 			            		groups="npg_project.npg_group_portal,project.group_project_user" 
 			            		attrs="{'readonly': True }"  nolabel = "1"/>
 			            	</group>
@@ -133,7 +187,7 @@
 
     </record>
   
-  
+  -->
 	<record id="npg_project_task_work_form" model="ir.ui.view">
 		<field name="name">Project Task Work</field>
 		<field name="model">project.task.work</field>
