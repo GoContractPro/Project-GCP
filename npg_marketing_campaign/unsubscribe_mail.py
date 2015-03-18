@@ -170,7 +170,8 @@ class email_template(osv.osv):
                                                  or False                                                 
                                                  
         if values['header_html']:
-            values['body_html'] = tools.append_content_to_html( values['header_html'],values['body_html'])
+#             values['body_html'] = tools.append_content_to_html( values['header_html'],values['body_html'])
+            values['body_html'] = values['header_html'] + "\n" + values['body_html']
             
         if template.user_signature:
             signature = self.pool.get('res.users').browse(cr, uid, uid, context).signature
@@ -178,7 +179,8 @@ class email_template(osv.osv):
                 values['body_html'] = tools.append_content_to_html(values['body_html'], signature)
                 
         if values['footer_html']:
-            values['body_html'] = tools.append_content_to_html(values['body_html'], values['footer_html'])
+#             values['body_html'] = tools.append_content_to_html(values['body_html'], values['footer_html'])
+            values['body_html'] = values['body_html'] + "\n" + values['footer_html']
                    
   #      workitem_id = context.get('workitem_id')
   #      if workitem_id:
