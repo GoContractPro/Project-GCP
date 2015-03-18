@@ -34,7 +34,7 @@
     """,
     'author': 'NovaPoint Group Inc',
     'website': 'www.novapointgroup.com',
-    'depends': ["base",],
+    'depends': ["base","mail"],
     'init_xml': [],
     'data': [
         "views/view.xml",
