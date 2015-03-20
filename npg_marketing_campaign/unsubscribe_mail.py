@@ -165,14 +165,15 @@ class email_template(osv.osv):
                                                  template.model, res_id, context=ctx) \
                                                  or False
         for field in ['header_html', 'footer_html',]:
-            values[field] = self.render_template(cr, uid, getattr(template, field),
+            if context.get('workitem_id'):
+                values[field] = self.render_template(cr, uid, getattr(template, field),
                                                  'marketing.campaign.workitem', context.get('workitem_id'), context=ctx) \
                                                  or False                                                 
                                                  
         if values['header_html']:
 #             values['body_html'] = tools.append_content_to_html( values['header_html'],values['body_html'])
             values['body_html'] = values['header_html'] + "\n" + values['body_html']
-            
+            del values['header_html']
         if template.user_signature:
             signature = self.pool.get('res.users').browse(cr, uid, uid, context).signature
             if signature:
@@ -181,7 +182,7 @@ class email_template(osv.osv):
         if values['footer_html']:
 #             values['body_html'] = tools.append_content_to_html(values['body_html'], values['footer_html'])
             values['body_html'] = values['body_html'] + "\n" + values['footer_html']
-                   
+            del values['footer_html']
   #      workitem_id = context.get('workitem_id')
   #      if workitem_id:
   #          work_item = "Work Item : " + str(workitem_id)
