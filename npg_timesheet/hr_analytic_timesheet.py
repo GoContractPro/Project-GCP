@@ -103,6 +103,13 @@ class hr_analytic_timesheet(osv.osv):
         self.create_status_log(cr, uid,  ids[0],'working', context)
         date_now = time.strftime('%Y-%m-%d %H:%M:%S')
         date = date_now[:10]
+        for sheet in self.browse(cr,uid,ids):
+            user_id=sheet.user_id.id
+            if user_id:
+                active_timesheet_lines=self.pool.get('hr.analytic.timesheet').search(cr, uid, [('user_id','=',user_id),('state','=','working'),('id','!=',sheet.id)])
+                for id in active_timesheet_lines:
+                    wf_service = netsvc.LocalService("workflow")
+                    wf_service.trg_validate(uid, 'hr.analytic.timesheet', id, 'button_pause', cr)
         self.write(cr, uid, ids, {'state':'working', 'date_start': date_now, 'date':date}, context=context)
         return True
 
@@ -169,6 +176,13 @@ class hr_analytic_timesheet(osv.osv):
                                                  message= "Restarting work on a new day created a new time sheet line")
             
         self.create_status_log(cr, uid,  id,'working', context)
+        for sheet in self.browse(cr,uid,ids):
+            user_id=sheet.user_id.id
+            if user_id:
+                active_timesheet_lines=self.pool.get('hr.analytic.timesheet').search(cr, uid, [('user_id','=',user_id),('state','=','working'),('id','!=',sheet.id)])
+                for id in active_timesheet_lines:
+                    wf_service = netsvc.LocalService("workflow")
+                    wf_service.trg_validate(uid, 'hr.analytic.timesheet', id, 'button_pause', cr)
         return self.write(cr, uid, ids, {'state':'working'}, context=context)
     
     def create_status_log(self, cr, uid, timesheet_id, state, context=None):

@@ -69,9 +69,6 @@ class project_task_timesheet(osv.osv):
             return emp.journal_id.id
         else :
             raise osv.except_osv(_('Warning!'), _('No analytic journal defined for \'%s\'.\nYou should assign an analytic journal on the employee form.')%(emp.name))
-
-
-    
     
     def _getEmployeeProduct(self, cr, uid, context=None):
         if context is None:
@@ -107,10 +104,6 @@ class project_task_timesheet(osv.osv):
             'journal_id': self._getAnalyticJournal(cr, uid, context),
         }}
 
-    
-    
-    
-    
     def on_change_date(self, cr, uid, ids, date):
         if ids:
             new_date = self.read(cr, uid, ids[0], ['date'])['date']

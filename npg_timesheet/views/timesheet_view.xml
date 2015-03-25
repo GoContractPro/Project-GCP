@@ -25,11 +25,11 @@
 				<field name="general_account_id" invisible="1" />
 				<field name="to_invoice" /> 
 				<field name="state" readonly="1"/>
-				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
-                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-play"/>
-                <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
-                <button name="button_done" string="Finished" states="working" icon="terp-check"/>
-                <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
+				<button name="button_start_working" type="workflow" string="Start" states="planned" icon="gtk-media-play"/>
+                <button name="button_resume" string="Resume" type="workflow" states="pause" icon="gtk-media-play"/>
+                <button name="button_pause" string="Pending" type="workflow" states="working" icon="gtk-media-pause"/>
+                <button name="button_done" string="Finished" type="workflow" states="working" icon="terp-check"/>
+                <button name="button_planned" string="Set Planned" type="workflow" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
 				</tree>
 			</field>
 		</record>
@@ -41,12 +41,12 @@
             <field name="arch" type="xml">
                 <field name="name" position="before">
                 <header colspan="8">
-                    <button name="button_start_working" string="Start" states="planned" icon="gtk-media-play" help="Start Working"/>
-                    <button name="button_cancel" string="Cancel Order" states="planned,working" icon="gtk-stop" help="Cancel Order"/>
-                    <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
-                    <button name="button_resume" string="Resume" states="pause" icon="gtk-media-pause" help="Resume Work Order"/>
-                    <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause" help="Pause Work Order"/>
-                    <button name="button_done" string="Finished" states="working" icon="terp-check" help="Finish Order"/>
+                    <button name="button_start_working" string="Start" type="workflow" states="planned" icon="gtk-media-play" help="Start Working"/>
+                    <button name="button_cancel" string="Cancel Order" type="workflow" states="planned,working" icon="gtk-stop" help="Cancel Order"/>
+                    <button name="button_planned" string="Set Planned" type="workflow" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
+                    <button name="button_resume" string="Resume" type="workflow" states="pause" icon="gtk-media-pause" help="Resume Work Order"/>
+                    <button name="button_pause" string="Pending" type="workflow" states="working" icon="gtk-media-pause" help="Pause Work Order"/>
+                    <button name="button_done" string="Finished" type="workflow" states="working" icon="terp-check" help="Finish Order"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                	</field>
