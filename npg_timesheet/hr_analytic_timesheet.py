@@ -26,6 +26,10 @@ from openerp import tools
 from openerp.tools.translate import _
 from openerp import netsvc
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from openerp import SUPERUSER_ID
+import pytz
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP
 import time
 
 class hr_analytic_timesheet(osv.osv):
@@ -95,6 +99,21 @@ class hr_analytic_timesheet(osv.osv):
         @return: True
         """
         return True
+    
+    def date_to_datetime(self, cr, uid, userdate, context=None):
+        user_date = datetime.strptime(userdate, '%Y-%m-%d %H:%M:%S')
+        if context and context.get('tz'):
+            tz_name = context['tz']
+        else:
+            tz_name = self.pool.get('res.users').read(cr, SUPERUSER_ID, uid, ['tz'])['tz']
+        if tz_name:
+            utc = pytz.timezone('UTC')
+            context_tz = pytz.timezone(tz_name)
+            user_datetime = user_date #- relativedelta(hours=5.0)
+            local_timestamp = context_tz.localize(user_datetime, is_dst=False)
+            user_datetime = local_timestamp.astimezone(utc)
+            return user_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        return user_date.strftime('%Y-%m-%d %H:%M:%S')
 
     def action_start_working(self, cr, uid, ids, context=None):
         """ Sets state to working and writes starting date.
@@ -103,8 +122,17 @@ class hr_analytic_timesheet(osv.osv):
         self.create_status_log(cr, uid,  ids[0],'working', context)
         date_now = time.strftime('%Y-%m-%d %H:%M:%S')
         date = date_now[:10]
+        emp_obj = self.pool.get('hr.employee')
+        att_date=datetime.now()
+        att_date=(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
         for sheet in self.browse(cr,uid,ids):
             user_id=sheet.user_id.id
+            emp_id=emp_obj.search(cr, uid, [('user_id','=',user_id)])
+            if emp_id:
+                eobj=emp_obj.browse(cr,uid,emp_id[0])
+                emp_state=eobj.state
+                if emp_state=='absent':
+                    emp_obj.attendance_action_change(cr, uid, emp_id, {'action':'sign_in', 'action_date':att_date})
             if user_id:
                 active_timesheet_lines=self.pool.get('hr.analytic.timesheet').search(cr, uid, [('user_id','=',user_id),('state','=','working'),('id','!=',sheet.id)])
                 for id in active_timesheet_lines:
@@ -119,14 +147,23 @@ class hr_analytic_timesheet(osv.osv):
         """
         time_now = datetime.now()
         obj_line = self.browse(cr, uid, ids[0])
-
+        emp_obj = self.pool.get('hr.employee')
         start_time = self.get_latest_status_log(cr,uid,ids[0],context=context)    
         work_time_hours = (time_now - start_time).total_seconds()/ float(60*60)
         work_time_hours = work_time_hours#round(work_time_hours/.25)*.25
         amount = obj_line.unit_amount + work_time_hours
         
+        att_date=datetime.now()
+        att_date=(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
+        for sheet in self.browse(cr,uid,ids):
+            user_id=sheet.user_id.id
+            emp_id=emp_obj.search(cr, uid, [('user_id','=',user_id)])
+            if emp_id:
+                eobj=emp_obj.browse(cr,uid,emp_id[0])
+                emp_state=eobj.state
+                if emp_state=='present':
+                    emp_obj.attendance_action_change(cr, uid, emp_id, {'action':'sign_out', 'action_date':att_date})
         date_finished = datetime.strftime(time_now,'%Y-%m-%d %H:%M:%S')
-        
         self.create_status_log(cr, uid,  ids[0],'done', context)
         self.write(cr, uid, ids, {'state':'done', 'date_finished': date_finished,'unit_amount':amount}, context=context)
 
@@ -143,41 +180,52 @@ class hr_analytic_timesheet(osv.osv):
         """ Sets state to pause.
         @return: True
         """
-
+        emp_obj = self.pool.get('hr.employee')
         time_now = datetime.now()
         
         start_time = self.get_latest_status_log(cr,uid,ids[0],context=context)
         
         work_time_hours = (time_now - start_time).seconds / float(60*60)
         work_time_hours = work_time_hours #round(work_time_hours/.25)*.25
-        
+        att_date=datetime.now()
+        att_date=(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
         for line in self.browse(cr,uid,ids, context=context):
+            user_id=line.user_id.id
+            emp_id=emp_obj.search(cr, uid, [('user_id','=',user_id)])
+            if emp_id:
+                eobj=emp_obj.browse(cr,uid,emp_id[0])
+                emp_state=eobj.state
+                if emp_state=='present':
+                    emp_obj.attendance_action_change(cr, uid, emp_id, {'action':'sign_out', 'action_date':att_date})
             amount = line.unit_amount + work_time_hours
         self.create_status_log(cr, uid,  ids[0],'pause', context)
         return self.write(cr, uid, ids, {'state':'pause','unit_amount':amount }, context=context)
 
     def action_resume(self, cr, uid, ids, context=None):
-        """ Sets state to working.
-        @return: True
-        """
+        """ Sets state to working.@return: True"""
         """ If is a new day create copy of the timesheet line """
         id = ids[0]
         pause_time = self.get_latest_status_log(cr, uid, id, 'pause', context)
         day_paused =pause_time.strftime('%Y%j')
         day_now = time.strftime('%Y%j')
-        
+        emp_obj = self.pool.get('hr.employee')
+        date_now = time.strftime('%Y-%m-%d %H:%M:%S')
+        att_date=datetime.now()
+        att_date=(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
         if day_paused <> day_now:
-            
             date = time.strftime("%Y-%m-%d")
             new_id = self.copy(cr, uid, id, default={'unit_amount':0,'date':date,'state':'working'}, context=context)
             self.create_status_log(cr, uid,  id,'working', context)
-  
-            return self.pool.get('warning').info(cr, uid, title='New Timesheet Line', 
-                                                 message= "Restarting work on a new day created a new time sheet line")
-            
+            return self.pool.get('warning').info(cr, uid, title='New Timesheet Line',message= "Restarting work on a new day created a new time sheet line")
         self.create_status_log(cr, uid,  id,'working', context)
         for sheet in self.browse(cr,uid,ids):
             user_id=sheet.user_id.id
+            emp_id=emp_obj.search(cr, uid, [('user_id','=',user_id)])
+            if emp_id:
+                eobj=emp_obj.browse(cr,uid,emp_id[0])
+                emp_state=eobj.state
+                if emp_state=='absent':
+                    emp_obj.attendance_action_change(cr, uid, emp_id, {'action':'sign_in', 'action_date':att_date})
             if user_id:
                 active_timesheet_lines=self.pool.get('hr.analytic.timesheet').search(cr, uid, [('user_id','=',user_id),('state','=','working'),('id','!=',sheet.id)])
                 for id in active_timesheet_lines:
