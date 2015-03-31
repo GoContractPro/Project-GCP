@@ -16,8 +16,6 @@
 	            
 	         	 	<field name ="sheet_ids" context="{'default_task_id': active_id,'task_project':project_id}">
 	           		  	<tree editable="bottom">
-	           				
-			                		
 			                <field name="name" default_focus="1" />
 		            		<field name="user_id" on_change="on_change_user_id(user_id)"/>
                             <field name="plan_time_amt" sum="Work Planned" widget="float_time" />

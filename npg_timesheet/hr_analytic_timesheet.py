@@ -180,6 +180,8 @@ class hr_analytic_timesheet(osv.osv):
         """ Sets state to pause.
         @return: True
         """
+        if context==None:
+            context={}
         emp_obj = self.pool.get('hr.employee')
         time_now = datetime.now()
         
@@ -190,13 +192,6 @@ class hr_analytic_timesheet(osv.osv):
         att_date=datetime.now()
         att_date=(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
         for line in self.browse(cr,uid,ids, context=context):
-            user_id=line.user_id.id
-            emp_id=emp_obj.search(cr, uid, [('user_id','=',user_id)])
-            if emp_id:
-                eobj=emp_obj.browse(cr,uid,emp_id[0])
-                emp_state=eobj.state
-                if emp_state=='present':
-                    emp_obj.attendance_action_change(cr, uid, emp_id, {'action':'sign_out', 'action_date':att_date})
             amount = line.unit_amount + work_time_hours
         self.create_status_log(cr, uid,  ids[0],'pause', context)
         return self.write(cr, uid, ids, {'state':'pause','unit_amount':amount }, context=context)
@@ -264,5 +259,39 @@ class hr_analytic_timesheet_log(osv.osv):
                 'timesheet_id': fields.many2one('hr.analytic.timesheet', 'Timesheet Reference', 
                                 required=True, ondelete='cascade', select=True, readonly=True, ),
                                 
-                }                
+                }        
+    
+class hr_employee(osv.osv):
+    _inherit = "hr.employee"
+    _description = "Employee"
+    
+    def attendance_action_change(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        action_date = context.get('action_date', False)
+        action = context.get('action', False)
+        hr_attendance = self.pool.get('hr.attendance')
+        warning_sign = {'sign_in': _('Sign In'), 'sign_out': _('Sign Out')}
+        for employee in self.browse(cr, uid, ids, context=context):
+            if not action:
+                if employee.state == 'present': 
+                    action = 'sign_out'
+                    user_id=employee.user_id.id
+                    active_timesheet_lines=self.pool.get('hr.analytic.timesheet').search(cr, uid, [('user_id','=',user_id),('state','=','working')])
+                    if active_timesheet_lines:
+                        for id in active_timesheet_lines:
+                            wf_service = netsvc.LocalService("workflow")
+                            wf_service.trg_validate(uid, 'hr.analytic.timesheet', id, 'button_pause', cr)
+                if employee.state == 'absent': 
+                    action = 'sign_in'
+            if not self._action_check(cr, uid, employee.id, action_date, context):
+                raise osv.except_osv(_('Warning'), _('You tried to %s with a date anterior to another event !\nTry to contact the HR Manager to correct attendances.')%(warning_sign[action],))
+
+            vals = {'action': action, 'employee_id': employee.id}
+            if action_date:
+                vals['name'] = action_date
+            hr_attendance.create(cr, uid, vals, context=context)
+        return True
+    
+hr_employee()        
                 
