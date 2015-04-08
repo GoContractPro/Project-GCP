@@ -36,26 +36,23 @@ website_visit_status()
 
 class res_partner(osv.osv):
     
-    def _get_valid_mail(self, cr, uid, ids, field_names, arg=None, context=None):
-        result = {}
-        for part in self.browse(cr,uid,ids):
-            valid_email =validate_email(part.email or '',verify=True)
-            if valid_email:
-                result[part.id] =False
-            else :
-                result[part.id] =True
-        return result
-            
     _name = 'res.partner'
     _inherit='res.partner'
     _columns={
               'inv_email':fields.char('Invalid Email',size=64),
               'stamp_time':fields.char('Stamp Time',size=64),
-              'email_valid': fields.function(_get_valid_mail, method=True, store=True, type='boolean',string='Invalid Email'),
-              
+#               'email_valid': fields.function(_get_valid_mail, method=True, store=True, type='boolean',string='Invalid Email'),
+              'email_invalid': fields.boolean("Invalid Email"),
               'email_status' : fields.one2many('email.status','partner_id', "Email Status"),
               'website_visit_status' : fields.one2many('website.visit.status','partner_id', "Website Visited"),
               }
+    
+    def get_valid_mail(self, cr, uid, ids, context=None):
+        email_valid = False
+        for part in self.browse(cr,uid,ids,context):
+            email_valid =validate_email(part.email or '',verify=True,debug=True)
+            part.write({'email_invalid':not email_valid})
+        return email_valid
     
     def unsubscribe_mail(self,cr,uid,args=None,context=None):
         if args is None:
@@ -139,7 +136,18 @@ class email_template(osv.osv):
     #         values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
     #     return values
     #===========================================================================
-            
+    
+    
+    def send_mail(self, cr, uid, template_id, res_id, force_send=False, context=None):
+        part = 'res.partner'
+        partner_obj = self.pool.get(part)
+        email_valid = True
+        template = self.get_email_template(cr, uid, template_id, res_id, context)
+        if template.model == part:
+            email_valid = partner_obj.get_valid_mail(cr,uid,[res_id])
+        if not email_valid:
+            raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
+        return super(email_template, self).send_mail(cr, uid, template_id, res_id, force_send, context)
 
     def generate_email(self, cr, uid, template_id, res_id, context=None):
         """Generates an email from the template for given (model, res_id) pair.
@@ -159,6 +167,7 @@ class email_template(osv.osv):
         if template.lang:
             ctx['lang'] = template._context.get('lang')
         values = {}
+        
         for field in ['subject', 'body_html', 'email_from',
                       'email_to', 'email_recipients', 'email_cc', 'reply_to']:
             values[field] = self.render_template(cr, uid, getattr(template, field),

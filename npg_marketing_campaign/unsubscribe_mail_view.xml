@@ -9,15 +9,19 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-             <field name="email" position="replace">
-            		<field name="email"/>
-<!--			       <button name="check_mail" type="object" string="Unsubscribe Mail"/-->
-			 </field> 
-			 <field name="website" position="after">
-            		<field name="inv_email" invisible="1"/>
-            		<field name="stamp_time" invisible="1"/>
-            		<field name="email_valid"/>   
-			 </field> 
+             <field name="email" position="replace"/>
+			<xpath expr="//sheet/group" position="inside">
+				<group>
+<!--            		<field name="inv_email" invisible="1"/>-->
+<!--            		<field name="stamp_time" invisible="1"/>-->
+						<label for="email"/>
+						<div>
+		            		<field name="email" class="oe_inline"/>
+				        	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/>
+				        </div>
+            		<field name="email_invalid" readonly="1"/>  
+            	</group>
+			 </xpath> 
 			 <xpath expr="//notebook/page[@string='History']" position="after">
 			 	<page string="Email open status">
 			 		<field name="email_status">
@@ -46,8 +50,8 @@
             <field name="inherit_id" ref="base.view_res_partner_filter" />
             <field name="arch" type="xml">
 		          <field name="name"  position="after">
-		            <field name="email_valid" />
-		            <filter string="Invalid Email" name="email_valid" domain="[('email_valid','=',1)]" help="Invalid Email"/>
+		            <field name="email_invalid" />
+		            <filter string="Invalid Email" name="email_invalid" domain="[('email_invalid','=',1)]" help="Invalid Email"/>
 		           </field>
 	        </field>
         </record>

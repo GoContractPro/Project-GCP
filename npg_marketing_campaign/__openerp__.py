@@ -36,7 +36,7 @@ Important this module requires installation of python packages
                 """,
     "website"  : "http://www.verts.co.in",
     "depends"  : ["base","mail","marketing_campaign"],
-    "category" : "Generic Modules",
+    'category': 'Marketing',
     "init_xml" : [],
     "demo_xml" : [],
      "data"     : ['unsubscribe_mail_view.xml',
