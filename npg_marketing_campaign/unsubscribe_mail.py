@@ -155,7 +155,7 @@ class email_template(osv.osv):
     #     return values
     #===========================================================================
     
-    """ 
+     
     def send_mail(self, cr, uid, template_id, res_id, force_send=False, context=None):
         part = 'res.partner'
         partner_obj = self.pool.get(part)
@@ -166,7 +166,7 @@ class email_template(osv.osv):
         if not email_valid:
             raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
         return super(email_template, self).send_mail(cr, uid, template_id, res_id, force_send, context)
-    """
+    
     def generate_email(self, cr, uid, template_id, res_id, context=None):
         """Generates an email from the template for given (model, res_id) pair.
 
