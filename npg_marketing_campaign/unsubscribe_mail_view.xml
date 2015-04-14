@@ -26,6 +26,7 @@
 			 	<page string="Email open status">
 			 		<field name="email_status">
 			 			<tree editable="bottom">
+			 				<field name="marketing_workitem_id" string="Campaign--Activity"/>
 			 				<field name="email_opened"/> 
 			 				<field name="date_open"/> 
 			 			</tree>
@@ -34,7 +35,7 @@
 			 	<page string="Website Visit status">
 			 		<field name="website_visit_status">
 			 			<tree editable="bottom">
-			 				<field name="marketing_workitem_id"/> 
+			 				<field name="marketing_workitem_id" string="Campaign--Activity"/> 
 			 				<field name="website_visit"/> 
 			 				<field name="date_visit"/> 
 			 			</tree>
@@ -70,5 +71,36 @@
 				</field>
 			</field>
 		</record>
+		
+		<record model="ir.ui.view" id="npg_view_marketing_campaign_workitem_form">
+	        <field name="name">npg.marketing.campaign.workitem.form</field>
+	        <field name="model">marketing.campaign.workitem</field>
+	        <field name="inherit_id" ref="marketing_campaign.view_marketing_campaign_workitem_form"/>
+	        <field name="arch" type="xml">
+	        	<xpath expr="//group[@string='Error Message']"  position = 'after'>
+	        		
+	        		<notebook>
+					 	<page string="Email open status">
+					 		<field name="email_status">
+					 			<tree>
+					 				<field name="email_opened"/> 
+					 				<field name="date_open"/> 
+					 			</tree>
+					 		</field>
+					 	</page>
+					 	<page string="Website Visit status">
+					 		<field name="website_visit_status">
+					 			<tree> 
+					 				<field name="website_visit"/> 
+					 				<field name="date_visit"/> 
+					 			</tree>
+					 		</field>
+					 	</page>
+					 	
+					 </notebook>
+	        	</xpath>
+	        </field>
+	     </record>
+        
 </data>
 </openerp>
