@@ -3,6 +3,15 @@
 <data>
        
        <!-- ********************  Unsubscribe mail Button for res partner *********************** -->
+       
+        <record id="NPG_res_partner_opt_out_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="email_template.res_partner_opt_out_form"/>
+            <field name="arch" type="xml">
+   		         <field name="opt_out" position="replace"/>
+   			</field>
+   		</record>
         
 		 <record id="verts_view_partner_form_unsb_in" model="ir.ui.view">
             <field name="name">res.partner.form</field>
@@ -10,7 +19,6 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
             <field name="email" position="replace"/>
-            <field name="opt_out" position="replace"/>
 			<xpath expr="//sheet/group" position="inside">
 				<group>
 <!--            		<field name="inv_email" invisible="1"/>-->
@@ -20,8 +28,9 @@
 		            		<field name="email" class="oe_inline"/>
 				        	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/>
 				        </div>
-            		<field name="email_invalid" readonly="1"/> 
-            		<field name="opt_out"/> 
+            		<field name="email_invalid" readonly="1"/>
+            		<field name="opt_out"/>
+
             	</group>
 			 </xpath> 
 			 <xpath expr="//notebook/page[@string='History']" position="after">
@@ -58,6 +67,9 @@
 		           </field>
 	        </field>
         </record>
+   		
+
+
    		
         <!-- Email Template -->
 		<record model="ir.ui.view" id="npg_marketing_email_template_form_inherit">
