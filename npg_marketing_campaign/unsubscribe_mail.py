@@ -39,7 +39,6 @@ class res_partner(osv.osv):
     _name = 'res.partner'
     _inherit='res.partner'
     _columns={
-              'inv_email':fields.char('Invalid Email',size=64),
               'stamp_time':fields.char('Stamp Time',size=64),
 #               'email_valid': fields.function(_get_valid_mail, method=True, store=True, type='boolean',string='Invalid Email'),
               'email_invalid': fields.boolean("Invalid Email"),
