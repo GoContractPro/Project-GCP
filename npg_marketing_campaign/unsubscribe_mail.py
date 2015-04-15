@@ -130,7 +130,7 @@ class marketing_campaign_activity(osv.osv):
         context.update({'workitem_id':workitem.id})
         return self.pool.get('email.template').send_mail(cr, uid,
                                             activity.email_template_id.id,
-                                            workitem.res_id, context=context)
+                                            workitem.id, context=context)
  
 
 
@@ -139,23 +139,27 @@ class email_template(osv.osv):
     _inherit = "email.template"
     
     _columns = {
+                'marketing_email': fields.boolean('Marketing Template', help='Select if this template is to be used with Marketing Campaigns'),
+                'preview_work_item': fields.many2one('marketing.campaign.workitem', string="Preview Work Item ",
+                                                      help='Select an Campaign Follow Up Work item record to use to preview of the Email Template'),             
                 'header_html': fields.text('Header', translate=True, help="Rich-text/HTML for header Part of mail body"),
                 'footer_html': fields.text('Footer', translate=True, help="Rich-text/HTML for Footer Part of mail body"),
                 }
-
-    #===========================================================================
-    # def generate_email(self, cr, uid, template_id, res_id, context=None):
-    #     if context is None:
-    #         context = {}
-    #     values = super(email_template, self).generate_email(cr, uid, template_id, res_id, context=context)
-    #     workitem_id = context.get('workitem_id')
-    #     if workitem_id:
-    #         work_item = "Work Item : " + str(workitem_id)
-    #         values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
-    #     return values
-    #===========================================================================
     
-     
+    def on_change_marketing_email(self,cr,uid,ids,marketing_email,model_id,preview_work_item,context=None):
+        
+        
+        if marketing_email:
+            model_id = self.pool.get("ir.model").search(cr, uid, [('model', '=', 'marketing.campaign.workitem')], context=context)[0]
+            result = {'model_id':model_id}
+            self.write(cr, uid, ids, result, context)
+            
+        else:
+            result = {'preview_work_item':False}
+            self.write(cr, uid, ids, result, context)
+        
+        return {'value': result}
+         
     def send_mail(self, cr, uid, template_id, res_id, force_send=False, context=None):
         part = 'res.partner'
         partner_obj = self.pool.get(part)
@@ -186,17 +190,12 @@ class email_template(osv.osv):
             ctx['lang'] = template._context.get('lang')
         values = {}
         
-        for field in ['subject', 'body_html', 'email_from',
+        for field in ['subject', 'body_html', 'header_html', 'footer_html','email_from',
                       'email_to', 'email_recipients', 'email_cc', 'reply_to']:
             values[field] = self.render_template(cr, uid, getattr(template, field),
                                                  template.model, res_id, context=ctx) \
-                                                 or False
-        for field in ['header_html', 'footer_html',]:
-#            if context.get('workitem_id'):
-                values[field] = self.render_template(cr, uid, getattr(template, field),
-                                                 'marketing.campaign.workitem', context.get('workitem_id'), context=ctx) \
-                                                 or False                                                 
-                                                 
+                                                or False
+                                                
         if values['header_html']:
 #             values['body_html'] = tools.append_content_to_html( values['header_html'],values['body_html'])
             values['body_html'] = values['header_html'] + "\n" + values['body_html']
@@ -249,3 +248,4 @@ class email_template(osv.osv):
         values['attachments'] = attachments
         values['attachment_ids'] = attachment_ids
         return values
+    

@@ -69,7 +69,26 @@
 				<field name="body_html" position="after">
 					<field name="footer_html" width="250" height="300" nolabel="1" colspan="2" placeholder="Email contents (in raw HTML format) for Mail body footer"/>
 				</field>
-			</field>
+				
+				<field name="model" position='after'>
+					<label for="marketing_email"/>
+					<field name="marketing_email" on_change="on_change_marketing_email(marketing_email,model_id,preview_work_item)"/>
+					<group attrs="{'invisible':[('marketing_email','=',False)]}" col="2" >
+						<field name="preview_work_item" />
+					</group>
+			    </field>
+			    
+			    <field name="model_id" position="attributes" >
+			    	<attribute name="attrs">{'readonly':[('marketing_email','=',True)]}</attribute>
+			    </field>
+			    
+			    <xpath expr="//button[@string='Preview']" position="replace">
+			          <button name="%(email_template.wizard_email_template_preview)d" string="Preview"
+                              type="action" target="new"
+                              context="{'template_id':active_id, 'default_res_id':preview_work_item}"/>
+			    </xpath>
+
+            </field>
 		</record>
 		
 		<record model="ir.ui.view" id="npg_view_marketing_campaign_workitem_form">
