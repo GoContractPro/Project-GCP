@@ -127,6 +127,7 @@ class marketing_campaign_activity(osv.osv):
         if context is None:
             context = {}
         context.update({'workitem_id':workitem.id})
+        context.update({ 'partner_id':workitem.partner_id.id})
         return self.pool.get('email.template').send_mail(cr, uid,
                                             activity.email_template_id.id,
                                             workitem.id, context=context)
@@ -164,10 +165,16 @@ class email_template(osv.osv):
         partner_obj = self.pool.get(part)
         email_valid = True
         template = self.get_email_template(cr, uid, template_id, res_id, context)
-        if template.model == part:
-            email_valid = partner_obj.get_valid_mail(cr,uid,[res_id])
-        if not email_valid:
-            raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
+        
+        if context.get('partner_id'):
+            partner_id = context.get('partner_id')
+            part_rec = partner_obj.browse(cr,uid,[partner_id],context)
+            for rec in part_rec:
+                if  rec.opt_out:
+                    raise osv.except_osv(_('Warning!'),_("Partner has opted out of emails"))
+            email_valid = partner_obj.get_valid_mail(cr,uid,[partner_id])
+            if not email_valid:
+                raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
         return super(email_template, self).send_mail(cr, uid, template_id, res_id, force_send, context)
     
     def generate_email(self, cr, uid, template_id, res_id, context=None):

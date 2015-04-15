@@ -9,7 +9,8 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-             <field name="email" position="replace"/>
+            <field name="email" position="replace"/>
+            <field name="opt_out" position="replace"/>
 			<xpath expr="//sheet/group" position="inside">
 				<group>
 <!--            		<field name="inv_email" invisible="1"/>-->
@@ -19,7 +20,8 @@
 		            		<field name="email" class="oe_inline"/>
 				        	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/>
 				        </div>
-            		<field name="email_invalid" readonly="1"/>  
+            		<field name="email_invalid" readonly="1"/> 
+            		<field name="opt_out"/> 
             	</group>
 			 </xpath> 
 			 <xpath expr="//notebook/page[@string='History']" position="after">
