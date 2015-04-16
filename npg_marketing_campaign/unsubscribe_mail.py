@@ -172,7 +172,7 @@ class email_template(osv.osv):
             for rec in part_rec:
                 if  rec.opt_out:
                     raise osv.except_osv(_('Warning!'),_("Partner has opted out of emails"))
-            email_valid = partner_obj.get_valid_mail(cr,uid,[partner_id])
+#            email_valid = partner_obj.get_valid_mail(cr,uid,[partner_id])
             if not email_valid:
                 raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
         return super(email_template, self).send_mail(cr, uid, template_id, res_id, force_send, context)
