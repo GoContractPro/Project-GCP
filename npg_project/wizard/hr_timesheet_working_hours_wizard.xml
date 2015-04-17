@@ -16,6 +16,8 @@
                
                <footer>
                     <button name="open_working_hours" string="Open" type="object" class="oe_highlight"/>
+                    <button name="recreate_deleted_analytic_entries" string="ReCreate Missing Entries" type="object" class="oe_highlight"/>
+                             
                     or
                     <button string="Cancel" class="oe_link" special="cancel" />
                </footer>
