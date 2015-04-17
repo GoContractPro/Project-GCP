@@ -1,0 +1,208 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+    
+    <!-- ***************************************** SRS *********************************************** -->
+        
+        <record id="tree_srs" model="ir.ui.view">
+			<field name="name">srs</field>
+            <field name="model">srs</field>
+            <field name="arch" type="xml">
+                <tree string="SRS">
+                     <field name="name"/>     
+                    <field name="sequence"/>
+                </tree>
+           </field>                         
+		</record>
+		
+		<record id="form_srs" model="ir.ui.view">
+			<field name="name">srs</field>
+            <field name="model">srs</field>
+            <field name="arch" type="xml">
+                <form string="SRS" version="7.0">
+                <sheet>
+               <group col="4">
+                    <field name="name" /> 
+                    <field name="sequence"/> 
+                    <field name="parent_id"/> 
+                    <field name="time" widget="float_time"/> 
+               </group> 
+               <notebook>
+                    <page string="Related Software">
+                       <separator string="Related Software" colspan="2"/>
+                  	   <field name="srs_package_ids"  col="4"/>	
+                    </page>
+                     <page string="Related Use Cases">
+                       <separator string="Related Use Cases" colspan="2"/>
+                  	   <field name="srs_use_case_ids"  col="4"/>	
+                    </page>
+                    <page string="Related User Guides">
+                       <separator string="Related User Guides" colspan="2"/>
+                  	   <field name="srs_user_guides" col="4"/>	
+                    </page>
+                 </notebook>
+                 <group col="4">      
+                   <field name="desc" placeholder="Requirement......" nolabel="1"/>  
+                 </group>
+                </sheet>
+                </form>
+           </field>                         
+		</record>
+		
+	    <record id="action_srs" model ="ir.actions.act_window"> 
+             <field name="name">SRS</field>
+            <field name="res_model">srs</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="tree_srs"/>
+        </record> 
+        
+        
+    <!-- *********************************** srs_software_package ***************************** -->
+        
+    <record id="view_srs_software_package_tree" model="ir.ui.view">
+        <field name="name">SRS Software Package</field>
+        <field name="model">srs.software.package</field>
+        <field name="arch" type="xml">
+            <tree string="SRS Software Package">
+                <field name="name"/>
+                <field name="repository"/>
+                <field name="author"/>
+                <field name="website"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_srs_software_package_form" model="ir.ui.view">
+		<field name="name">SRS Software Package</field>
+        <field name="model">srs.software.package</field>
+        <field name="arch" type="xml">
+            <form string="SRS Software Package" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+                <field name="repository"/>
+                <field name="author"/>
+                <field name="website"/>
+            </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_srs_software_package" model ="ir.actions.act_window"> 
+        <field name="name">SRS Software Package</field>
+        <field name="res_model">srs.software.package</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_srs_software_package_tree"/>
+    </record>    
+        
+     <!-- *********************************** use_cases ***************************** -->
+        
+    <record id="view_use_cases_tree" model="ir.ui.view">
+        <field name="name">Use Cases</field>
+        <field name="model">srs.use.case</field>
+        <field name="arch" type="xml">
+            <tree string="Use Cases">
+                <field name="name"/>
+                <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_use_cases_form" model="ir.ui.view">
+		<field name="name">Use Cases</field>
+        <field name="model">srs.use.case</field>
+        <field name="arch" type="xml">
+            <form string="Use Cases" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+                <field name="sequence"/>
+            </group>
+             <field name="case_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+                  <tree string="Use Case Line"  editable="bottom">
+                      <field name="name"/>
+                      <field name="sequence"/>
+                      <field name="desc"/>
+                      <field name="expt_result"/>
+                  </tree>
+             </field>
+             <group col="4">      
+                  <field name="desc" placeholder="Description......" nolabel="1"/>  
+             </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_use_cases" model ="ir.actions.act_window"> 
+        <field name="name">Use Cases</field>
+        <field name="res_model">srs.use.case</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_use_cases_tree"/>
+    </record>  
+    
+     <!-- *********************************** User Guides ***************************** -->
+        
+    <record id="view_user_guide_tree" model="ir.ui.view">
+        <field name="name">User Guides</field>
+        <field name="model">srs.user.guide</field>
+        <field name="arch" type="xml">
+            <tree string="User Guides">
+                <field name="name"/>
+                <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_user_guide_form" model="ir.ui.view">
+		<field name="name">User Guides</field>
+        <field name="model">srs.user.guide</field>
+        <field name="arch" type="xml">
+            <form string="User Guides" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+                <field name="sequence"/>
+            </group>
+             <field name="guide_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+                  <tree string="User Guides Line"  editable="bottom">
+                      <field name="name"/>
+                      <field name="author"/>
+                      <field name="input_file"/>
+                      <field name="fname" invisible="1"/>
+                      <field name="soft_pack_id"/>
+                      <field name="desc"/>
+                  </tree>
+             </field>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_user_guide" model ="ir.actions.act_window"> 
+        <field name="name">User Guides</field>
+        <field name="res_model">srs.user.guide</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_user_guide_tree"/>
+    </record>    
+        
+    <menuitem  id="mainmenu_srs" name="SRS" sequence="1" />
+    <menuitem  id="menu_srs" name="SRS" parent="mainmenu_srs"  sequence="1" />
+    <menuitem  id="submenu_srs" name="SRS"  parent="menu_srs" action="action_srs"  sequence="2" />
+    <menuitem  id="menu_conf" name="Configuration"  parent="mainmenu_srs"  sequence="2" />
+    <menuitem  id="menu_pacakage" name="Software Package"  parent="menu_conf" action="action_srs_software_package" sequence="1" />
+    <menuitem  id="menu_use_case" name="Use Cases"  parent="menu_conf" action="action_use_cases" sequence="2" />
+    <menuitem  id="menu_user_guide" name="User Guides"  parent="menu_conf" action="action_user_guide"  sequence="3" />
+      
+    </data>
+</openerp>
+    
