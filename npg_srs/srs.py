@@ -120,5 +120,50 @@ class srs(osv.osv):
 
 srs()
 
+class srs_document(osv.osv):
+    _name = "srs.document"
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
+    _columns = {
+         'name':fields.char('Name',size=64),
+         'partner_id': fields.many2one('res.partner','Partner'),
+         'create_date':fields.date('Create date'),
+         'plan_date':fields.date('Plan date'),
+         'desc':fields.text('Description'),
+         'doc_lines':fields.one2many('document.line','doc_id','Doc Lines')
+         }
+srs_document()
+
+class document_line(osv.osv):
+    _name = "document.line"
+    _columns = {
+     'name':fields.char('Name',size=64),
+     'doc_id': fields.many2one('srs.document','Doc ID'),
+     'sequence': fields.integer('Sequence'),
+     'approved': fields.boolean('Approved'),
+     'plan_date':fields.date('Plan date'),
+     'category_ids':fields.one2many('srs.categories','doc_line_id','Category'),
+#      'est_hour': fields.function(_get_estimation_hour, method=True,  type="float", string="Estimate Hours"),
+     'project_id': fields.many2one('project.project','Project'),
+     'state': fields.selection([
+            ('draft','Draft'),
+            ('planning','Planning'),
+            ('implementation','Implementation'),
+            ('done','Done'),
+            ], 'Status', readonly=True, ),
+    }
+    _defaults={
+               'state':'draft'
+               }
+document_line()
+
+class srs_categories(osv.osv):
+    _name = "srs.categories"
+    _columns = {
+     'name':fields.char('Category',size=64),
+     'doc_line_id': fields.many2one('document.line','Doc Line'),
+     'desc':fields.text('Description'),
+       }
+srs_categories()
+
 
 
