@@ -97,12 +97,18 @@ srs_user_guide_line()
 
 class srs(osv.osv):
     _name = "srs"
+    _parent_name = "parent_id"
+    _parent_store = True
+    _parent_order = 'sequence, name'
     _columns = {
      'name':fields.char('ID',size=64,readonly=True),
+     'sname':fields.char('Name',size=64),
      'parent_id':fields.many2one('srs','Parent'),
+     'child_id': fields.one2many('srs', 'parent_id', string='Child SRS'),
      'sequence': fields.integer('Sequence'),
      'desc':fields.text('Requirements'),
      'time':fields.float('Estimate Time'),
+     'task_id': fields.many2one('project.task','Task'),
      'srs_package_ids': fields.many2many('srs.software.package', 'rel_srs_soft_package', 'soft_pack_srs', 'soft_pack_id', 'Related Software'),
      'srs_use_case_ids': fields.many2many('srs.use.case', 'rel_software_use_case', 'use_case_software', 'srs_use_id', 'Related Use Cases'),
      'srs_user_guides': fields.many2many('srs.user.guide', 'rel_srs_user_guide', 'user_guide_srs', 'guide_srs_id', 'Related User Guides'),
@@ -126,11 +132,25 @@ class srs_document(osv.osv):
     _columns = {
          'name':fields.char('Name',size=64),
          'partner_id': fields.many2one('res.partner','Partner'),
-         'create_date':fields.date('Create date'),
-         'plan_date':fields.date('Plan date'),
+         'created_task': fields.boolean('Task Created'),
+         'create_date':fields.date('Create Date'),
+         'plan_date':fields.date('Plan Date'),
          'desc':fields.text('Description'),
          'doc_lines':fields.one2many('document.line','doc_id','Doc Lines')
          }
+    
+    def action_create_task(self, cr, uid, ids, context=None):
+        for doc in self.browse(cr,uid,ids,context):
+            for dline in doc.doc_lines:
+                for rline in dline.doc_req_line:
+                    user_id=rline.user_id.id
+                    for req in rline.srequirement_ids:
+                            task_number= self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/' 
+                            task_id=self.pool.get('project.task').create(cr,uid,{'task_number':task_number,'user_id':user_id,'name':req.sname,'srs_code':req.name,'project_id':dline.project_id.id})
+                            self.pool.get('srs').write(cr,uid,req.id,{'task_id':task_id})
+        self.write(cr,uid,doc.id,{'created_task':True})
+        return True
+    
 srs_document()
 
 class document_line(osv.osv):
@@ -155,6 +175,7 @@ class document_line(osv.osv):
     _defaults={
                'state':'draft'
                }
+    
 document_line()
 
 class srs_categories(osv.osv):
@@ -172,9 +193,18 @@ class doc_req_line(osv.osv):
      'name':fields.char('Category',size=64),
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),
-     'srs_requirements_ids': fields.many2many('srs', 'rel_doc_line_srs', 'srs_doc_line', 'dlrs_id', 'Related SRS'),
+     'srequirement_ids': fields.many2many('srs','rel_dline_srs','dline_srs_id','doc_line_srs_id','Related SRS'),
        }
+    
 doc_req_line()
+
+class project_task(osv.osv):
+    _name = "project.task"
+    _inherit = "project.task"
+    _columns = {
+        'srs_code': fields.char('SRS Code',size=64,readonly=True),
+       }
+project_task()
 
 
 
