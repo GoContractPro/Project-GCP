@@ -27,7 +27,7 @@
                     <field name="sequence"/> 
                     <field name="parent_id"/> 
                     <field name="task_id" readonly="1"/>
-                    <field name="time" widget="float_time"/> 
+                    <field name="est_time" widget="float_time"/> 
                </group> 
                <notebook>
                     <page string="Related Software">
@@ -267,6 +267,7 @@
                           <field name="plan_date"/> 
                           <field name="project_id" required="1"/>  
                           <field name="approved"/>
+                          <field name="est_hour"/>
                       </group>
                       <newline/>
                       <group col="4">
@@ -297,8 +298,8 @@
              </field>
             </sheet>
             <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="message_ids" widget="mail_thread"/>
+                <field name="message_follower_ids" widget="mail_followers" />
+                <field name="message_ids" widget="mail_thread"/>
              </div>
             </form>
        </field>                         

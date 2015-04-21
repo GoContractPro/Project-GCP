@@ -23,7 +23,7 @@ from osv import fields, osv
 import time
 import sys 
 sys.setrecursionlimit(10000)
-
+import openerp.addons.decimal_precision as dp
 from tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP
 
@@ -107,7 +107,7 @@ class srs(osv.osv):
      'child_id': fields.one2many('srs', 'parent_id', string='Child SRS'),
      'sequence': fields.integer('Sequence'),
      'desc':fields.text('Requirements'),
-     'time':fields.float('Estimate Time'),
+     'est_time':fields.float('Estimate Time'),
      'task_id': fields.many2one('project.task','Task'),
      'srs_package_ids': fields.many2many('srs.software.package', 'rel_srs_soft_package', 'soft_pack_srs', 'soft_pack_id', 'Related Software'),
      'srs_use_case_ids': fields.many2many('srs.use.case', 'rel_software_use_case', 'use_case_software', 'srs_use_id', 'Related Use Cases'),
@@ -154,16 +154,27 @@ class srs_document(osv.osv):
 srs_document()
 
 class document_line(osv.osv):
+    
+    def _calculate_total(self, cr, uid, ids, name, args, context):
+        res = {}
+        est_time=0.0
+        for dline in self.browse(cr,uid,ids,context):
+            for rline in dline.doc_req_line:
+                for req in rline.srequirement_ids:
+                    est_time += req.est_time
+            res[dline.id] = est_time 
+        return res
+    
     _name = "document.line"
     _columns = {
      'name':fields.char('Name',size=64),
      'doc_id': fields.many2one('srs.document','Doc ID'),
      'sequence': fields.integer('Sequence'),
      'approved': fields.boolean('Approved'),
-     'plan_date':fields.date('Plan date'),
+     'plan_date':fields.date('Plan Date'),
      'category_ids':fields.one2many('srs.categories','doc_line_id','Category'),
      'doc_req_line':fields.one2many('doc.req.line','ldoc_id','Document Line'),
-#      'est_hour': fields.function(_get_estimation_hour, method=True,  type="float", string="Estimate Hours"),
+     'est_hour': fields.function(_calculate_total, method=True, type='float', string='Estimate Hours', ),
      'project_id': fields.many2one('project.project','Project'),
      'state': fields.selection([
             ('draft','Draft'),
