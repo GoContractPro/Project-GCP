@@ -223,7 +223,6 @@
              <field name="doc_lines"  colspan="4" nolabel="1"  widget="one2many_list">
                   <form string="SRS Document Line">
                       <header>
-                          <button name="%(act_wizard_requirement)d"  string="Requirements" type="action" icon="terp-document-new"/>
                           <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
                       </header>
                       <newline/>
@@ -233,13 +232,22 @@
                           <field name="project_id"/>  
                           <field name="approved"/>
                       </group>
-                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
-                          <tree string="Categories"  editable="bottom">
-		                      <field name="name"/>
-		                      <field name="desc"/>
-		                  </tree>
-                      </field>
-                  
+                      <group col="4">
+	                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Categories"  editable="bottom">
+			                      <field name="name"/>
+			                      <field name="desc"/>
+			                  </tree>
+	                      </field>
+                     </group>
+                      <group col="4">
+	                      <field name="doc_req_line"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Requirements"  editable="bottom">
+			                      <field name="user_id"/>
+			                      <field name="srs_requirements_ids" widget="many2many_tags"/>
+			                  </tree>
+	                      </field>
+                     </group>
                   </form>
                    <tree string="SRS Document Line">
                       <field name="sequence"/>

@@ -116,7 +116,7 @@ class srs(osv.osv):
     
     _defaults = {        
            'name': lambda obj, cr, uid, context: '/', 
-      }
+               }
 
 srs()
 
@@ -142,6 +142,7 @@ class document_line(osv.osv):
      'approved': fields.boolean('Approved'),
      'plan_date':fields.date('Plan date'),
      'category_ids':fields.one2many('srs.categories','doc_line_id','Category'),
+     'doc_req_line':fields.one2many('doc.req.line','ldoc_id','Document Line'),
 #      'est_hour': fields.function(_get_estimation_hour, method=True,  type="float", string="Estimate Hours"),
      'project_id': fields.many2one('project.project','Project'),
      'state': fields.selection([
@@ -149,7 +150,7 @@ class document_line(osv.osv):
             ('planning','Planning'),
             ('implementation','Implementation'),
             ('done','Done'),
-            ], 'Status', readonly=True, ),
+            ], 'Status',readonly=True),
     }
     _defaults={
                'state':'draft'
@@ -164,6 +165,16 @@ class srs_categories(osv.osv):
      'desc':fields.text('Description'),
        }
 srs_categories()
+
+class doc_req_line(osv.osv):
+    _name = "doc.req.line"
+    _columns = {
+     'name':fields.char('Category',size=64),
+     'ldoc_id': fields.many2one('document.line','Doc Line'),
+     'user_id': fields.many2one('res.users','Assign To'),
+     'srs_requirements_ids': fields.many2many('srs', 'rel_doc_line_srs', 'srs_doc_line', 'dlrs_id', 'Related SRS'),
+       }
+doc_req_line()
 
 
 
