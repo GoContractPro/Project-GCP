@@ -35,6 +35,7 @@
     "data"     : [
                   'sequence.xml',
                   'srs_view.xml',
+                  'srs_report_view.xml'
                  ],
     'test': [],    
     'installable': True,

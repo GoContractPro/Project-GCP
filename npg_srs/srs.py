@@ -216,6 +216,3 @@ class project_task(osv.osv):
         'srs_code': fields.char('SRS Code',size=64,readonly=True),
        }
 project_task()
-
-
-
