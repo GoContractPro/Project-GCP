@@ -267,8 +267,9 @@
                       <newline/>
                       <group col="4">
 	                      <field name="sequence"/>
-                          <field name="plan_date"/> 
-                          <field name="project_id" required="1"/>  
+	                      <field name="project_id" required="1"/>  
+                          <field name="create_date"/>
+                          <field name="plan_date"/>  
                           <field name="approved"/>
                           <field name="est_hour"/>
                       </group>
@@ -323,8 +324,9 @@
         <field name="name">srs.document.line.gantt</field>
         <field name="model">document.line</field>
         <field name="arch" type="xml">
-            <gantt date_stop="plan_date"  string="Document Line" default_group_by="project_id">
+           <gantt date_stop="plan_date" date_start="create_date"  string="Document Line" default_group_by="project_id">
                <field name="project_id"/>
+               <field name="create_date"/>
                <field name="plan_date"/>
             </gantt>
         </field>
@@ -336,6 +338,7 @@
         <field name="arch" type="xml">
             <tree string="SRS Document Line">
               <field name="sequence"/>
+              <field name="create_date"/>
               <field name="plan_date"/>
               <field name="project_id"/>
               <field name="approved"/>
@@ -344,11 +347,52 @@
         </field>
      </record>
     
+     <record id="view_document_line_form" model="ir.ui.view">
+		<field name="name">SRS Document Line</field>
+        <field name="model">document.line</field>
+        <field name="arch" type="xml">
+           <form string="SRS Document Line" version="7.0">
+            <sheet>
+                     <header>
+                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
+                      </header>
+                      <newline/>
+                      <group col="4">
+	                      <field name="sequence"/>
+	                      <field name="project_id" required="1"/>  
+                          <field name="plan_date"/> 
+                          <field name="create_date"/>
+                          <field name="approved"/>
+                          <field name="est_hour"/>
+                      </group>
+                      <newline/>
+                      <group col="4">
+	                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Categories"  editable="bottom">
+			                      <field name="name"/>
+			                      <field name="desc"/>
+			                  </tree>
+	                      </field>
+                     </group>
+                     <newline/>
+                      <group col="4">
+	                      <field name="doc_req_line"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Requirements"  editable="bottom">
+			                      <field name="user_id" required="1"/>
+			                      <field name="srequirement_ids" widget="many2many_tags"/>
+			                  </tree>
+	                      </field>
+                     </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
     <record id="action_srs_document_line" model ="ir.actions.act_window"> 
         <field name="name">SRS Document Line</field>
         <field name="res_model">document.line</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="view_type">tree</field>
+        <field name="view_type">form</field>
         <field name="view_mode">tree,form,gantt</field>
         <field name="view_id" ref="view_document_line_tree"/>
     </record>   
@@ -411,7 +455,7 @@
     <menuitem  id="submenu_srs" name="SRS Master"  parent="menu_srs" action="action_srs"  sequence="2" />
     <menuitem  id="submenu_srs_expend" name="SRS Expandable"  parent="menu_srs" action="action_catgory_expend"  sequence="4" />
     <menuitem  id="menu_srs_document" name="SRS Documentation"  parent="menu_srs" action="action_srs_document"  sequence="6" />
-    <menuitem  id="menu_srs_document_line" name="SRS Documentation Line"  parent="menu_srs" action="action_srs_document_line"  sequence="7" />
+    <menuitem  id="menu_srs_document_line" name="Document Line"  parent="menu_srs" action="action_srs_document_line"  sequence="7" />
     <menuitem  id="menu_conf" name="SRS Configuration"  parent="menu_srs"  sequence="9" />
     <menuitem  id="menu_category" name="Categories"  parent="menu_conf" action="action_catgory" sequence="1" />
     <menuitem  id="menu_pacakage" name="Software Package"  parent="menu_conf" action="action_srs_software_package" sequence="2" />

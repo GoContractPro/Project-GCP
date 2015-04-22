@@ -133,8 +133,8 @@ class srs_document(osv.osv):
          'name':fields.char('Name',size=64),
          'partner_id': fields.many2one('res.partner','Partner'),
          'created_task': fields.boolean('Task Created'),
-         'create_date':fields.date('Create Date'),
-         'plan_date':fields.date('Plan Date'),
+         'create_date':fields.date('Start Date'),
+         'plan_date':fields.date('Planned End Date'),
          'desc':fields.text('Description'),
          'doc_lines':fields.one2many('document.line','doc_id','Doc Lines')
          }
@@ -171,10 +171,11 @@ class document_line(osv.osv):
      'doc_id': fields.many2one('srs.document','Doc ID'),
      'sequence': fields.integer('Sequence'),
      'approved': fields.boolean('Approved'),
-     'plan_date':fields.date('Plan Date'),
+     'create_date':fields.date('Start Date'),
+     'plan_date':fields.date('Planned End Date'),
      'category_ids':fields.one2many('srs.categories','doc_line_id','Category'),
      'doc_req_line':fields.one2many('doc.req.line','ldoc_id','Document Line'),
-     'est_hour': fields.function(_calculate_total, method=True, type='float', string='Estimate Hours', ),
+     'est_hour': fields.function(_calculate_total, method=True, type='float', string='Estimate Hours'),
      'project_id': fields.many2one('project.project','Project'),
      'state': fields.selection([
             ('draft','Draft'),
@@ -196,6 +197,7 @@ class srs_categories(osv.osv):
      'doc_line_id': fields.many2one('document.line','Doc Line'),
      'desc':fields.text('Description'),
        }
+    
 srs_categories()
 
 class doc_req_line(osv.osv):
@@ -214,5 +216,6 @@ class project_task(osv.osv):
     _inherit = "project.task"
     _columns = {
         'srs_code': fields.char('SRS Code',size=64,readonly=True),
-       }
+         }
+    
 project_task()
