@@ -197,7 +197,6 @@ class email_template(osv.osv):
         values = {}
         
         for field in ['subject', 'body_html', 'header_html', 'footer_html','email_from',
-
                       'email_to', 'email_recipients', 'email_cc', 'reply_to']:
             values[field] = self.render_template(cr, uid, getattr(template, field),
                                                  template.model, res_id, context=ctx) \
