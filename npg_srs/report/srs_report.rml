@@ -18,14 +18,6 @@
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
     </blockTableStyle>
-     <blockTableStyle id="Table1a">
-      <blockAlignment value="LEFT"/>
-      <blockValign value="TOP"/>
-      <lineStyle kind="LINEABOVE" colorName="#ffffff" start="0,0" stop="2,0"/>
-      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="0,0" stop="0,1"/>
-      <lineStyle kind="LINEAFTER" colorName="#ffffff" start="2,0" stop="-1,-1"/>
-      <lineStyle kind="LINEABOVE" colorName="#ffffff" start="0,1" stop="3,1"/>
-    </blockTableStyle>
     <blockTableStyle id="Table2">
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
@@ -107,74 +99,69 @@
     <paraStyle name="terp_default_9" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_tblheader_General_Centre" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
     <paraStyle name="terp_default_Centre_8" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="terp_tblheader_Details" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="6.0" spaceAfter="6.0"/>
+    
     <paraStyle name="terp_tblheader_Details_Centre" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
     <paraStyle name="terp_tblheader_Details_Right" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="6.0" spaceAfter="6.0"/>
-    <paraStyle name="terp_tblheader_Details_Left" fontSize="9.0" alignment="LEFT"/>
-    <paraStyle name="terp_default_Centre_9" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_tblheader_Details_Left" fontSize="16.0" alignment="LEFT"/>
+    
+    <paraStyle name="terp_tblheader_Details" fontSize="12.0" leading="11" alignment="LEFT" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_default_Centrehead" fontSize="13.0"  leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Centrecontent" fontSize="13.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Centrsrs" fontSize="25.0"  leading="25" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    
+    <paraStyle name="terp_default_left" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    
     <paraStyle name="terp_default_Right_9" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_1" fontSize="2.0" leading="3" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Right_9_Bold" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="Table Heading" fontSize="10.0" fontName="Times-Roman" alignment="LEFT"/>
-    <paraStyle name="P15" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica-Bold" fontSize="10.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P4" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="10.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="style.Title"  fontName="Courier-Bold" fontSize="26" alignment="CENTER" leading="30" /> 
+    
+    
+    
+    <paraStyle name="Table Heading" fontName="Courier-Bold" fontSize="25.0"  alignment="CENTER"/>
+    <paraStyle name="style.Title" textColor="blue" fontName="Courier-Bold" fontSize="26" alignment="CENTER" leading="30" /> 
     <paraStyle name="style.line" leading="20" /> 
     <paraStyle name="Table Contents" fontName="Times-Roman" fontSize="9"/>
-    <paraStyle name="P7_head" fontName="Helvetica-Bold" fontSize="24.0" leading="17" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    
+     <paraStyle name="terp_tblheader_Details_Right" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="6.0" spaceAfter="6.0"/>
+    
+    
     <images/>
   </stylesheet>
   <story>
   <pto>
+   <section>
   <para style="terp_default_8">[[repeatIn(objects,'o')]]</para>
-    <spacer length="35"/>
-    <blockTable colWidths="30.0,360.0,30.0" style="Table1a">
+  <spacer length="50"/>
+  <section>
+    <blockTable colWidths="530.0" style="Table2">
       <tr>
         <td>
-	      <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="P7_head">SRS Requirements</para>                    
-        </td>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
+          <para style="terp_default_Centrsrs"><b>SRS Requirements</b></para>                    
         </td>
       </tr>
     </blockTable>
     <spacer length="50"/>
-    <blockTable colWidths="190.0,180.0,190.0" style="Table2">
+    <blockTable colWidths="190.0,180.0,190.0" repeatRows="1" style="Table2">
         <tr>
           <td>
-           <para style="P15"><b>Partner</b></para> 
+           <para style="terp_default_Centrehead"><b>Partner</b></para> 
+           <spacer length="8"/>
+           <para style="terp_default_Centrecontent">[[ o.partner_id.name]]</para>
           </td>
           <td>
-           <para style="P15"><b>Create Date</b></para>
+           <para style="terp_default_Centrehead"><b>Create Date</b></para>
+           <spacer length="8"/>
+            <para style="terp_default_Centrecontent">[[o.create_date and o.create_date or '']]</para>
           </td>
           <td>
-           <para style="P15"><b>Plan Date</b></para> 
+           <para style="terp_default_Centrehead"><b>Plan Date</b></para> 
+           <spacer length="8"/>
+           <para style="terp_default_Centrecontent">[[o.plan_date and o.plan_date or '']]</para> 
           </td>
         </tr>
       </blockTable>
-      <blockTable colWidths="190.0,180.0,190.0" style="Table2">
-        <tr>
-          <td>
-           <para style="P4"><b>[[o.partner_id.name]]</b></para> 
-          </td>
-          <td>
-           <para style="P4"><b>[[o.create_date]]</b></para>
-          </td>
-          <td>
-           <para style="P4"><b>[[o.plan_date]]</b></para> 
-          </td>
-        </tr>
-      </blockTable>
-      <spacer length="55"/>
-      <para style="Table Contents">[[ repeatIn(objects,'o') ]]</para>
-      <blockTable colWidths="190.0,180.0,190.0" repeatRows="1" style="Table4">
+      <spacer length="50"/>
+       <blockTable colWidths="190.0,180.0,190.0" repeatRows="1" style="Table4">
             <tr>
              <td>
               <para style="terp_tblheader_Details"><b>Project</b></para>
@@ -183,26 +170,41 @@
               <para style="terp_tblheader_Details"><b>Assigned to</b></para>
              </td>
              <td>
-              <para style="terp_tblheader_Details_Centre"><b>Related SRS</b></para>
+              <para style="terp_tblheader_Details"><b>Related SRS</b></para>
              </td>
+             
            </tr>  
          </blockTable>
-       <section>
-      <para style="Table Contents">[[ repeatIn(get_srs_lines(o),'line') ]]</para>
-      <blockTable colWidths="190.0,180.0,190.0" style="Table5">
+      <section>
+      <para style="terp_default_Centre_9">[[ repeatIn(o.doc_lines,'dline') ]]</para>
+      <blockTable colWidths="150.0,410.0" style="Table5">
         <tr>
           <td>
-            <para style="terp_default_Centre_9">[[ line.project_id.name]]</para>
-          </td>
-          <td>
-              <para style="terp_default_Centre_9">[[ line.user_id.name]]</para>
-             </td>
+            <para style="terp_default_Centre_9">[[ dline.project_id.name]]</para>
+           </td>
              <td>
-                <para style="terp_default_Centre_9">[[line.srequirements_ids]]</para>
+             	<section>
+			      <para style="terp_default_Centre_9">[[ repeatIn(dline.doc_req_line,'sline') ]]</para>
+	              <blockTable colWidths="150.0,250.0" style="Table5">
+			        <tr>
+			          <td>
+			            <para style="terp_default_Centre_9">[[ sline.user_id.name]]</para>
+			          </td>
+			          <td>
+			              <section>
+                          <para style="terp_default_Centre_9">[[ repeatIn(sline.srequirement_ids,'rline') ]]</para>
+                          <para style="terp_default_Centre_9">[[ rline.name]] - [[ rline.sname]]</para>
+                          </section>
+			          </td>
+			        </tr>
+			      </blockTable>
+			    </section>
              </td>
         </tr>
       </blockTable>
+     </section>
     </section>
-  </pto>
+     </section>
+    </pto>
   </story>
 </document>

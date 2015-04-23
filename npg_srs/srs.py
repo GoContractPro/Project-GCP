@@ -102,7 +102,7 @@ class srs(osv.osv):
     _parent_order = 'sequence, name'
     _columns = {
      'name':fields.char('ID',size=64,readonly=True),
-     'sname':fields.char('Name',size=64),
+     'sname':fields.char('Name',size=64,required=True),
      'parent_id':fields.many2one('srs','Parent'),
      'child_id': fields.one2many('srs', 'parent_id', string='Child SRS'),
      'sequence': fields.integer('Sequence'),
