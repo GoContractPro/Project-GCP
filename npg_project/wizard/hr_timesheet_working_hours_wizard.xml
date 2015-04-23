@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-    
+  
       <record id="view_hr_timesheet_hours_open" model="ir.ui.view">
         <field name="name">hr_timesheet_hours_open.form</field>
         <field name="model">hr.timesheet.working.hours</field>
@@ -16,6 +16,8 @@
                
                <footer>
                     <button name="open_working_hours" string="Open" type="object" class="oe_highlight"/>
+                    <button name="recreate_deleted_analytic_entries" string="ReCreate Missing Entries" type="object" class="oe_highlight"/>
+                             
                     or
                     <button string="Cancel" class="oe_link" special="cancel" />
                </footer>
@@ -32,12 +34,7 @@
         <field name="target">new</field>
         <field name="help">Working Hours  opens task hours in date range. </field>
     </record>
-
-    <menuitem action="action_hr_timesheet_hours_open" id="menu_act_working_hours_wizard"
-     	name="Working Hours by Date" parent="hr_attendance.menu_hr_time_tracking" sequence="1"/>
          
-        
-   		
 
     </data>
 </openerp>

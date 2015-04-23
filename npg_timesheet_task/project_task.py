@@ -35,8 +35,8 @@ class project_task_timesheet(osv.osv):
     _columns = {
             'hr_analytic_timesheet_id': fields.many2one('hr.analytic.timesheet', 'Timesheet Line', ondelete='cascade', required=True),
             'task_id':fields.many2one('project.task','Task',  required=True, ondelete='cascade', select=True,),
-            'public_note': fields.text('Public Notes'),
-            'internal_note': fields.text('Developer Notes')
+#            'public_note': fields.text('Public Notes'),
+            'work_note': fields.text('Task Work Notes')
     }
     
     def _getGeneralAccount(self, cr, uid, context=None):

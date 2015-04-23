@@ -39,7 +39,6 @@ class res_partner(osv.osv):
     _name = 'res.partner'
     _inherit='res.partner'
     _columns={
-              'inv_email':fields.char('Invalid Email',size=64),
               'stamp_time':fields.char('Stamp Time',size=64),
 #               'email_valid': fields.function(_get_valid_mail, method=True, store=True, type='boolean',string='Invalid Email'),
               'email_invalid': fields.boolean("Invalid Email"),
@@ -95,13 +94,31 @@ class marketing_campaign_workitem(osv.osv):
     _inherit = "marketing.campaign.workitem"
     
     _columns = {
-               'email_opened':fields.datetime("Open Email"),
-               'weblink_clicked':fields.datetime("Open Weblink"),
-               }
+              'email_status' : fields.one2many('email.status','marketing_workitem_id', "Email Status"),
+              'website_visit_status' : fields.one2many('website.visit.status','marketing_workitem_id', "Website Visited"),
+              }
+    
     def update_campain_click_status(self,cr,uid,args = None , context = None):
  # TODO add code  here to update click time Stamps from PHP will search base on 
  # agruments passed for partner_id and 'activity_id.name'       
         return True
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return []
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        reads = self.read(cr, uid, ids, ['campaign_id','activity_id'], context=context)
+        res = []
+        for record in reads:
+            name = str(record['id'])
+            if record['campaign_id']:
+                name = '[' + name + ']' + record['campaign_id'][1]
+            if record['activity_id']:
+                name = name + '--' +record['activity_id'][1]
+                
+            res.append((record['id'], name))
+        return res
     
 class marketing_campaign_activity(osv.osv):
     _inherit = "marketing.campaign.activity"
@@ -110,9 +127,10 @@ class marketing_campaign_activity(osv.osv):
         if context is None:
             context = {}
         context.update({'workitem_id':workitem.id})
+        context.update({ 'partner_id':workitem.partner_id.id})
         return self.pool.get('email.template').send_mail(cr, uid,
                                             activity.email_template_id.id,
-                                            workitem.res_id, context=context)
+                                            workitem.id, context=context)
  
 
 
@@ -121,34 +139,44 @@ class email_template(osv.osv):
     _inherit = "email.template"
     
     _columns = {
+                'marketing_email': fields.boolean('Marketing Template', help='Select if this template is to be used with Marketing Campaigns'),
+                'preview_work_item': fields.many2one('marketing.campaign.workitem', string="Preview Work Item ",
+                                                      help='Select an Campaign Follow Up Work item record to use to preview of the Email Template'),             
                 'header_html': fields.text('Header', translate=True, help="Rich-text/HTML for header Part of mail body"),
                 'footer_html': fields.text('Footer', translate=True, help="Rich-text/HTML for Footer Part of mail body"),
                 }
-
-    #===========================================================================
-    # def generate_email(self, cr, uid, template_id, res_id, context=None):
-    #     if context is None:
-    #         context = {}
-    #     values = super(email_template, self).generate_email(cr, uid, template_id, res_id, context=context)
-    #     workitem_id = context.get('workitem_id')
-    #     if workitem_id:
-    #         work_item = "Work Item : " + str(workitem_id)
-    #         values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
-    #     return values
-    #===========================================================================
     
-    
+    def on_change_marketing_email(self,cr,uid,ids,marketing_email,model_id,preview_work_item,context=None):
+        
+        
+        if marketing_email:
+            model_id = self.pool.get("ir.model").search(cr, uid, [('model', '=', 'marketing.campaign.workitem')], context=context)[0]
+            result = {'model_id':model_id}
+            self.write(cr, uid, ids, result, context)
+            
+        else:
+            result = {'preview_work_item':False}
+            self.write(cr, uid, ids, result, context)
+        
+        return {'value': result}
+         
     def send_mail(self, cr, uid, template_id, res_id, force_send=False, context=None):
         part = 'res.partner'
         partner_obj = self.pool.get(part)
         email_valid = True
         template = self.get_email_template(cr, uid, template_id, res_id, context)
-        if template.model == part:
-            email_valid = partner_obj.get_valid_mail(cr,uid,[res_id])
-        if not email_valid:
-            raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
+        
+        if context.get('partner_id'):
+            partner_id = context.get('partner_id')
+            part_rec = partner_obj.browse(cr,uid,[partner_id],context)
+            for rec in part_rec:
+                if  rec.opt_out:
+                    raise osv.except_osv(_('Warning!'),_("Partner has opted out of emails"))
+#            email_valid = partner_obj.get_valid_mail(cr,uid,[partner_id])
+            if not email_valid:
+                raise osv.except_osv(_('Warning!'),_("To Email address is not valid"))
         return super(email_template, self).send_mail(cr, uid, template_id, res_id, force_send, context)
-
+    
     def generate_email(self, cr, uid, template_id, res_id, context=None):
         """Generates an email from the template for given (model, res_id) pair.
 
@@ -168,26 +196,30 @@ class email_template(osv.osv):
             ctx['lang'] = template._context.get('lang')
         values = {}
         
-        for field in ['subject', 'body_html', 'email_from',
+        for field in ['subject', 'body_html', 'header_html', 'footer_html','email_from',
+
                       'email_to', 'email_recipients', 'email_cc', 'reply_to']:
             values[field] = self.render_template(cr, uid, getattr(template, field),
                                                  template.model, res_id, context=ctx) \
-                                                 or False
-        if template.header_html:
-            values['body_html'] = tools.append_content_to_html(values['body_html'], template.header_html)
-            
+                                                or False
+                                                
+        if values['header_html']:
+#             values['body_html'] = tools.append_content_to_html( values['header_html'],values['body_html'])
+            values['body_html'] = values['header_html'] + "\n" + values['body_html']
+            del values['header_html']
         if template.user_signature:
             signature = self.pool.get('res.users').browse(cr, uid, uid, context).signature
             if signature:
                 values['body_html'] = tools.append_content_to_html(values['body_html'], signature)
                 
-        if template.header_html:
-            values['body_html'] = tools.append_content_to_html(values['body_html'], template.footer_html)
-                   
-        workitem_id = context.get('workitem_id')
-        if workitem_id:
-            work_item = "Work Item : " + str(workitem_id)
-            values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
+        if values['footer_html']:
+#             values['body_html'] = tools.append_content_to_html(values['body_html'], values['footer_html'])
+            values['body_html'] = values['body_html'] + "\n" + values['footer_html']
+            del values['footer_html']
+  #      workitem_id = context.get('workitem_id')
+  #      if workitem_id:
+  #          work_item = "Work Item : " + str(workitem_id)
+  #          values['body_html'] = tools.append_content_to_html(values['body_html'], work_item)
             
             
         if values['body_html']:
@@ -197,7 +229,7 @@ class email_template(osv.osv):
                       auto_delete=template.auto_delete,
                       model=template.model,
                       res_id=res_id or False)
-
+        print values['body_html']
         attachments = []
         # Add report in attachments
         if template.report_template:
@@ -223,3 +255,4 @@ class email_template(osv.osv):
         values['attachments'] = attachments
         values['attachment_ids'] = attachment_ids
         return values
+    

@@ -50,8 +50,8 @@ class hr_timesheet_working_hours(osv.osv_memory):
             
         if user:
             domain.append(('user_id','=',user[0]))
-        result = mod_obj.get_object_reference(cr, uid, 'timesheet_task', 'act_hr_timesheet_lines_form')
-        id = result and result[1] or False
+#        result = mod_obj.get_object_reference(cr, uid, 'timesheet_task', 'act_hr_timesheet_lines_form')
+#        id = result and result[1] or False
         return {
               'name': _('Working Time by date'),
               'view_type': 'form',
@@ -60,11 +60,46 @@ class hr_timesheet_working_hours(osv.osv_memory):
               'type': 'ir.actions.act_window',
               'domain': domain,
               }
+        
+    def recreate_deleted_analytic_entries(self, cr, uid,ids, context=None):
+        
+        timesheet_obj = self.pool.get('hr.analytic.timesheet')
+        taskwork_obj = self.pool.get('project.task.work')
+
+        data = self.read(cr, uid, ids, [])[0]
+        from_date = data['from_date']
+        to_date = data['to_date']
+        user = data['user_id']
+        
+        domain = [('hr_analytic_timesheet_id','=',False)]
+        
+        
+        if from_date and to_date:
+            domain.append(('date','>=',from_date + ' 00:00:00'))
+            domain.append(('date','<=',to_date + ' 23:59:59'))
+        elif from_date:
+            domain.append(('date','>=',from_date + ' 00:00:00'))
+        elif to_date:
+            domain.append(('date','<=',to_date + ' 23:59:59'))
+            
+        if user:
+            domain.append(('user_id','=',user[0]))
+        
+        
+        
+        work_ids = taskwork_obj.search(cr,uid, domain, context = context)
+
+        for work_id in work_ids:
+     
+            vals = taskwork_obj.copy_data(cr, uid, work_id, default=None, context=None)
+            timeline_id = taskwork_obj._create_analytic_entries(cr, uid, vals, context)  
+            taskwork_obj.write(cr, uid, work_id, {'hr_analytic_timesheet_id' : timeline_id}, context=context)
+  
     
-    
-    
-    
+        return
 
 hr_timesheet_working_hours()
+
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

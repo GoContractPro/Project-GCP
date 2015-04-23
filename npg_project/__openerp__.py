@@ -33,13 +33,22 @@
     """,
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
-    'depends': ['project','project_gtd','portal_project','project_issue'],
+
+    'depends': ['project',
+                'project_gtd',
+                'portal_project',
+                'project_issue',
+                'project_timesheet',
+                'hr_timesheet','hr_timesheet_sheet'],
+
     'data': [ 'security/portal_security.xml',
               'security/ir.model.access.csv',
-             'project_task.xml',
              'task_sequence.xml',
-             'project_task_menus.xml',
-#              'wizard/hr_timesheet_working_hours_wizard.xml',
+             'wizard/hr_timesheet_working_hours_wizard.xml',
+             'views/project_task_views.xml',
+             'views/issues_views.xml',
+             'views/project_view.xml',
+             'views/project_task_menus.xml',             
              ],
              
     'js': [
