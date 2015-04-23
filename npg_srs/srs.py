@@ -96,6 +96,23 @@ class srs_user_guide_line(osv.osv):
 srs_user_guide_line()
 
 class srs(osv.osv):
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return []
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        reads = self.read(cr, uid, ids, ['name','sname','parent_id'], context=context)
+        res = []
+        for record in reads:
+            name = record['name']
+            sname = record['sname']
+            if record['parent_id']:
+                name =  '[' + record['parent_id'][1] + ']' + '/' +  '[' + name + ']'  + sname 
+            res.append((record['id'], name))
+        return res
+    
+    
     _name = "srs"
     _parent_name = "parent_id"
     _parent_store = True
@@ -131,7 +148,7 @@ class srs_document(osv.osv):
     _inherit = ['mail.thread', 'ir.needaction_mixin']
     _columns = {
          'name':fields.char('Name',size=64),
-         'partner_id': fields.many2one('res.partner','Partner'),
+         'partner_id': fields.many2one('res.partner','Customer'),
          'created_task': fields.boolean('Task Created'),
          'create_date':fields.date('Start Date'),
          'plan_date':fields.date('Planned End Date'),
