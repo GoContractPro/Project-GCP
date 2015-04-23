@@ -34,7 +34,12 @@
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
 
-    'depends': ['project','project_gtd','portal_project','project_issue'],
+    'depends': ['project',
+                'project_gtd',
+                'portal_project',
+                'project_issue',
+                'project_timesheet',
+                'hr_timesheet','hr_timesheet_sheet'],
 
     'data': [ 'security/portal_security.xml',
               'security/ir.model.access.csv',
