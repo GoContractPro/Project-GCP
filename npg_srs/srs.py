@@ -112,7 +112,6 @@ class srs(osv.osv):
             res.append((record['id'], name))
         return res
     
-    
     _name = "srs"
     _parent_name = "parent_id"
     _parent_store = True
@@ -190,7 +189,7 @@ class document_line(osv.osv):
      'approved': fields.boolean('Approved'),
      'create_date':fields.date('Start Date'),
      'plan_date':fields.date('Planned End Date'),
-     'category_ids':fields.one2many('srs.categories','doc_line_id','Category'),
+     'category_ids':fields.one2many('srs.doc.line.categories','doc_line_id','Category'),
      'doc_req_line':fields.one2many('doc.req.line','ldoc_id','Document Line'),
      'est_hour': fields.function(_calculate_total, method=True, type='float', string='Estimate Hours'),
      'project_id': fields.many2one('project.project','Project'),
@@ -200,6 +199,7 @@ class document_line(osv.osv):
             ('implementation','Implementation'),
             ('done','Done'),
             ], 'Status',readonly=True),
+     'desc':fields.text('Description'),
     }
     _defaults={
                'state':'draft'
@@ -207,15 +207,16 @@ class document_line(osv.osv):
     
 document_line()
 
-class srs_categories(osv.osv):
-    _name = "srs.categories"
+class srs_doc_line_categories(osv.osv):
+    _name = "srs.doc.line.categories"
     _columns = {
-     'name':fields.char('Category',size=64),
+     'name':fields.char('Name',size=64),
+     'category_id': fields.many2one('srs.categories','Category'),
      'doc_line_id': fields.many2one('document.line','Doc Line'),
      'desc':fields.text('Description'),
        }
     
-srs_categories()
+srs_doc_line_categories()
 
 class doc_req_line(osv.osv):
     _name = "doc.req.line"
@@ -223,10 +224,31 @@ class doc_req_line(osv.osv):
      'name':fields.char('Category',size=64),
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),
+     'req_id': fields.many2one('srs','Requirement'),
+     'created_task': fields.boolean('Task Created'),
      'srequirement_ids': fields.many2many('srs','rel_dline_srs','dline_srs_id','doc_line_srs_id','Related SRS'),
        }
     
+    def action_create_task(self, cr, uid, ids, context=None):
+        for req in self.browse(cr,uid,ids,context):
+            project_id=context.get('project_id')
+            user_id=req.user_id.id
+            task_number= self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/' 
+            task_id=self.pool.get('project.task').create(cr,uid,{'task_number':task_number,'user_id':user_id,'name':req.req_id.sname,'srs_code':req.req_id.name,'project_id':project_id})
+            self.pool.get('srs').write(cr,uid,req.req_id.id,{'task_id':task_id})
+            self.write(cr,uid,req.id,{'created_task':True})
+        return True
+    
 doc_req_line()
+
+class srs_categories(osv.osv):
+    _name = "srs.categories"
+    _columns = {
+     'name':fields.char('Category',size=64),
+     'desc':fields.text('Description'),
+       }
+    
+srs_categories()
 
 class project_task(osv.osv):
     _name = "project.task"
