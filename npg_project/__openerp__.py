@@ -38,7 +38,7 @@
         
         ===================================================
     """,
-    'author': 'NovaPoint Group LLC',
+    'author': 'NovaPoint Group INC, Stephen Levenhagen',
     'website': 'http://www.novapointgroup.com',
 
     'depends': ['project',

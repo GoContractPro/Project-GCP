@@ -21,23 +21,24 @@
 ##############################################################################
 
 {
-    'name': 'Template Module',
+    'name': 'NPG Timesheet Sheet',
     'version': '1.0',
     'category': '',
     "sequence": 14,
     'complexity': "easy",
-    'category': 'Generic Modules/Others',
+    'category': ' Time Sheet',
     'description': """
-        
-        
+     * Allows to edit start and end dates on Timesheet Sheets
+     * Removes Cascade delete on Timesheet lines when Deleteing Timesheet Sheets
+     * Changes default Start Date value for a new Timesheet Sheet to be next date 
+         after previous End Date for the last existing Timesheet Sheet for the Employee
+       
     """,
-    'author': 'NovaPoint Group Inc',
+    'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
     'depends': [],
     'init_xml': [],
-    'data': [
-        "views/view.xml",
-        ],
+    'data': [],
     'demo_xml': [],
     'test': [],
     'qweb' : [],
