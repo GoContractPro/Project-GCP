@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="0">
-
-        
+       
         <record id="act_hr_timesheet_lines_calendar" model="ir.actions.act_window">
             <field name="name">Time Sheet Task Calendar</field>
             <field name="res_model">hr.analytic.timesheet</field>
@@ -20,30 +19,6 @@
         	<field name="action" ref="npg_timesheet.act_hr_timesheet_lines_calendar"/>
         	<field name="parent_id" ref="hr_attendance.menu_hr_time_tracking" />	
         </record>	
-		
-<!--  	<record id="npg_act_hr_timesheet_sheet_form" model="ir.actions.act_window">
-            <field name="name">Timesheets to Validate</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">NPG_hr_timesheet_sheet_tree_simplified</field>
-            <field name="view_type">form</field>
-            <field name="view_id" eval="False"/>
-            <field name="search_view_id" ref="hr_timesheet_sheet.view_hr_timesheet_sheet_filter"/>
-           
-        </record>
--->        
-         
- <!-- 		<record id="act_hr_timesheet_sheets_list" model="ir.actions.act_window">
-            <field name="name">TimeSheet Line sheet</field>
-            <field name="res_model">hr_timesheet_sheet.sheet</field>
-            <field name="view_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_tree_simplified" />
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="context">{qwew}</field>
-            <field name="search_view_id" ref="hr_timesheet_sheet.view_hr_timesheet_sheet_filter"/>
-            <field name="help">Through Working Hours you can register your working hours by task every day.</field>
-        </record>   
-        
- -->
         
      </data>
 </openerp>

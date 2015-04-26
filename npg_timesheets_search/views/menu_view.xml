@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+     <!-- Time Tracking Menus in base project menu
+	puts time tracking in the base PM menu-->
+
+	    <record id="npg_action_hr_timesheet_hours_open" model="ir.actions.act_window">
+	        <field name="name">Timesheet Activities Search</field>
+	        <field name="res_model">hr.timesheet.working.hours</field>
+	        <field name="view_type">form</field>
+	        <field name="view_mode">tree,form</field>
+	        <field name="view_id" ref="npg_view_hr_timesheet_hours_open"/>
+	        <field name="target">new</field>
+	        <field name="help">Timesheet Activities Search--opens list of timesheet items by date range and user. </field>
+	    </record>
+	    
+		<menuitem 
+			id="npg_menu_main_pm_working_hours_wizard"
+			name="Timesheet Activities Search" 
+			action="npg_action_hr_timesheet_hours_open"
+			parent="hr_attendance.menu_hr_time_tracking" 
+			sequence="10"/>
+	
+          
+    </data>
+</openerp>

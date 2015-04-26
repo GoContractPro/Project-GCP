@@ -9,6 +9,8 @@ import time
 import smtplib
 from validate_email import validate_email
 from openerp import tools
+from openerp import netsvc
+import base64
 
 
 class email_status(osv.osv):

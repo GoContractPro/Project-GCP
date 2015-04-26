@@ -21,29 +21,33 @@
 ##############################################################################
 
 {
-    'name': 'NPG HR Timesheet Sheet Modification',
+    'name': 'NPG Mail Private',
     'version': '1.0',
     'category': '',
     "sequence": 14,
     'complexity': "easy",
-    'category': 'Generic Modules/Others',
+    'category': 'Email',
     'description': """
-    This module 
-    *Removes Cascade Deletes on  HR timesheet lines When Timesheet Sheet is deleted
-    *Allows to edit Start adn End  Dates on Timesheet Sheets
-    *Changes Default Behavior of Start date on new time sheets to be date after latest TimeSheet Sheet 
-     
+        ====================================================================================
+        *    Adds new check box on mail Compose Wizard to allow sending mail from 
+            mail thread on documents to specific user and not all followers.
+            
+        *    When  sending Private mail on document Thread will not add user as follower for that 
+            Document.
+        =====================================================================================
     """,
-    'author': 'NovaPoint Group Inc, Stephen Levenhagen',
+    'author': 'NovaPoint Group Inc, Vinod Singh',
     'website': 'www.novapointgroup.com',
-    'depends': [],
+    'depends': ["base","mail"],
     'init_xml': [],
     'data': [
         "views/view.xml",
-        ],
+    ],
     'demo_xml': [],
-    'test': [],
-    'qweb' : [],
+    'test': [
+    ],
+    'qweb' : [
+    ],
     'installable': True,
     'auto_install': False,
 }

@@ -21,20 +21,17 @@
 ##############################################################################
 
 {
-    'name': 'NPG HR Timesheet Sheet Modification',
+    'name': 'Template Module',
     'version': '1.0',
     'category': '',
     "sequence": 14,
     'complexity': "easy",
     'category': 'Generic Modules/Others',
     'description': """
-    This module 
-    *Removes Cascade Deletes on  HR timesheet lines When Timesheet Sheet is deleted
-    *Allows to edit Start adn End  Dates on Timesheet Sheets
-    *Changes Default Behavior of Start date on new time sheets to be date after latest TimeSheet Sheet 
-     
+        
+        
     """,
-    'author': 'NovaPoint Group Inc, Stephen Levenhagen',
+    'author': 'NovaPoint Group Inc',
     'website': 'www.novapointgroup.com',
     'depends': [],
     'init_xml': [],

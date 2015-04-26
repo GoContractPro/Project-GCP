@@ -21,26 +21,24 @@
 ##############################################################################
 
 {
-    'name': 'NPG HR Timesheet Sheet Modification',
+    'name': 'NPG Project Management Menu',
     'version': '1.0',
     'category': '',
     "sequence": 14,
     'complexity': "easy",
-    'category': 'Generic Modules/Others',
+    'category': 'Project',
     'description': """
-    This module 
-    *Removes Cascade Deletes on  HR timesheet lines When Timesheet Sheet is deleted
-    *Allows to edit Start adn End  Dates on Timesheet Sheets
-    *Changes Default Behavior of Start date on new time sheets to be date after latest TimeSheet Sheet 
-     
+        Adds new Time tracking nodes on the Base Project menu
+        and on the NPG Enhanced Project Menu
+        
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': [],
+    'depends': ['npg_pm_timesheet_search',],
     'init_xml': [],
     'data': [
-        "views/view.xml",
-        ],
+        "views/menu_view.xml",
+    ],
     'demo_xml': [],
     'test': [],
     'qweb' : [],

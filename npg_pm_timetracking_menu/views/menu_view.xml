@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       
+      		        
+		<record id="npg_act_hr_timesheet_lines_form" model="ir.actions.act_window">
+	         <field name="name">Time Sheet Lines</field>
+	         <field name="res_model">hr.analytic.timesheet</field>
+	         <field name="view_id" ref="hr_timesheet.hr_timesheet_line_tree" />
+	         <field name="view_type">form</field>
+	         <field name="view_mode">tree,form,calendar,gantt</field>     
+	         <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
+	         <field name="search_view_id" ref="npg_timesheet_search.hr_timesheet_line_date_search"/>
+	         <field name="help">Through Working Hours you can register your working hours by task every day.</field>
+		</record> 
+		
+		<record id="npg_act_hr_timesheet_sheet_form" model="ir.actions.act_window">
+            <field name="name">Timesheets</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr_timesheet_sheet.sheet</field>
+            <field name="view_type">form</field>
+            <field name="view_id" eval="False"/>
+            <field name="context">{}</field>
+            <field name="search_view_id" ref="hr_timesheet_sheet.view_hr_timesheet_sheet_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                You must record timesheets every day and confirm at the end
+                of the week. Once the timesheet is confirmed, it should be
+                validated by a manager.
+              </p><p>
+                Timesheets can also be invoiced to customers, depending on the
+                configuration of each project's related contract.
+              </p>
+            </field>
+        </record>
+		 
+	<!-- Add Time tracking to Standard  Project Menu -->    
+	         
+       <record id="npg_menu_main_pm_time_tracking" model="ir.ui.menu">
+            <field name="name">Time Tracking</field>
+         	<field eval="1" name="sequence"/>
+            <field name="parent_id" ref="base.menu_main_pm"/>
+        </record>
+        
+		    <menuitem 
+				id="npg_menu_main_pm_working_hours_wizard"
+				name="Working Hours by Date" 
+				action="npg_timesheet_search.npg_action_hr_timesheet_hours_open"
+				parent="npg_menu_main_pm_time_tracking" 
+				sequence="10"/>
+		
+			<menuitem 
+				id="npg_menu_main_pm_working_hours"
+				name="Working Hours" 
+				action="npg_act_hr_timesheet_lines_form"
+				parent="npg_menu_main_pm_time_tracking" 
+				sequence="20"/>
+				
+			<menuitem 
+				id="npg_menu_main_pm_timesheet_sheet_form"
+		     	name="Current Timesheet"
+		     	action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"
+		     	parent="npg_menu_main_pm_time_tracking"
+		     	sequence="30"/>
+		     	
+		    <menuitem 
+				id="npg_menu_main_pm_timesheet_sheet_form"
+		     	name="Timesheets"
+		     	action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"
+		     	parent="npg_menu_main_pm_time_tracking"
+		     	sequence="30"/>
+
+   
+		
+	<!-- Time Tracking  Menu  to NPG enhanced Project meny-->
+		 		
+		<menuitem id="npg_project_menu_time_tracking" 
+            name="Time Tracking"
+            parent="npg_project.npg_project_top_menu"
+         	sequence="30"/>
+
+        	<menuitem 
+        		id="npg_project_menu_time_tracking_working_hours_wizard"
+     			name="Working Hours by Date" 
+     			action="action_hr_timesheet_hours_open"
+     			parent="npg_project_menu_time_tracking" 
+     			sequence="10"/>
+        
+       		<menuitem 
+       			id="npg_project_menu_time_tracking_working_hours"
+       			name="Working Hours" 
+       			action="npg_act_hr_timesheet_lines_form"
+       			parent="npg_project_menu_time_tracking" 
+       			sequence="20"/>
+       			
+      		<menuitem 
+	        	id="npg_project_menu_time_tracking_timesheet_sheet_form"
+	            name="Current Timesheet"
+	            action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"
+	            parent="npg_project_menu_time_tracking"
+	            sequence="30"/>
+	            
+	        <menuitem 
+				id="npg_menu_main_pm_timesheet_sheet_form"
+		     	name="Timesheets"
+		     	action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"
+		     	parent="npg_menu_main_pm_time_tracking"
+		     	sequence="30"/>
+	 
+    
+    </data>
+</openerp>

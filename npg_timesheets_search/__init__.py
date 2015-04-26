@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2011 NovaPoint Group INC (<http://www.novapointgroup.com>)
+#    Copyright (C) 2011-2015 NovaPoint Group INC (<http://www.novapointgroup.com>)
 #    Copyright (C) 2004-2010 OpenERP SA (<http://www.openerp.com>)
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,31 +19,4 @@
 #
 ##############################################################################
 
-{
-    'name': 'NPG Mail',
-    'version': '1.0',
-    'category': '',
-    "sequence": 14,
-    'complexity': "easy",
-    'category': 'Generic Modules/Others',
-    'description': """
-        
-     Enhancement to mail moves OERP Document link to top of mailer rather than location after
-     Signature where is hidden when Signature is folded in mail Clients  
-    """,
-    'author': 'NovaPoint Group Inc',
-    'website': 'www.novapointgroup.com',
-    'depends': ["base","mail"],
-    'init_xml': [],
-    'data': [
-        "views/view.xml",
-    ],
-    'demo_xml': [],
-    'test': [
-    ],
-    'qweb' : [
-    ],
-    'installable': True,
-    'auto_install': False,
-}
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+import wizard
