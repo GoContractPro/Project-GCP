@@ -21,10 +21,9 @@
 ##############################################################################
 
 {
-    'name': 'NPG Timesheet Sheet',
+    'name': 'NPG Timesheet Sheet Editable',
     'version': '1.0',
     'category': '',
-    "sequence": 14,
     'complexity': "easy",
     'category': ' Time Sheet',
     'description': """
@@ -36,7 +35,7 @@
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': [],
+    'depends': ['hr_timesheet_sheet'],
     'init_xml': [],
     'data': [],
     'demo_xml': [],

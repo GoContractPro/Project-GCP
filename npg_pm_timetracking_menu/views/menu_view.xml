@@ -10,7 +10,7 @@
 	         <field name="view_type">form</field>
 	         <field name="view_mode">tree,form,calendar,gantt</field>     
 	         <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
-	         <field name="search_view_id" ref="npg_timesheet_search.hr_timesheet_line_date_search"/>
+	         <field name="search_view_id" ref="npg_timesheet_search.npg_hr_timesheet_line_date_search"/>
 	         <field name="help">Through Working Hours you can register your working hours by task every day.</field>
 		</record> 
 		
@@ -44,14 +44,14 @@
         
 		    <menuitem 
 				id="npg_menu_main_pm_working_hours_wizard"
-				name="Working Hours by Date" 
+				name="TimeSheet Activities by Date" 
 				action="npg_timesheet_search.npg_action_hr_timesheet_hours_open"
 				parent="npg_menu_main_pm_time_tracking" 
 				sequence="10"/>
 		
 			<menuitem 
 				id="npg_menu_main_pm_working_hours"
-				name="Working Hours" 
+				name="Timesheet Activities" 
 				action="npg_act_hr_timesheet_lines_form"
 				parent="npg_menu_main_pm_time_tracking" 
 				sequence="20"/>
@@ -81,14 +81,14 @@
 
         	<menuitem 
         		id="npg_project_menu_time_tracking_working_hours_wizard"
-     			name="Working Hours by Date" 
-     			action="action_hr_timesheet_hours_open"
+     			name="Search Work Activities by Date" 
+     			action="npg_timesheet_search.npg_action_hr_timesheet_hours_open"
      			parent="npg_project_menu_time_tracking" 
      			sequence="10"/>
         
        		<menuitem 
        			id="npg_project_menu_time_tracking_working_hours"
-       			name="Working Hours" 
+       			name="Timesheet Activities" 
        			action="npg_act_hr_timesheet_lines_form"
        			parent="npg_project_menu_time_tracking" 
        			sequence="20"/>

@@ -21,21 +21,25 @@
 ##############################################################################
 
 {
-    'name': ' ',
+    'name': 'Search Timesheet Lines',
     'version': '1.0',
     'category': '',
+    "sequence": 14,
     'complexity': "easy",
-    'category': 'Generic Modules/Others',
+    'category': 'Project',
     'description': """
-    
+    Adds  new search wizard in Time tracking to allow to search time entries by  Users and Date ranges
+    Adds feature to recreate any deleted time sheet lines that were created from project task work lines
+            
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': [],
+    'depends': ['project_timesheet',],
     'init_xml': [],
-    'data': [
-        "views/view.xml",
-        ],
+    'data': ["wizard/hr_timesheet_working_hours_wizard.xml",
+             "views/search_view.xml",
+             "views/menu_view.xml",
+             ],
     'demo_xml': [],
     'test': [],
     'qweb' : [],

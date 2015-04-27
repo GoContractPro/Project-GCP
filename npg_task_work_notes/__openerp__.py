@@ -21,25 +21,29 @@
 ##############################################################################
 
 {
-    'name': 'Project Search Timesheet Lines',
+    'name': 'Project Task Work Notes',
     'version': '1.0',
     'category': '',
-    "sequence": 14,
     'complexity': "easy",
-    'category': 'Project',
+    'category': 'Generic Modules/Others',
     'description': """
-    Adds  new search wizard in Time tracking to allow to search time entries by  Users and Date ranges
-    Adds feature to recreate any deleted time sheet lines that were created from project task work lines
+        * Adds new field "Work Notes" to Project Task Work lines.
+        * Pop Up form to enter Task Work Line
+        * Adds new page on "Task" form called "Work Log". 
+            Work log is updated  each time a Task work line is added or updated. This in effect 
+            keeps a permanent history of changes made to Work History, also gives a easy to read 
+            and review format for work history.
             
+        
+        
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ['project_timesheet',],
+    'depends': ['project'],
     'init_xml': [],
-    'data': ["wizard/hr_timesheet_working_hours_wizard.xml",
-             "views/search_view.xml",
-             "views/menu_view.xml",
-             ],
+    'data': [
+        "views/project_task_view.xml",
+        ],
     'demo_xml': [],
     'test': [],
     'qweb' : [],

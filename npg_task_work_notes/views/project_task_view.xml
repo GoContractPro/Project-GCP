@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <record id="npg_view_task_form_work_notes" model="ir.ui.view">
+            <field name="name">npg.project.task.form.work.notes</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+            
+  				<field name="work_ids" position="replace">
+
+                 	<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+						
+						<tree string="Task Work" >
+						    <field name="name"/>
+						    <field name="hours"  sum="Spent Hours"/>
+						    <field name="date"/>
+						    <field name="user_id"/>
+						</tree>
+
+                 		<form string="Task Work">
+			          		<group>
+			          		<field name="name"/>
+			              	<field name="hours"  />
+			              	<field name="date"/>
+			              	<field name="user_id"/>
+			              	<field name="work_note"/>
+			         		</group>
+						</form>
+
+					</field>
+				</field>
+				
+				<xpath expr="//notebook/page[@string='Description']" position="after">
+	        			<page string="Work Log" groups="project.group_project_user">
+	           				<group string="Work Updates Log">
+	           				<field name="work_notes" groups="project.group_project_user"
+	           					readonly="1" nolabel = "1"/>
+	            			</group>
+	            		</page>
+	            </xpath>
+				
+			</field>
+		</record>
+    </data>
+</openerp>

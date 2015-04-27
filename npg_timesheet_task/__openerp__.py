@@ -41,6 +41,7 @@ task information through the timesheet sheet (hr.timesheet.sheet). 'website': 'h
  'data':[ 
          'project_task_view.xml',
           'menus.xml',
+          "security/ir.model.access.csv",
           ],
  'demo': [],
  'test': ['test/task_timesheet_indicators.yml'],

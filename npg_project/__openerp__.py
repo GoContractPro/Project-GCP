@@ -24,8 +24,9 @@
     'version': '1.0',
     'category': 'Project Management',
     'description': """
+        
         Project Functionality Enhancements
-        ==================================
+        
             * Additional tab for notes on tasks.
             * A new Projects Portal user group 
             * Add field for Task Number sequence Field
@@ -35,8 +36,7 @@
             * All Task opens in list view group by Projects
             * Enhances Issues Form for Portal Users
             *             
-        
-        ===================================================
+       
     """,
     'author': 'NovaPoint Group INC, Stephen Levenhagen',
     'website': 'http://www.novapointgroup.com',

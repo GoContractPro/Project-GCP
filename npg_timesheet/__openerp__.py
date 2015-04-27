@@ -44,13 +44,13 @@ NovaPoint Group Inc Enhancements Functionality of Time Sheets Lines
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ["base","npg_warning","hr_timesheet"],
+    'depends': ["base","npg_warning","hr_timesheet","npg_timesheet_search"],
     'init_xml': [],
     'data': [
         "views/timesheet_view.xml",
         "views/menus.xml",
         "timesheet_workflow.xml",
-        "wizard/hr_timesheet_working_hours_wizard.xml"
+        "security/ir.model.access.csv",
     ],
     'demo_xml': [],
     'test': [

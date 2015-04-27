@@ -21,7 +21,7 @@
 ##############################################################################
 
 {
-    'name': 'NPG Project Management Menu',
+    'name': 'Project HR TimeSheet Menus',
     'version': '1.0',
     'category': '',
     "sequence": 14,
@@ -34,7 +34,7 @@
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ['npg_pm_timesheet_search',],
+    'depends': ['npg_timesheet_search','npg_project'],
     'init_xml': [],
     'data': [
         "views/menu_view.xml",

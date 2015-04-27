@@ -21,20 +21,22 @@
 ##############################################################################
 
 {
-    'name': ' ',
+    'name': 'Project Task Work Mail',
     'version': '1.0',
     'category': '',
     'complexity': "easy",
     'category': 'Generic Modules/Others',
     'description': """
     
+        * Adds functionality to compose and send Email for Task Work Line updates 
+     
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': [],
+    'depends': ['npg_task_work_notes'],
     'init_xml': [],
     'data': [
-        "views/view.xml",
+        "views/project_task_view.xml",
         ],
     'demo_xml': [],
     'test': [],

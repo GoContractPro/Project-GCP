@@ -28,13 +28,13 @@
     'complexity': "easy",
     'category': 'Email',
     'description': """
-        ====================================================================================
+        
         *    Adds new check box on mail Compose Wizard to allow sending mail from 
             mail thread on documents to specific user and not all followers.
             
         *    When  sending Private mail on document Thread will not add user as follower for that 
             Document.
-        =====================================================================================
+        
     """,
     'author': 'NovaPoint Group Inc, Vinod Singh',
     'website': 'www.novapointgroup.com',

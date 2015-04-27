@@ -28,10 +28,10 @@
     'complexity': "easy",
     'category': 'Generic Modules/Others',
     'description': """
-     =======================================================================================   
+       
      Enhancement to mail moves  Document links to top of email mailer from standard location after
      Signature. This give link more visibility when viewed from email client and avoids links hidden. 
-     ======================================================================================= 
+      
     """,
     'author': 'NovaPoint Group Inc, Stephen  Levenhagen',
     'website': 'www.novapointgroup.com',

@@ -1,28 +1,35 @@
 # -*- coding: utf-8 -*-
-from openerp.tools.translate import _
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2014 NovaPoint Group INC (<http://www.novapointgroup.com>)
+#    Copyright (C) 2004-2010 OpenERP SA (<http://www.openerp.com>)
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+
+
 from openerp.osv import fields, osv
 from openerp import tools
-import math
-import time
+from openerp.tools.translate import _
+from openerp import netsvc
+from datetime import datetime, timedelta
 
-
-class task(osv.osv):
+class project_work(osv.osv):
+    _inherit = "project.task.work"
     
-    _inherit = "project.task"
-    _columns = {
-    'task_number':fields.char('Task Number', size=32),
-	'pub_descrip': fields.text('Public Notes'),
-    
-    }
-
-           
-    def create(self, cr, uid, vals, context=None):
-        if vals.get('task_number',0) == 0:
-            vals['task_number'] = self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/'
-                    
-        return super(task, self).create(cr, uid, vals, context=context)
-    
-
     
     def action_task_work_line_send(self, cr, uid, ids, context=None):
         '''
@@ -82,6 +89,3 @@ class task(osv.osv):
             'context': ctx,
         }
         
-        
-
-    

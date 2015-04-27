@@ -22,13 +22,7 @@
 import time
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from pytz import timezone
-import pytz
-
-from openerp.osv import fields, osv
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
-from openerp.tools.translate import _
-from openerp import netsvc
+from osv import fields, osv
 
 
 class hr_timesheet_sheet(osv.osv):
