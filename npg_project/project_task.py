@@ -21,7 +21,7 @@ class task(osv.osv):
                     
         return super(task, self).create(cr, uid, vals, context=context)
     
-    def write(self, cr, uid, ids, vals, context=None):
+'''    def write(self, cr, uid, ids, vals, context=None):
         if len(ids) >1 : return super(task, self).write(cr, uid, ids, vals, context=context)
          
         if vals.get('work_ids'):
@@ -56,7 +56,8 @@ class task(osv.osv):
                 old_desc = prev_obj.description or ''
                 vals['description'] = old_desc + '\n\n===================================================\n\n' + desc
         return super(task, self).write(cr, uid, ids, vals, context=context)
-    
+'''
+       
 class hr_timesheet_line(osv.osv):
     _inherit = "hr.analytic.timesheet"
     
