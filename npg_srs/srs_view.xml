@@ -324,6 +324,8 @@
 	                          <tree string="Requirements" editable="bottom">
 	                               <field name="name"/>
 	                               <field name="code"/>
+	                                <field name="is_task_create"/>
+	                               <field name="is_add_req"/>
 			                       <field name="user_id" widget="selection"/>
 			                       <field name="req_id" invisible="1"/>
 			                    <!--  <button name="action_create_task" string="Create Task" icon="gtk-go-forward" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>-->

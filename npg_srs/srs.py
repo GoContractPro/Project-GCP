@@ -244,6 +244,8 @@ class doc_req_line(osv.osv):
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),
      'req_id': fields.many2one('srs','Requirement'),
+     'is_task_create': fields.boolean('Task'),
+     'is_add_req': fields.boolean('Add in Req'),
      'created_task': fields.boolean('Task Created'),
      'srequirement_ids': fields.many2many('srs','rel_dline_srs','dline_srs_id','doc_line_srs_id','Related SRS'),
        }
