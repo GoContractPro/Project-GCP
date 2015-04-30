@@ -22,7 +22,9 @@
             <field name="arch" type="xml">
                 <tree string="SRS">
                     <field name="name"/>
-                    <field name="parent_id" invisible="1"/>          
+                    <field name="parent_id" invisible="1"/> 
+                    <field name="category_id"/> 
+                    <field name="version_id"/>          
                 </tree>
            </field>                         
 		</record>
@@ -38,6 +40,8 @@
                     <field name="sname" /> 
                     <field name="sequence"/> 
                     <field name="parent_id"/> 
+                    <field name="category_id"/> 
+                    <field name="version_id"/> 
                     <field name="task_id" readonly="1"/>
                     <field name="est_time" widget="float_time"/> 
                </group> 
@@ -294,6 +298,8 @@
                       <group col="4">
 	                      <field name="sequence"/>
 	                      <field name="project_id" required="1"/>  
+	                      <field name="category_id" on_change="onchange_get_requirement(version_id,category_id)"/>
+	                      <field name="version_id" on_change="onchange_get_requirement(version_id,category_id)"/>
                           <field name="create_date"/>
                           <field name="plan_date"/>  
                           <field name="approved"/>
@@ -316,9 +322,11 @@
                       <group col="4">
 	                      <field name="doc_req_line" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
 	                          <tree string="Requirements" editable="bottom">
-			                      <field name="user_id" widget="selection"/>
-			                       <field name="req_id" widget="selection"/>
-			                      <button name="action_create_task" string="Create Task" icon="gtk-go-forward" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>
+	                               <field name="name"/>
+	                               <field name="code"/>
+			                       <field name="user_id" widget="selection"/>
+			                       <field name="req_id" invisible="1"/>
+			                    <!--  <button name="action_create_task" string="Create Task" icon="gtk-go-forward" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>-->
 			                      <field name="srequirement_ids" invisible="1"/>
 			                      <field name="created_task" invisible="1"/>
 			                  </tree>
@@ -483,6 +491,45 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_category_tree"/>
     </record>    
+    
+     <!-- *********************************** SRS Vesrion ***************************** -->
+        
+    <record id="view_version_tree" model="ir.ui.view">
+        <field name="name">SRS Version</field>
+        <field name="model">srs.version</field>
+        <field name="arch" type="xml">
+            <tree string="SRS Version">
+                <field name="name"/>
+                <field name="desc"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_version_form" model="ir.ui.view">
+		<field name="name">SRS Version</field>
+        <field name="model">srs.version</field>
+        <field name="arch" type="xml">
+            <form string="SRS Version" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+            </group>
+            <group col="4">
+                <field name="desc"/>
+            </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_version" model ="ir.actions.act_window"> 
+        <field name="name">SRS Version</field>
+        <field name="res_model">srs.version</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_version_tree"/>
+    </record>    
         
     <menuitem  id="menu_srs" name="SRS" parent="base.menu_main_pm"  sequence="8"/>
     <menuitem  id="submenu_srs" name="SRS Master"  parent="menu_srs" action="action_srs"  sequence="2"/>
@@ -490,7 +537,8 @@
     <menuitem  id="menu_srs_document" name="SRS Documentation"  parent="menu_srs" action="action_srs_document" sequence="6"/>
     <menuitem  id="menu_srs_document_line" name="Document Line"  parent="menu_srs" action="action_srs_document_line" sequence="7"/>
     <menuitem  id="menu_conf" name="SRS Configuration"  parent="menu_srs"  sequence="9"/>
-    <menuitem  id="menu_category" name="Categories"  parent="menu_conf" action="action_catgory" sequence="1"/>
+    <menuitem  id="menu_category" name="Category"  parent="menu_conf" action="action_catgory" sequence="1"/>
+    <menuitem  id="menu_version" name="Version"  parent="menu_conf" action="action_version" sequence="1"/>
     <menuitem  id="menu_pacakage" name="Software Package"  parent="menu_conf" action="action_srs_software_package" sequence="2"/>
     <menuitem  id="menu_use_case" name="Use Cases"  parent="menu_conf" action="action_use_cases" sequence="3"/>
     <menuitem  id="menu_user_guide" name="User Guides"  parent="menu_conf" action="action_user_guide"  sequence="4"/>
