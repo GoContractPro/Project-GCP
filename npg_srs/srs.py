@@ -27,7 +27,6 @@ import openerp.addons.decimal_precision as dp
 from tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP
 
-
 class srs_software_package(osv.osv):
     _name = "srs.software.package"
     _columns = {
@@ -125,6 +124,8 @@ class srs(osv.osv):
      'desc':fields.text('Requirements'),
      'est_time':fields.float('Estimate Time'),
      'task_id': fields.many2one('project.task','Task'),
+     'category_id': fields.many2one('srs.categories','Category'),
+     'version_id': fields.many2one('srs.version','Version'),
      'srs_package_ids': fields.many2many('srs.software.package', 'rel_srs_soft_package', 'soft_pack_srs', 'soft_pack_id', 'Related Software'),
      'srs_use_case_ids': fields.many2many('srs.use.case', 'rel_software_use_case', 'use_case_software', 'srs_use_id', 'Related Use Cases'),
      'srs_user_guides': fields.many2many('srs.user.guide', 'rel_srs_user_guide', 'user_guide_srs', 'guide_srs_id', 'Related User Guides'),
@@ -193,6 +194,8 @@ class document_line(osv.osv):
      'doc_req_line':fields.one2many('doc.req.line','ldoc_id','Document Line'),
      'est_hour': fields.function(_calculate_total, method=True, type='float', string='Estimate Hours'),
      'project_id': fields.many2one('project.project','Project'),
+     'category_id': fields.many2one('srs.categories','Category'),
+     'version_id': fields.many2one('srs.version','Version'),
      'state': fields.selection([
             ('draft','Draft'),
             ('planning','Planning'),
@@ -204,6 +207,21 @@ class document_line(osv.osv):
     _defaults={
                'state':'draft'
                }
+    
+    def onchange_get_requirement(self, cr, uid, ids,version_id,category_id,context=None):
+        res={}
+        if category_id and  version_id:
+            srs_obj=self.pool.get('srs')
+            srs_ids=self.pool.get('doc.req.line').search(cr, uid, [])
+            if srs_ids:
+                self.pool.get('doc.req.line').unlink(cr,uid,srs_ids,context=None)
+            srs_ids=srs_obj.search(cr,uid,[('category_id','=',category_id),('version_id','=',version_id)])
+            ser = []
+            for sid in srs_ids:
+                sobj=srs_obj.browse(cr,uid,sid)
+                ser.append({'req_id':sid,'name':sobj.sname,'code':sobj.name})
+            res['value']={'doc_req_line':ser}
+        return res
     
 document_line()
 
@@ -221,10 +239,13 @@ srs_doc_line_categories()
 class doc_req_line(osv.osv):
     _name = "doc.req.line"
     _columns = {
-     'name':fields.char('Category',size=64),
+     'name':fields.char('Requirement',size=64),
+     'code':fields.char('Code',size=64),
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),
      'req_id': fields.many2one('srs','Requirement'),
+     'is_task_create': fields.boolean('Task'),
+     'is_add_req': fields.boolean('Add in Req'),
      'created_task': fields.boolean('Task Created'),
      'srequirement_ids': fields.many2many('srs','rel_dline_srs','dline_srs_id','doc_line_srs_id','Related SRS'),
        }
@@ -249,6 +270,15 @@ class srs_categories(osv.osv):
        }
     
 srs_categories()
+
+class srs_version(osv.osv):
+    _name = "srs.version"
+    _columns = {
+     'name':fields.char('Version',size=64),
+     'desc':fields.text('Description'),
+       }
+    
+srs_version()
 
 class project_task(osv.osv):
     _name = "project.task"
