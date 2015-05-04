@@ -309,6 +309,10 @@ class doc_req_line(osv.osv):
      'create_task': fields.boolean('Create Task'),
      'srequirement_ids': fields.many2many('srs','rel_dline_srs','dline_srs_id','doc_line_srs_id','Related SRS'),
        }
+    
+    sql_constraints = [
+        ('srs_uniq','unique(req_id, ldoc_id)', 'This SRS already Added!'),
+    ]
 
 doc_req_line()
 
