@@ -286,29 +286,31 @@
         <field name="arch" type="xml">
             <form string="SRS Document" version="7.0">
             <header>
-                <button name="action_create_task"  string="Create Task" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>
+                <button name="action_create_task"  string="Create Task" attrs="{'invisible':[('task_created','!=',True)]}" type="object" class="oe_highlight"/>
             </header>
             <sheet>
             <group col="4">
                 <field name="partner_id" required="1"/>
-                <field name="created_task" invisible="1"/>
+                <field name="task_created" invisible="1"/>
                 <field name="create_date"/>
                 <field name="plan_date"/>
             </group>
-             <field name="doc_lines"  colspan="4" nolabel="1" attrs="{'readonly':[('created_task','=',True)]}" widget="one2many_list">
+             <field name="doc_lines"  colspan="4" nolabel="1"  widget="one2many_list">
                   <form string="SRS Document Line">
                       <header>
-                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
+                          <button name="action_get_requirement" attrs="{'invisible':[('state','!=','draft')]}" string="Get Requirement"  type="object" class="oe_highlight"/>
+                          <button name="action_approve" string="Appoved" attrs="{'invisible':[('state','!=','planning')]}"   type="object" class="oe_highlight"/>
+                          <button name="action_done"  string="Done" attrs="{'invisible':[('state','!=','pending')]}"   type="object" class="oe_highlight"/>
+                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,'pending',approved,done" />
                       </header>
                       <newline/>
                       <group col="4">
 	                      <field name="sequence"/>
 	                      <field name="project_id" required="1"/>  
-	                      <field name="category_id" on_change="onchange_get_requirement(version_id,category_id)"/>
-	                      <field name="version_id" on_change="onchange_get_requirement(version_id,category_id)"/>
+	                      <field name="category_id"/>
+	                      <field name="version_id"/>
                           <field name="create_date"/>
                           <field name="plan_date"/>  
-                          <field name="approved"/>
                           <field name="est_hour"/>
                       </group>
                       <newline/>
@@ -317,17 +319,15 @@
                       </group>
                      <newline/>
                      <group col="4">
-	                      <field name="doc_req_line" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
+	                      <field name="doc_req_line" attrs="{'readonly':[('state','not in',('draft','planning','approved'))]}" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
 	                          <tree string="Requirements" editable="bottom">
 	                               <field name="name"/>
-	                               <field name="code"/>
-	                                <field name="is_task_create"/>
-	                               <field name="is_add_req"/>
+	                               <field name="approved"/>
+	                               <field name="create_task"/>
 			                       <field name="user_id" widget="selection"/>
+			                       <field name="task_id" readonly="1"/>
 			                       <field name="req_id" invisible="1"/>
-			                    <!--  <button name="action_create_task" string="Create Task" icon="gtk-go-forward" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>-->
 			                      <field name="srequirement_ids" invisible="1"/>
-			                      <field name="created_task" invisible="1"/>
 			                  </tree>
 	                      </field>
                      </group>
@@ -337,7 +337,6 @@
                       <field name="sequence"/>
                       <field name="plan_date"/>
                       <field name="project_id"/>
-                      <field name="approved"/>
                       <field name="state"/>
                  </tree>
              </field>
@@ -382,7 +381,6 @@
               <field name="create_date"/>
               <field name="plan_date"/>
               <field name="project_id"/>
-              <field name="approved"/>
               <field name="state"/>
             </tree>
         </field>
@@ -403,7 +401,6 @@
 	                      <field name="project_id" required="1"/>  
                           <field name="plan_date"/> 
                           <field name="create_date"/>
-                          <field name="approved"/>
                           <field name="est_hour"/>
                       </group>
                      <newline/>
@@ -474,7 +471,7 @@
        </field>                         
 	</record>
     
-     <record id="action_catgory" model ="ir.actions.act_window"> 
+    <record id="action_catgory" model ="ir.actions.act_window"> 
         <field name="name">SRS Categories</field>
         <field name="res_model">srs.categories</field>
         <field name="type">ir.actions.act_window</field>

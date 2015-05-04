@@ -24,8 +24,7 @@ import time
 import sys 
 sys.setrecursionlimit(10000)
 import openerp.addons.decimal_precision as dp
-from tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP
+from openerp.tools.translate import _
 
 class srs_software_package(osv.osv):
     _name = "srs.software.package"
@@ -139,8 +138,8 @@ class srs(osv.osv):
      'sequence': fields.integer('Sequence'),
      'desc':fields.text('Requirements'),
      'est_time':fields.float('Estimate Time'),
-     'srs_lines':fields.one2many('srs','parent_id'),
-     'task_ids':fields.one2many('project.task','sreq_id'),
+     'srs_lines':fields.one2many('srs','parent_id','SRS Lines'),
+     'task_ids':fields.one2many('project.task','sreq_id','Task'),
      'category_id': fields.many2one('srs.categories','Category',required=True),
      'srs_package_ids': fields.many2many('srs.software.package', 'rel_srs_soft_package', 'soft_pack_srs', 'soft_pack_id', 'Related Software'),
      'srs_use_case_ids': fields.many2many('srs.use.case', 'rel_software_use_case', 'use_case_software', 'srs_use_id', 'Related Use Cases'),
@@ -164,7 +163,7 @@ class srs_document(osv.osv):
     _columns = {
          'name':fields.char('Name',size=64),
          'partner_id': fields.many2one('res.partner','Customer'),
-         'created_task': fields.boolean('Task Created'),
+         'task_created': fields.boolean('Task Created'),
          'create_date':fields.date('Start Date'),
          'plan_date':fields.date('Planned End Date'),
          'desc':fields.text('Description'),
@@ -176,8 +175,15 @@ class srs_document(osv.osv):
             for dline in doc.doc_lines:
                 for rline in dline.doc_req_line:
                     user_id=rline.user_id.id
-                    task_number= self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/' 
-                    task_id=self.pool.get('project.task').create(cr,uid,{'task_number':task_number,'sreq_id':rline.req_id.id,'user_id':user_id,'name':rline.req_id.sname,'srs_code':rline.req_id.name,'project_id':dline.project_id.id})
+                    if rline.create_task:
+                        if not user_id:
+                            raise osv.except_osv(_('Warning!'), _('Please select user in requirement %s for Project %s')%(rline.name,dline.project_id.name) )
+                        task_number= self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/' 
+                        stage_id=self.pool.get('project.task.type').search(cr,uid,[('name','=','Analysis')])
+                        task_id=self.pool.get('project.task').create(cr,uid,{'task_number':task_number,'sreq_id':rline.req_id.id,'user_id':user_id,'name':rline.req_id.sname,'srs_code':rline.req_id.name,'project_id':dline.project_id.id,'stage_id':stage_id[0]})
+                        self.pool.get('doc.req.line').write(cr,uid,rline.id,{'task_id':task_id})
+                self.pool.get('document.line').write(cr,uid,dline.id,{'state':'pending'})
+            self.write(cr,uid,doc.id,{'task_created':False})
         return True
     
     
@@ -200,7 +206,6 @@ class document_line(osv.osv):
      'name':fields.char('Name',size=64),
      'doc_id': fields.many2one('srs.document','Doc ID'),
      'sequence': fields.integer('Sequence'),
-     'approved': fields.boolean('Approved'),
      'create_date':fields.date('Start Date'),
      'plan_date':fields.date('Planned End Date'),
      'doc_req_line':fields.one2many('doc.req.line','ldoc_id','Document Line'),
@@ -211,6 +216,9 @@ class document_line(osv.osv):
      'state': fields.selection([
             ('draft','Draft'),
             ('planning','Planning'),
+            ('approved','Approved'),
+            ('pending','Pending'),
+            ('canceled','canceled'),
             ('implementation','Implementation'),
             ('done','Done'),
             ], 'Status',readonly=True),
@@ -220,13 +228,36 @@ class document_line(osv.osv):
                'state':'draft'
                }
     
-    def onchange_get_requirement(self, cr, uid, ids,version_id,category_id,context=None):
-        result={}
-        if category_id and  version_id:
+#     def onchange_get_requirement(self, cr, uid, ids,version_id,category_id,context=None):
+#         result={}
+#         if category_id and  version_id:
+#             srs_obj=self.pool.get('srs')
+#             srs_ids=self.pool.get('doc.req.line').search(cr, uid, [])
+#             if srs_ids:
+#                 self.pool.get('doc.req.line').unlink(cr,uid,srs_ids,context=None)
+#             cr.execute('SELECT soft_pack_srs \
+#                     FROM rel_srs_soft_package \
+#                     WHERE soft_pack_id = %s  \
+#                     '% version_id)
+#             res = cr.fetchall()
+#             srsids = [s[0] for s in res]
+#             sids = self.pool.get('srs').search(cr,uid,[('category_id','=',category_id),('id','in',srsids)])
+#             ser = []
+#             for sid in sids:
+#                 sobj=srs_obj.browse(cr,uid,sid)
+#                 ser.append({'req_id':sid,'name':sobj.sname,'code':sobj.name})
+#             result['value']={'doc_req_line':ser}
+#         return result
+    
+    def action_get_requirement(self, cr, uid, ids, context=None):
+        for dline in self.browse(cr,uid,ids,context):
             srs_obj=self.pool.get('srs')
-            srs_ids=self.pool.get('doc.req.line').search(cr, uid, [])
-            if srs_ids:
-                self.pool.get('doc.req.line').unlink(cr,uid,srs_ids,context=None)
+            category_id = dline.category_id.id
+            version_id = dline.version_id.id
+            if not category_id:
+                raise osv.except_osv(_('Invalid Action!'), _('Please select Category ') )
+            if not  version_id:
+                raise osv.except_osv(_('Invalid Action!'), _('Please select Version') )
             cr.execute('SELECT soft_pack_srs \
                     FROM rel_srs_soft_package \
                     WHERE soft_pack_id = %s  \
@@ -234,12 +265,34 @@ class document_line(osv.osv):
             res = cr.fetchall()
             srsids = [s[0] for s in res]
             sids = self.pool.get('srs').search(cr,uid,[('category_id','=',category_id),('id','in',srsids)])
-            ser = []
-            for sid in sids:
-                sobj=srs_obj.browse(cr,uid,sid)
-                ser.append({'req_id':sid,'name':sobj.sname,'code':sobj.name})
-            result['value']={'doc_req_line':ser}
-        return result
+            if len(sids) > 0:
+                for sid in sids:
+                    sobj=srs_obj.browse(cr,uid,sid)
+                    rid=self.pool.get('doc.req.line').create(cr,uid,{'req_id':sid,'name':sobj.sname,'ldoc_id':dline.id})
+                    self.write(cr,uid,dline.id,{'state':'planning'})   
+            else:
+                raise osv.except_osv(_('Invalid Action!'), _('No Requirement found..!!!') )     
+        return True
+    
+    def action_approve(self, cr, uid, ids, context=None):
+        for dline in self.browse(cr,uid,ids,context):
+            for rline in dline.doc_req_line:
+                if not rline.approved:
+                   self.pool.get('doc.req.line').unlink(cr,uid,rline.id,context=None)
+            self.write(cr,uid,dline.id,{'state':'approved'})
+            doc_id=dline.doc_id.id
+            self.pool.get('srs.document').write(cr,uid,doc_id,{'task_created':True})
+        return True
+    
+    def action_done(self, cr, uid, ids, context=None):
+        for dline in self.browse(cr,uid,ids,context):
+            for rline in dline.doc_req_line:
+                if rline.create_task:
+                    print"rline.task_id.stage_id",rline.task_id.stage_id
+                    if rline.task_id.stage_id.name != 'Done':
+                        raise osv.except_osv(_('Warning!'), _('Task is not done for project %s for Requirement %s..!!!')%(dline.project_id.name,rline.name)) 
+            self.write(cr,uid,dline.id,{'state':'done'})
+        return True
     
 document_line()
     
@@ -251,22 +304,12 @@ class doc_req_line(osv.osv):
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),
      'req_id': fields.many2one('srs','Requirement'),
-     'is_task_create': fields.boolean('Task'),
-     'is_add_req': fields.boolean('Add in Req'),
-     'created_task': fields.boolean('Task Created'),
+     'task_id':fields.many2one('project.task','Task'),
+     'approved': fields.boolean('Approved'),
+     'create_task': fields.boolean('Create Task'),
      'srequirement_ids': fields.many2many('srs','rel_dline_srs','dline_srs_id','doc_line_srs_id','Related SRS'),
        }
-    
-    def action_create_task(self, cr, uid, ids, context=None):
-        for req in self.browse(cr,uid,ids,context):
-            project_id=context.get('project_id')
-            user_id=req.user_id.id
-            task_number= self.pool.get('ir.sequence').get(cr, uid, 'project.task') or '/' 
-            task_id=self.pool.get('project.task').create(cr,uid,{'task_number':task_number,'user_id':user_id,'name':req.req_id.sname,'srs_code':req.req_id.name,'project_id':project_id})
-            self.pool.get('srs').write(cr,uid,req.req_id.id,{'task_id':task_id})
-            self.write(cr,uid,req.id,{'created_task':True})
-        return True
-    
+
 doc_req_line()
 
 class srs_categories(osv.osv):
