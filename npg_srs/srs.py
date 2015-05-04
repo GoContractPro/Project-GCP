@@ -220,6 +220,7 @@ class document_line(osv.osv):
             ('pending','Pending'),
             ('canceled','canceled'),
             ('implementation','Implementation'),
+            ('cancelled','Cancelled'),
             ('done','Done'),
             ], 'Status',readonly=True),
      'desc':fields.text('Description'),
@@ -294,12 +295,20 @@ class document_line(osv.osv):
             self.write(cr,uid,dline.id,{'state':'done'})
         return True
     
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr,uid,ids[0],{'state':'cancelled'})
+        return True
+    
+    def action_set_to_draft(self, cr, uid, ids, context=None):
+        self.write(cr,uid,ids[0],{'state':'draft'})
+        return True
+    
 document_line()
     
 class doc_req_line(osv.osv):
     _name = "doc.req.line"
     _columns = {
-     'name':fields.char('Requirement',size=64),
+     'name':fields.text('Requirement Comments',size=64),
      'code':fields.char('Code',size=64),
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),

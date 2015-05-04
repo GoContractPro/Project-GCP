@@ -299,8 +299,10 @@
                   <form string="SRS Document Line">
                       <header>
                           <button name="action_get_requirement" attrs="{'invisible':[('state','!=','draft')]}" string="Get Requirement"  type="object" class="oe_highlight"/>
-                          <button name="action_approve" string="Appoved" attrs="{'invisible':[('state','!=','planning')]}"   type="object" class="oe_highlight"/>
-                          <button name="action_done"  string="Done" attrs="{'invisible':[('state','!=','pending')]}"   type="object" class="oe_highlight"/>
+                          <button name="action_approve" string="Appoved" attrs="{'invisible':[('state','!=','planning')]}" type="object" class="oe_highlight"/>
+                          <button name="action_done"  string="Done" attrs="{'invisible':[('state','!=','pending')]}" type="object" class="oe_highlight"/>
+                          <button name="action_cancel"  string="cancel" attrs="{'invisible':[('state','!=','pending')]}" type="object" class="oe_highlight"/>
+                          <button name="action_set_to_draft"  string="Set to Draft" attrs="{'invisible':[('state','!=','cancelled')]}" type="object" class="oe_highlight"/>
                           <field name="state" widget="statusbar" statusbar_visible="draft,planning,'pending',approved,done" />
                       </header>
                       <newline/>
