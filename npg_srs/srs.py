@@ -257,7 +257,7 @@ class document_line(osv.osv):
             version_id = dline.version_id.id
             if not category_id:
                 raise osv.except_osv(_('Invalid Action!'), _('Please select Category ') )
-            srs_ids=self.pool.get('doc.req.line').search(cr, uid, [])
+            srs_ids=self.pool.get('doc.req.line').search(cr, uid,[('ldoc_id','=',ids[0])])
             if srs_ids:
                 self.pool.get('doc.req.line').unlink(cr,uid,srs_ids,context=None)
             if category_id and not version_id:
@@ -322,6 +322,7 @@ class doc_req_line(osv.osv):
     _columns = {
      'name':fields.text('Requirement Comments',size=64),
      'ldoc_id': fields.many2one('document.line','Doc Line'),
+     'doc_id': fields.related('ldoc_id','doc_id', type='many2one', relation='srs.document', string="Doc Reference", readonly=True,store=True),
      'user_id': fields.many2one('res.users','Assign To'),
      'req_id': fields.many2one('srs','Requirement'),
      'task_id':fields.many2one('project.task','Task'),
