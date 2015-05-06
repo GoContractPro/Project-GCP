@@ -257,22 +257,33 @@ class document_line(osv.osv):
             version_id = dline.version_id.id
             if not category_id:
                 raise osv.except_osv(_('Invalid Action!'), _('Please select Category ') )
-            if not  version_id:
-                raise osv.except_osv(_('Invalid Action!'), _('Please select Version') )
-            cr.execute('SELECT soft_pack_srs \
-                    FROM rel_srs_soft_package \
-                    WHERE soft_pack_id = %s  \
-                    '% version_id)
-            res = cr.fetchall()
-            srsids = [s[0] for s in res]
-            sids = self.pool.get('srs').search(cr,uid,[('category_id','=',category_id),('id','in',srsids)])
-            if len(sids) > 0:
-                for sid in sids:
-                    sobj=srs_obj.browse(cr,uid,sid)
-                    rid=self.pool.get('doc.req.line').create(cr,uid,{'req_id':sid,'name':sobj.sname,'ldoc_id':dline.id})
-                    self.write(cr,uid,dline.id,{'state':'planning'})   
-            else:
-                raise osv.except_osv(_('Invalid Action!'), _('No Requirement found..!!!') )     
+            srs_ids=self.pool.get('doc.req.line').search(cr, uid, [])
+            if srs_ids:
+                self.pool.get('doc.req.line').unlink(cr,uid,srs_ids,context=None)
+            if category_id and not version_id:
+                sids = self.pool.get('srs').search(cr,uid,[('category_id','=',category_id)])
+                if len(sids) > 0:
+                    for sid in sids:
+                        sobj=srs_obj.browse(cr,uid,sid)
+                        rid=self.pool.get('doc.req.line').create(cr,uid,{'req_id':sid,'name':sobj.sname,'ldoc_id':dline.id})
+                        self.write(cr,uid,dline.id,{'state':'planning'})   
+                else:
+                    raise osv.except_osv(_('Invalid Action!'), _('No Requirement found..!!!') ) 
+            if category_id and version_id:
+                cr.execute('SELECT soft_pack_srs \
+                        FROM rel_srs_soft_package \
+                        WHERE soft_pack_id = %s  \
+                        '% version_id)
+                res = cr.fetchall()
+                srsids = [s[0] for s in res]
+                sids = self.pool.get('srs').search(cr,uid,[('category_id','=',category_id),('id','in',srsids)])
+                if len(sids) > 0:
+                    for sid in sids:
+                        sobj=srs_obj.browse(cr,uid,sid)
+                        rid=self.pool.get('doc.req.line').create(cr,uid,{'req_id':sid,'name':sobj.sname,'ldoc_id':dline.id})
+                        self.write(cr,uid,dline.id,{'state':'planning'})   
+                else:
+                    raise osv.except_osv(_('Invalid Action!'), _('No Requirement found..!!!') )     
         return True
     
     def action_approve(self, cr, uid, ids, context=None):
@@ -282,6 +293,7 @@ class document_line(osv.osv):
                    self.pool.get('doc.req.line').unlink(cr,uid,rline.id,context=None)
             self.write(cr,uid,dline.id,{'state':'approved'})
             doc_id=dline.doc_id.id
+        if doc_id:
             self.pool.get('srs.document').write(cr,uid,doc_id,{'task_created':True})
         return True
     
@@ -309,7 +321,6 @@ class doc_req_line(osv.osv):
     _name = "doc.req.line"
     _columns = {
      'name':fields.text('Requirement Comments',size=64),
-     'code':fields.char('Code',size=64),
      'ldoc_id': fields.many2one('document.line','Doc Line'),
      'user_id': fields.many2one('res.users','Assign To'),
      'req_id': fields.many2one('srs','Requirement'),
@@ -322,6 +333,13 @@ class doc_req_line(osv.osv):
     sql_constraints = [
         ('srs_uniq','unique(req_id, ldoc_id)', 'This SRS already Added!'),
     ]
+    
+    def onchange_req(self, cr, uid, ids,req_id,context=None):
+        result={}
+        if req_id:
+            req_obj=self.pool.get('srs').browse(cr,uid,req_id)
+            result['value']={'name':req_obj.sname}
+        return result
 
 doc_req_line()
 
