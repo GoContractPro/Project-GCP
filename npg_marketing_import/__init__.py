@@ -19,19 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 ##############################################################################
+import market_lead_csv
 
-{
-    'name':'sync data',
-    'version':'1.0',
-    'category':'sync data detail',
-    'description': """
-    This module adds customizations import projects and tasks from external Database.
-    """,
-    'author':'Novapoint Group Inc, Stephen Levenhagen',
-    'website':'www.novapointgroup.com',
-    'data':['wizard/sync_data_info.xml'],
-    'depends':['base'],
-    'auto_install':False,
-    'installable':True,
-    'active':True
-}
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

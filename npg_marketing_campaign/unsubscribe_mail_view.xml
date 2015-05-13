@@ -13,7 +13,7 @@
    			</field>
    		</record>
         
-		 <record id="verts_view_partner_form_unsb_in" model="ir.ui.view">
+		 <record id="npg_view_partner_form_unsb_in" model="ir.ui.view">
             <field name="name">res.partner.form</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
@@ -52,6 +52,22 @@
 			 			</tree>
 			 		</field>
 			 	</page>
+			 	<page string="Marketing" col="4" name="marketing">
+                    <group>
+                            <field name="x_first_name" />
+                            <field name="x_last_name"/>   
+                            <field name="x_employees" />
+                            <field name="x_revenue"/>
+                            <field name="x_sic_code1"/>
+                            <field name="x_sic_code2"/>
+                            <field name="x_title"/>
+                            <field name="x_marketing"/>
+                            <field name="x_income"/>
+                            <field name="x_averagehousevalue"/> 
+                	</group>
+
+         		</page>
+			 	
 			 </xpath>
          </field>
         </record>

@@ -19,19 +19,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 ##############################################################################
-
 {
-    'name':'sync data',
-    'version':'1.0',
-    'category':'sync data detail',
+    'name': 'Marketing Import',
+    'version': '1.0',
+    'category': 'Marketing',
     'description': """
-    This module adds customizations import projects and tasks from external Database.
+    This module adds customizations to read the partner data from csv files.
     """,
-    'author':'Novapoint Group Inc, Stephen Levenhagen',
-    'website':'www.novapointgroup.com',
-    'data':['wizard/sync_data_info.xml'],
-    'depends':['base'],
-    'auto_install':False,
-    'installable':True,
-    'active':True
+    'author': 'NovaPoint Group LLC, Stephen Levenhagen',
+    'website': ' http://www.novapointgroup.com',
+    'depends': ['npg_marketing_campaign'],
+    'data': ['market_lead_csv_view.xml',],
+    'demo': [
+    ],
+    'auto_install': False,
+    'installable': True,
 }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
