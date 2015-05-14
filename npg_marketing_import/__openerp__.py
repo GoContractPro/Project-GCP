@@ -28,7 +28,7 @@
     """,
     'author': 'NovaPoint Group LLC, Stephen Levenhagen',
     'website': ' http://www.novapointgroup.com',
-    'depends': ['npg_marketing_campaign'],
+    'depends': ['npg_marketing_campaign', 'npg_warning'],
     'data': ['market_lead_csv_view.xml',],
     'demo': [
     ],

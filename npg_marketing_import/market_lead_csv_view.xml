@@ -11,9 +11,17 @@
                     	<field name="name"/>
                     	<field name="end_time"/>
                         <field name="browse_path" />
-                         <button name="import_csv" string="Import" type="object" class="oe_highlight"/>
-                      
                     </group>
+                    
+                    <newline/>
+                    
+                    <group col="8">
+                         <field name="test_sample_size" />
+                         <button name="import_csv" string="Test" type="object" clase="oe_highlight" context="{'test':True}"/>
+                         <newline/>
+                         <button name="import_csv" string="Import" type="object" class="oe_highlight"/>
+                   </group>
+
                     <group>
                     	 <field name="error_log"/>
                     </group>

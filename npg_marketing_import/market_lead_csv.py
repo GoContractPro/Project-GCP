@@ -26,8 +26,9 @@ import cStringIO
 import base64
 from datetime import datetime
 import time
-
+from openerp.tools.translate import _
 import logging
+import sys
 
 _logger = logging.getLogger(__name__)
 
@@ -36,16 +37,19 @@ class market_lead_csv(osv.osv_memory):
     _columns = {
         'name':fields.char('Started',size=10, readonly=True),
         'end_time': fields.datetime('End',  readonly=True),
-        'browse_path': fields.binary('Csv File Path'),
+        'browse_path': fields.binary('Csv File Path', required=True),
         'error_log': fields.text('Error Log'),
+        'test_sample_size': fields.integer('Test Sample Size')
     }
- #   _defaults = {
- #                'name' :time.strftime('%Y-%m-%d %H:%M:%S'),
- #                }
+    
+    _defaults = {
+        'test_sample_size':10
+        }
+    
     def import_csv(self, cr, uid, ids, context=None):
         partner_obj = self.pool.get('res.partner')
         state_obj = self.pool.get('res.country.state')
-        start = time.strftime('%Y-%m-%d %H:%M:%S')
+        start = time.strftime('%Y-%m-%d %H:%M:%S')       
         if context is None:
             context = {}
         for wiz_rec in self.browse(cr, uid, ids, context=context):
@@ -79,39 +83,87 @@ class market_lead_csv(osv.osv_memory):
             }
             
             error_log = ''
+            n = 0
+            
+            time_start = datetime.now()
             for data in partner_data[1:]:
                 
-                state_search_val = [('code','=',data[headers_dict['state_code']])] 
-                
-                part_vals = {
-                        'name'          :data[headers_dict['x_first_name']] + ' ' + data[headers_dict['x_last_name']],
-                        'email'         :data[headers_dict['email']],
-                        'x_first_name'  :data[headers_dict['x_first_name']],
-                        'x_last_name'   :data[headers_dict['x_last_name']],
-                        'street'        :data[headers_dict['street']],
-                        'city'          :data[headers_dict['city']],
-                        'x_county'      :data[headers_dict['x_county']],
-                        'state_id'      :state_obj.search(cr, uid , state_search_val)[0] or None,
-                        'zip'           :data[headers_dict['zip']],
-                        'x_averagehousevalue': data[headers_dict['x_averagehousevalue']],
-                        'x_income'      :data[headers_dict['x_income']], 
-                        'x_marketing': True,                                 
-                        }
-                search = [ ('email','=', part_vals.get('email', False))]
-                part_id = partner_obj.search(cr,uid,search) or None
-                if part_id:
-                    continue
-                
-                
                 try:
-                    partner_obj.create(cr, uid,part_vals , context=context)
-                except:
-                    _logger.info('Error  # partner not created for %s',data[headers_dict['Name']])
-                    error_log += ('Error ' + data[headers_dict['Name']] + ', ' + data[headers_dict['Street']])
+                    name = data[headers_dict['x_first_name']] + ' ' + data[headers_dict['x_last_name']]                    
+                    email = data[headers_dict['email']]
+                    search = [ ('email','=', email )]
+                    part_id = partner_obj.search(cr,uid,search) or None
+                    if part_id:
+                        continue
                     
-            vals = {'name':start,
-                    'end_time': time.strftime('%Y-%m-%d %H:%M:%S'),
-                    'error':error_log}
-        return True
+                    n += 1
+                    
+                    state_search_val = [('code','=',data[headers_dict['state_code']])]
+                    try: 
+                        state_id = state_obj.search(cr, uid , state_search_val)[0] or None
+                    except:
+                        _logger.info(_('Error State Not Found -- %s, %s' % (name or '',email or'' )))
+                        error_log += _('Error State Not Found at Record %s -- %s, %s ' % (n,name or '',email or'' ))
+                        state_id = None
+                    
+                    part_vals = {
+                            'name'          :name,
+                            'email'         :email,
+                            'x_first_name'  :data[headers_dict['x_first_name']],
+                            'x_last_name'   :data[headers_dict['x_last_name']],
+                            'street'        :data[headers_dict['street']],
+                            'city'          :data[headers_dict['city']],
+                            'x_county'      :data[headers_dict['x_county']],
+                            'state_id'      :state_id,
+                            'zip'           :data[headers_dict['zip']],
+                            'x_averagehousevalue': data[headers_dict['x_averagehousevalue']],
+                            'x_income'      :data[headers_dict['x_income']], 
+                            'x_marketing': True,                                 
+                            }
+                    
+
+                    if n == wiz_rec.test_sample_size  and context.get('test',False):
+                        t2 = datetime.now()
+                        time_delta = (t2 - time_start)
+                        time_each = time_delta // wiz_rec.test_sample_size
+                        list_size = len(partner_data)
+                         
+                        estimate_time = (time_each * list_size)
+                        
+                        
+                        msg = _('Time for %s records  is %s (hrs:min:sec) \n %s' % (list_size, estimate_time ,error_log))
+                        cr.rollback()
+                        vals = {'name':start,
+                        'end_time': time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'error_log':error_log}
+                        self.write(cr,uid,ids[0],vals)
+                        return self.show_warning(cr, uid, msg , context = context)
+                    
+                    
+                    partner_obj.create(cr, uid,part_vals , context=context)
+                    _logger.info('Loaded record %s for %s ',n,email)
+                except:
+                    e = sys.exc_info()
+                    _logger.info(_('Error  # partner not created for %s, %s' % (name or '',email or'' )))
+                    error_log += _('Error  %s at Record %s -- %s, %s ' % (e,n,name or '',email or'' ))
+                    
+        vals = {'name':start,
+                'end_time': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'error_log':error_log}
+        if context.get('test',False):
+            cr.rollback()
+        self.write(cr,uid,ids[0],vals)
+        result = {} 
+        result['value'] = vals   
+        return result
+    
+    def show_message(self, cr, uid, ids, context=None):
+        
+        return self.show_warning(cr,uid, "this is test")
+        
+    def show_warning(self,cr,uid,msg="None",context=None):
+        
+        warn_obj = self.pool.get( 'warning')
+        return warn_obj.info(cr, uid, title='Import Information',message = msg)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
