@@ -20,16 +20,16 @@
 #
 ##############################################################################
 {
-    'name': 'Marketing Import',
+    'name': 'Marketing Lead Import',
     'version': '1.0',
-    'category': 'Marketing',
+    'category': 'Import',
     'description': """
-    This module adds customizations to read the partner data from csv files.
+    This module adds customizations to import marketing leads from csv files.
     """,
     'author': 'NovaPoint Group LLC, Stephen Levenhagen',
     'website': ' http://www.novapointgroup.com',
     'depends': ['npg_marketing_campaign', 'npg_warning'],
-    'data': ['market_lead_csv_view.xml',],
+    'data': ['marketing_csv_view.xml',],
     'demo': [
     ],
     'auto_install': False,

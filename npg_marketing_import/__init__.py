@@ -19,6 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 ##############################################################################
-import market_lead_csv
+import marketing_csv
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
