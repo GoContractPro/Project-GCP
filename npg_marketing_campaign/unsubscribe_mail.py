@@ -55,7 +55,8 @@ class res_partner(osv.osv):
               'x_income'      :fields.float('Income'),
               'x_averagehousevalue' : fields.float("Average House Value"),
               'x_county'    :fields.char('County', size=32), 
-              'x_sic_code1' :fields.char('SIC Code 1' , size=10),   
+              'x_sic_code1' :fields.char('SIC Code 1' , size=10),
+              'x_sic_code_description': fields.char('SIC Description', size=64),   
               'x_sic_code2' :fields.char( 'SIC Code 2' , size=10),    
               'x_title'     :fields.char(  'Title' ,size=32),
               }

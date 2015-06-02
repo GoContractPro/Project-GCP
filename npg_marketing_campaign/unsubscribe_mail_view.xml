@@ -59,6 +59,7 @@
                             <field name="x_employees" />
                             <field name="x_revenue"/>
                             <field name="x_sic_code1"/>
+                            <field name="x_sic_code_description"/>   
                             <field name="x_sic_code2"/>
                             <field name="x_title"/>
                             <field name="x_marketing"/>
@@ -84,9 +85,24 @@
 	        </field>
         </record>
    		
-
-
-   		
+       <record id="marketing_view_res_partner_filter" model="ir.ui.view">
+            <field name="name">marketing.res.partner.select</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                
+                	<field name="user_id" position="after">
+                		<field name="email" />
+                		<field name="x_sic_code_description"/>
+                	</field>
+                	<xpath expr="//search/group/filter[@string='Country']" position="after">
+                		
+                		<filter string="SIC Description" context="{'group_by': 'x_sic_code_description'}"/> 
+                	</xpath>
+				
+			</field>
+		</record>
+		   		
         <!-- Email Template -->
 		<record model="ir.ui.view" id="npg_marketing_email_template_form_inherit">
 			<field name="name">npg.marketing.email.template.form.inherit</field>

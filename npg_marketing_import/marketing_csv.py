@@ -41,6 +41,7 @@ HEADER_MAP = {
                 'email'     : 'Email',
                 'street': 'Address',
                 'city': 'City',
+                
                 'x_first_name':'FName',
                 'x_last_name':'LName',
                 'x_county': 'County',
@@ -48,7 +49,18 @@ HEADER_MAP = {
                 'zip':'Zip',
                 'x_averagehousevalue' :'AverageHouseValue',
                 'x_income'  : 'IncomePerHousehold',
-                
+                'x_sic_code1' : 'sic_code',
+                'x_sic_code_description': 'sic_code_description',
+                'x_first_name' : 'first_name',
+                'x_last_name'   :'last_name',
+                'name' : 'contact_name',
+                'x_title'     :'title',
+                'company_name': 'company_name',
+                'street':   'address',
+                'phone':'phone',
+                'x_revenue': 'revenue',
+                'x_employees':'employees',
+               
                 }
 
 def index_get(L, i, v=None):
@@ -109,9 +121,9 @@ class partner_csv(osv.osv):
             fields_matched = {}
             fields_missing = []  
             
-             
+            headers_list = [x.lower() for x in headers_list ] 
             for field, column in HEADER_MAP.iteritems():
-                col_num = index_get(headers_list,column)
+                col_num = index_get(headers_list,column.lower())
                 if col_num is None:
                     fields_missing.append(field)
                 else:
@@ -156,11 +168,12 @@ class partner_csv(osv.osv):
             headers_list = []
             for header in partner_data[0]:
                 headers_list.append(header.strip())
+            headers_list = [x.lower() for x in headers_list ] 
              
             headers_dict = {}
             for field, column in HEADER_MAP.iteritems():  
                 
-                headers_dict[field] = index_get(headers_list,column)
+                headers_dict[field] = index_get(headers_list,column.lower())
                 
             error_log = ''
             n = 1 # Start Counter at One for to Account for Column Headers
@@ -174,12 +187,30 @@ class partner_csv(osv.osv):
                
                     email =  ((headers_dict.get('email') > -1) and data[headers_dict['email']]) or None  
                     
-                    if  first or last:
-                        name =  '%s %s' %(first or '',last or '')
-                    else: 
-                        name = email                   
+                    name = ((headers_dict.get('name') > -1) and data[headers_dict['name']]) or None
+                    
+                    if not (email):
+                        _logger.info(_('Missing Name and Email at Record %s \n' % (n, )))
+                        error_log += _('Missing Name and Email at Record %s \n' % (n, ))
+                        
+                        continue 
+                    skip = False
+                    for search in ['admin@','support@','info@','sales@']:
+                        found = email.find(search)
+                        if found > -1: 
+                            skip = True
+                    if skip:
+                        _logger.info(_('Skip (admin,support,sales or info)Email %s at Record %s \n' % (email,n, )))
+                        error_log += _('Skip (admin,support,sales or info)Email %s at Record %s \n' % (email,n, ))
+                        continue
+                        
+                    if  not name:
+                        if first or last:
+                            name =  '%s %s' %(first or '',last or '')
+                        else: 
+                            name = email                   
                        
-                    search = [ ('email','=', email )]
+                    search = [ ('email','=', email ),('is_company','=',False)]
                     partner_ids = partner_obj.search(cr,uid,search) or None
                     
                     if partner_ids and not wiz_rec.do_update:
@@ -188,25 +219,7 @@ class partner_csv(osv.osv):
                         
                         continue 
                     
-                    if not (name or email):
-                        _logger.info(_('Missing Name and Email at Record %s \n' % (n, )))
-                        error_log += _('Missing Name and Email at Record %s \n' % (n, ))
-                        
-                        continue 
-                    
-                    if headers_dict.get('related_company') and data[headers_dict['related_company']]:
-                        
-                        try:
-                            related_search = [('name','=',)]
-                            parent_id = state_obj.search(cr, uid , related_search)[0] or None
-                        except:
-                            msg = _('Error Related Company - %s - Not Found at Record %s -- %s, %s \n' % (data[headers_dict['related_company']],n,name or '',email or'' ))
-                            _logger.info(msg)
-                            error_log += msg
-                            parent_id = None
-                    else:
-                        parent_id = None 
-                          
+
                     
                     if (headers_dict.get('country_code') > -1) and data[headers_dict['country_code']]:
                        
@@ -252,7 +265,15 @@ class partner_csv(osv.osv):
                     else:
                         property_payment_term = None
                             
-                        
+                    if (headers_dict.get('company_name') > -1) and data[headers_dict['company_name']]:
+                        search = [('name','=',data[headers_dict['company_name']]),('is_company','=',True)]
+                        parent_id = partner_obj.search(cr,uid,search)
+                        if not parent_id:
+                            vals = {'name':data[headers_dict['company_name']],
+                                    'is_company': True,
+                                    }
+                            parent_id = partner_obj.create(cr,uid,vals,context)
+                        else: parent_id = parent_id[0]                                      
                     try:
                         part_vals = {
                                 'name'          :name,
@@ -270,7 +291,7 @@ class partner_csv(osv.osv):
 #                                'supplier'      :headers_dict.get'supplier') anif n == wiz_rec.test_sample_size  and context.get('test',True):
 #                                'credit_limit'  :headers_dict.get('credit_limit') and data[headers_dict['credit_limit']] or None,
 #                                'debit_limit'   :headers_dict.get('debit_limit') and data[headers_dict['debit_limit']] or None,
-#                                'parent_id'     :parent_id,
+                                'parent_id'     :parent_id,
                                 'phone'         :((headers_dict.get('phone') > -1) and data[headers_dict['phone']]) or None,
 #                                'fax'           :headers_dict.get('fax') and data[headers_dict['fax']] or None,
 #                                'mobile'        :headers_dict.get('mobile') and data[headers_dict['mobile']] or None,
@@ -281,7 +302,15 @@ class partner_csv(osv.osv):
                                 'x_last_name':      ((headers_dict.get('x_last_name') > -1) and data[headers_dict['x_last_name']]) or None,
                                 'x_county':         ((headers_dict.get('x_county') > -1) and data[headers_dict['x_county']]) or None,
                                 'x_averagehousevalue' :((headers_dict.get('x_averagehousevalue') > -1) and data[headers_dict['x_averagehousevalue']]) or None,
-                                'x_income'  :           ((headers_dict.get('x_income') > -1) and data[headers_dict['x_income']]) or None,                   
+                                'x_income'  :           ((headers_dict.get('x_income') > -1) and data[headers_dict['x_income']]) or None,
+                                'x_revenue'  :           ((headers_dict.get('x_revenue') > -1) and data[headers_dict['x_revenue']]) or None,
+                                'x_sic_code1'  :           ((headers_dict.get('x_sic_code_1') > -1) and data[headers_dict['x_sic_code_1']]) or None,                   
+                                'x_sic_code_description'  :((headers_dict.get('x_sic_code_description') > -1) and data[headers_dict['x_sic_code_description']]) or None,                   
+                                'x_employees'  :           ((headers_dict.get('x_employees') > -1) and data[headers_dict['x_employees']]) or None,
+                                'x_title'  :           ((headers_dict.get('x_title') > -1) and data[headers_dict['x_title']]) or None,
+                                'x_marketing':     True,
+                                               
+                                                  
                                 }
                         
                                                 

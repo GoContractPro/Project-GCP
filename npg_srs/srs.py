@@ -120,9 +120,9 @@ class srs(osv.osv):
             name = record['name']
             sname = record['sname']
             if record['parent_id']:
-                name =  '[' + record['parent_id'][1] + ']' + '/' +  '[' + name + ']'  + sname 
+                name =  record['parent_id'][1] + ' >> ' + name +  '-'  + sname 
             else:
-                name =  '[' + name + ']'  + sname 
+                name =   name + '-'  + sname 
             res.append((record['id'], name))
         return res
     
