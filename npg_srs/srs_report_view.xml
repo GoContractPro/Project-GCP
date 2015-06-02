@@ -1,0 +1,6 @@
+<openerp>
+ <data>
+<report id="srs_document_report_id" model="srs.document" name="srs_report" rml="addons/npg_srs/report/srs_report.rml" string="SRS Document Report" auto="False">
+</report>
+ </data>
+</openerp>

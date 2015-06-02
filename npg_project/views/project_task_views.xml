@@ -1,0 +1,209 @@
+<openerp>
+    <data>
+    
+    	 <record id="view_task_list_view_npg" model="ir.ui.view">
+            <field name="name">project.task.tree.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_tree2"/>
+            <field name="arch" type="xml">
+	    		<field name="name" position="before">
+	            	<field name="task_number" string="Task Number"/>
+	            	<field name="date_deadline"/>
+	            </field>
+            </field>
+        </record>
+    
+        <record id="view_task_search_form_npg" model="ir.ui.view">
+            <field name="name">project.task.search.form.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_search_form"/>
+            <field name="arch" type="xml">
+	    		<field name="name" position="before">
+	            	<field name="task_number" string="Task Number"/>
+	            </field>
+            </field>
+        </record>  
+        
+        <record id="view_task_gtd_search_form_npg" model="ir.ui.view">
+            <field name="name">project.task.search.form.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project_gtd.view_task_gtd_search"/>
+            <field name="arch" type="xml">
+	    		<field name="name" position="before">
+	            	<field name="task_number" string="Task Number"/>
+	            </field>
+            </field>
+        </record>
+          
+        <record id="hr_timesheet_line_date_search" model="ir.ui.view">
+           <field name="name">hr.analytic.timesheet.date.search</field>
+           <field name="model">hr.analytic.timesheet</field>
+           <field name="type">search</field>
+           <field name="arch" type="xml">
+               <search string="Timesheet">
+                   <group col='8' colspan='4'>
+                       <field name="user_id"/>
+                       <field name="account_id"/>
+                       <field name="search_from" filter_domain="[('date','&gt;=',self)]"/>
+					<field name="search_to" filter_domain="[('date','&lt;=',self)]"/>
+                   </group>
+                   <newline/>
+                   <group expand="0" string="Group By...">
+                       <filter string="Users" icon="terp-personal" domain="[]" context="{'group_by':'user_id'}"/>
+                       <separator orientation="vertical"/>
+                       <filter string="Anlytic account" icon="terp-folder-green" domain="[]" context="{'group_by':'account_id'}"/>
+                       <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                       <separator orientation="vertical"/>
+                       <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                   </group>
+               </search>
+           </field>
+   	
+   		</record>
+    	
+         <record id="hr_timesheet_line_tree_npg" model="ir.ui.view">
+            <field name="name">hr.analytic.timesheet.tree.npg</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+	            <field name="unit_amount" position="replace">
+	            	<field name="unit_amount" string="Duration" 
+	            	on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id)" sum="Total time" />
+	            </field>
+           </field>
+             
+		</record>    
+
+               <record id="view_task_form_npg" model="ir.ui.view">
+            <field name="name">project.task.form.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+				<field name="project_id" position="before">
+					<field name="task_number" string="Task Number"/>
+				</field>
+				<field name="project_id" position="attributes">
+				 	<attribute name="required">1 </attribute>
+				</field>
+				
+				<xpath expr="//notebook/page[@string='Delegation']" position="before">				
+									           
+	           		   <page string="Notes"  groups="project.group_project_user">
+			             	<group>
+
+			            	<field name="pub_descrip" groups="project.group_project_user"  nolabel="1"/>
+			            	</group>
+			            </page>
+				
+				</xpath>
+
+
+				<xpath expr="//notebook/page[@string='Description']" position="replace">
+				</xpath>
+				
+				<xpath expr="//notebook/page[@string='Notes']" position="before">
+				
+					<page string="Description" groups="project.group_project_user,npg_project.npg_group_portal">
+			            	<group>
+			            	<field name="description"  attrs="{'readonly':[('state','=','done')]}" nolabel="1"/>
+			            	</group>
+			        </page>
+			    </xpath>
+				
+
+				
+				<xpath expr="//notebook/page[@string='Description']" position="before">
+					<page string="Work">
+						<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+						
+                             <tree string="Task Work" editable="bottom">
+                                 <field name="name"/>
+                                 <field name="hours" widget="float_time" sum="Spent Hours"/>
+                                 <field name="date"/>
+                                 <field name="user_id"/>
+                             </tree>
+
+                        </field>
+					</page>
+
+				</xpath>
+		</field>
+    </record>
+ <!--  
+  
+        <record id="view_task_form_npg" model="ir.ui.view">
+            <field name="name">project.task.form.npg</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+				<field name="project_id" position="before">
+				<field name="task_number" string="Task Number"/>
+				</field>
+				<field name="project_id" position = "attributes">
+				 	<attribute name="required">1 </attribute>
+				</field>
+				
+				<xpath expr="//notebook/page[@string='Description']" position="replace">
+				</xpath>
+				
+				<xpath expr="//notebook/page[@string='Delegation']" position="before">
+				
+						<page string="Description" groups="base.group_user">
+			            	<group>
+			            	<field name="description" groups="base.group_user" attrs="{'readonly':[('state','=','done')]}"  nolabel = "1"/>
+			            	</group>
+			            </page>
+			    </xpath>x
+				
+				<xpath expr="//notebook/page[@string='Description']" position="before">				
+									           
+	           		   <page string="Public Notes" groups="npg_project.npg_group_portal,project.group_project_user">
+			             	<group>
+			                  	<field name="pub_descrip" 
+			            		groups="npg_project.npg_group_portal,project.group_project_user" 
+			            		attrs="{'readonly': True }"  nolabel = "1"/>
+			            	</group>
+			            </page>
+				
+				</xpath>
+				
+				<xpath expr="//notebook/page[@string='Public Notes']" position="before">
+					<page string="Work">
+						<field name="work_ids" groups="project.group_tasks_work_on_tasks">
+						
+                             <tree string="Task Work" editable="bottom">
+                                 <field name="name"/>
+                                 <field name="hours" widget="float_time" sum="Spent Hours"/>
+                                 <field name="date"/>
+                                 <field name="user_id" />
+                             </tree>
+
+                        </field>
+					</page>
+
+				</xpath>
+            
+	    </field>
+
+    </record>
+  
+  -->
+	<record id="npg_project_task_work_form" model="ir.ui.view">
+		<field name="name">Project Task Work</field>
+		<field name="model">project.task.work</field>
+		<field name="arch" type="xml">
+			<form string="task Work">
+	          	<group>
+	          		<field name="name"/>
+	              	<field name="hours" widget="float_time" sum="Spent Hours"/>
+	              	<field name="date"/>
+	              	<field name="user_id"/>
+	              	<field name="work_note"/>
+	          	</group>
+	     	</form>
+	     </field>
+	</record>
+
+
+    </data>
+</openerp>

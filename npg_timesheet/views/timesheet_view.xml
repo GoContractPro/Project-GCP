@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    <record id="npg_hr_timesheet_line_tree2" model="ir.ui.view">
+		<field name="name">hr.analytic.timesheet.tree.npg</field>
+		<field name="model">hr.analytic.timesheet</field>
+		<field eval="30" name="priority"/>
+		<field name="arch" type="xml">
+            
+           	<tree editable="top" string="Task Work Activities">         
+				<field name="user_id"  on_change="on_change_user_id(user_id)" required="1" />
+	  			<field name="name" default_focus="1" />
+				<field name="plan_date_start" on_change="on_change_plan_date_start(plan_date_start,context)" /> 
+				<field name="plan_time_amt" sum="Work Planned" widget="float_time" />
+				<field name="unit_amount" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+                          sum="Total time" widget="float_time" string="Duration"/>
+				<field name="date" on_change="on_change_date(date)" invisible='1' readonly="1"/>
+				<field name="journal_id" invisible="0" />
+				<field domain="[('type','=','normal')]" name="account_id" invisible="1" />
+				<field name="product_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id, to_invoice)"
+				       required="1" domain="[('type','=','service')]" invisible="1" />
+				<field name="product_uom_id" on_change="on_change_unit_amount(product_id, unit_amount, False, product_uom_id,journal_id,  to_invoice)"
+				       invisible="1" />
+				<field name="amount" sum="Total cost" invisible="1" />
+				<field name="general_account_id" invisible="1" />
+				<field name="to_invoice" /> 
+				<field name="state" readonly="1"/>
+				<button name="button_start_working" type="workflow" string="Start" states="planned" icon="gtk-media-play"/>
+                <button name="button_resume" string="Resume" type="workflow" states="pause" icon="gtk-media-play"/>
+                <button name="button_pause" string="Pending" type="workflow" states="working" icon="gtk-media-pause"/>
+                <button name="button_done" string="Finished" type="workflow" states="working" icon="terp-check"/>
+                <button name="button_planned" string="Set Planned" type="workflow" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
+				</tree>
+			</field>
+		</record>
+		
+		<record id="npg_hr_timesheet_line_form_inherit" model="ir.ui.view">
+            <field name="name">npg.hr.analytic.timesheet.form2</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                <header colspan="8">
+                    <button name="button_start_working" string="Start" type="workflow" states="planned" icon="gtk-media-play" help="Start Working"/>
+                    <button name="button_cancel" string="Cancel Order" type="workflow" states="planned,working" icon="gtk-stop" help="Cancel Order"/>
+                    <button name="button_planned" string="Set Planned" type="workflow" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
+                    <button name="button_resume" string="Resume" type="workflow" states="pause" icon="gtk-media-pause" help="Resume Work Order"/>
+                    <button name="button_pause" string="Pending" type="workflow" states="working" icon="gtk-media-pause" help="Pause Work Order"/>
+                    <button name="button_done" string="Finished" type="workflow" states="working" icon="terp-check" help="Finish Order"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+               	</field>
+               	<field name="date" position="before">
+               		
+               			<field name="plan_date_start" on_change="on_change_plan_date_start(plan_date_start,context)" /> 
+						<field name="plan_time_amt" sum="Work Planned" widget="float_time" />
+              		
+               	</field>
+            </field>
+        </record>
+
+        <record id="npg_hr_timesheet_line_tree_inherit" model="ir.ui.view">
+            <field name="name">npg.hr.analytic.timesheet.tree</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+                <field name="date" position="before">
+                <field name="state" readonly="1"/>
+				<button name="button_start_working" string="Start" states="planned" icon="gtk-media-play"/>
+                <button name="button_resume" string="Resume" states="pause" icon="gtk-media-play"/>
+                <button name="button_pause" string="Pending" states="working" icon="gtk-media-pause"/>
+                <button name="button_done" string="Finished" states="working" icon="terp-check"/>
+                <button name="button_planned" string="Set Planned" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
+                </field>
+            </field>
+        </record>
+		
+    
+        <record id="npg_timesheet_activity_plan_calendar" model="ir.ui.view">
+            <field name="name">Timesheet Planned Activities</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field eval="2" name="priority"/>
+            <field name="arch" type="xml">
+                <calendar color="user_id" date_start="plan_date_start" date_delay="plan_time_amt" string="Work Plans">
+                    <field name="name"/>
+                    <field name="journal_id"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="npg_timesheet_activity_plan_gantt" model="ir.ui.view">
+            <field name="name">Timesheet Planned Activies</field>
+            <field name="model">hr.analytic.timesheet</field>
+            <field eval="2" name="priority"/>
+            <field name="arch" type="xml">
+                <gantt date_start="plan_date_start" date_delay="plan_time_amt" string="Work Plans" default_group_by="state">
+                </gantt>
+            </field>
+        </record>
+
+ <!--   	<record id="NPG_hr_timesheet_sheet_tree_simplified" model="ir.ui.view">
+            <field name="name">hr.timesheet.sheet.tree.npg</field>
+            <field name="model">hr_timesheet_sheet.sheet</field>
+            <field eval="10" name="priority"/>
+            <field name="arch" type="xml">
+                <tree colors="blue:state == 'draft';black:state in ('confirm','new');gray:state == 'done'" string="Timesheets">
+                    <field name="employee_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="department_id" invisible="1"/>
+                    <field name="total_attendance" widget="float_time" groups="base.group_hr_attendance"/>
+                    <field name="total_timesheet" widget="float_time"/>
+                    <field name="total_difference" widget="float_time" groups="base.group_hr_attendance"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+   -->   
+       
+    </data>
+</openerp>

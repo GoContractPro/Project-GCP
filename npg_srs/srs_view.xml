@@ -1,0 +1,500 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+    
+    <!-- ***************************************** SRS *********************************************** -->
+        
+        <record id="tree_srs" model="ir.ui.view">
+			<field name="name">SRS</field>
+            <field name="model">srs</field>
+            <field name="arch" type="xml">
+                <tree string="SRS">
+                    <field name="name"/>
+                    <field name="sname"/>
+                </tree>
+           </field>                         
+		</record>
+		
+		<record id="tree_srs_expend" model="ir.ui.view">
+			<field name="name">SRS</field>
+            <field name="model">srs</field>
+            <field name="field_parent">child_id</field>
+            <field name="arch" type="xml">
+                <tree string="SRS">
+                    <field name="name"/>
+                    <field name="parent_id" invisible="1"/>          
+                </tree>
+           </field>                         
+		</record>
+		
+		<record id="form_srs" model="ir.ui.view">
+			<field name="name">srs</field>
+            <field name="model">srs</field>
+            <field name="arch" type="xml">
+                <form string="SRS" version="7.0">
+                <sheet>
+               <group col="4">
+                    <field name="name" /> 
+                    <field name="sname" /> 
+                    <field name="sequence"/> 
+                    <field name="parent_id"/> 
+                    <field name="task_id" readonly="1"/>
+                    <field name="est_time" widget="float_time"/> 
+               </group> 
+               <notebook>
+                    <page string="Related Software">
+                       <separator string="Related Software" colspan="2"/>
+                  	   <field name="srs_package_ids"  col="4"/>	
+                    </page>
+                     <page string="Related Use Cases">
+                       <separator string="Related Use Cases" colspan="2"/>
+                  	   <field name="srs_use_case_ids"  col="4"/>	
+                    </page>
+                    <page string="Related User Guides">
+                       <separator string="Related User Guides" colspan="2"/>
+                  	   <field name="srs_user_guides" col="4"/>	
+                    </page>
+                 </notebook>
+                 <group col="4">      
+                   <field name="desc" placeholder="Requirement......" nolabel="1"/>  
+                 </group>
+                </sheet>
+                </form>
+           </field>                         
+		</record>
+		
+	    <record id="action_srs" model ="ir.actions.act_window"> 
+            <field name="name">SRS</field>
+            <field name="res_model">srs</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="tree_srs"/>
+        </record>
+        
+         <record id="srs_normal_action_tree" model="ir.actions.act_window">
+            <field name="name">SRS Expendable</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">srs</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+         <record id="action_catgory_expend" model="ir.actions.act_window">
+            <field name="name">SRS Expendable</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">srs</field>
+            <field name="domain">[('parent_id','=',False)]</field>
+            <field name="view_type">tree</field>
+            <field name="view_id" ref="tree_srs_expend"/>
+        </record>
+        
+         <record id="ir_srs_open" model="ir.values">
+            <field eval="'tree_but_open'" name="key2"/>
+            <field eval="'srs'" name="model"/>
+            <field name="name">SRS Expendable</field>
+            <field eval="'ir.actions.act_window,%d'%srs_normal_action_tree" name="value"/>
+        </record>
+        
+    <!-- *********************************** srs_software_package ***************************** -->
+        
+    <record id="view_srs_software_package_tree" model="ir.ui.view">
+        <field name="name">SRS Software Package</field>
+        <field name="model">srs.software.package</field>
+        <field name="arch" type="xml">
+            <tree string="SRS Software Package">
+                <field name="name"/>
+                <field name="repository"/>
+                <field name="author"/>
+                <field name="website"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_srs_software_package_form" model="ir.ui.view">
+		<field name="name">SRS Software Package</field>
+        <field name="model">srs.software.package</field>
+        <field name="arch" type="xml">
+            <form string="SRS Software Package" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+                <field name="repository"/>
+                <field name="author"/>
+                <field name="website"/>
+            </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_srs_software_package" model ="ir.actions.act_window"> 
+        <field name="name">SRS Software Package</field>
+        <field name="res_model">srs.software.package</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_srs_software_package_tree"/>
+    </record>    
+        
+     <!-- *********************************** use_cases ***************************** -->
+        
+    <record id="view_use_cases_tree" model="ir.ui.view">
+        <field name="name">Use Cases</field>
+        <field name="model">srs.use.case</field>
+        <field name="arch" type="xml">
+            <tree string="Use Cases">
+                <field name="name"/>
+                <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_use_cases_form" model="ir.ui.view">
+		<field name="name">Use Cases</field>
+        <field name="model">srs.use.case</field>
+        <field name="arch" type="xml">
+            <form string="Use Cases" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+                <field name="sequence"/>
+            </group>
+             <field name="case_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+                  <tree string="Use Case Line"  editable="bottom">
+                      <field name="name"/>
+                      <field name="sequence"/>
+                      <field name="desc"/>
+                      <field name="expt_result"/>
+                  </tree>
+             </field>
+             <group col="4">      
+                  <field name="desc" placeholder="Description......" nolabel="1"/>  
+             </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_use_cases" model ="ir.actions.act_window"> 
+        <field name="name">Use Cases</field>
+        <field name="res_model">srs.use.case</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_use_cases_tree"/>
+    </record>  
+    
+     <!-- *********************************** User Guides ***************************** -->
+        
+    <record id="view_user_guide_tree" model="ir.ui.view">
+        <field name="name">User Guides</field>
+        <field name="model">srs.user.guide</field>
+        <field name="arch" type="xml">
+            <tree string="User Guides">
+                <field name="name"/>
+                <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_user_guide_form" model="ir.ui.view">
+		<field name="name">User Guides</field>
+        <field name="model">srs.user.guide</field>
+        <field name="arch" type="xml">
+            <form string="User Guides" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+                <field name="sequence"/>
+            </group>
+             <field name="guide_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+                  <tree string="User Guides Line"  editable="bottom">
+                      <field name="name"/>
+                      <field name="author"/>
+                      <field name="input_file"/>
+                      <field name="fname" invisible="1"/>
+                      <field name="soft_pack_id"/>
+                      <field name="desc"/>
+                  </tree>
+             </field>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_user_guide" model ="ir.actions.act_window"> 
+        <field name="name">User Guides</field>
+        <field name="res_model">srs.user.guide</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_user_guide_tree"/>
+    </record>    
+    
+    <!-- *********************************** SRS Document ***************************** -->
+    
+    <record id="view_srs_document_calendar" model="ir.ui.view">
+        <field name="name">srs.document</field>
+        <field name="model">srs.document</field>
+        <field name="arch" type="xml">
+            <calendar string="SRS Document" color="partner_id" date_start="create_date" >
+                <field name="partner_id"/>
+                <field name="create_date"/>
+                <field name="plan_date"/>
+            </calendar>
+        </field>
+    </record>
+    
+     <record id="view_srs_document_gantt" model="ir.ui.view">
+        <field name="name">srs.document.gantt</field>
+        <field name="model">srs.document</field>
+        <field name="arch" type="xml">
+            <gantt date_stop="plan_date" date_start="create_date"  string="Documents" default_group_by="partner_id">
+               <field name="partner_id"/>
+               <field name="create_date"/>
+               <field name="plan_date"/>
+            </gantt>
+        </field>
+     </record>
+        
+    <record id="view_srs_document_tree" model="ir.ui.view">
+        <field name="name">SRS Document</field>
+        <field name="model">srs.document</field>
+        <field name="arch" type="xml">
+            <tree string="SRS Document">
+                <field name="partner_id"/>
+                <field name="create_date"/>
+                <field name="plan_date"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_srs_documente_form" model="ir.ui.view">
+		<field name="name">SRS Document</field>
+        <field name="model">srs.document</field>
+        <field name="arch" type="xml">
+            <form string="SRS Document" version="7.0">
+            <header>
+                <button name="action_create_task" invisible="1" string="Create Task" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>
+            </header>
+            <sheet>
+            <group col="4">
+                <field name="partner_id" required="1"/>
+                <field name="created_task" invisible="1"/>
+                <field name="create_date"/>
+                <field name="plan_date"/>
+            </group>
+             <field name="doc_lines"  colspan="4" nolabel="1" attrs="{'readonly':[('created_task','=',True)]}" widget="one2many_list">
+                  <form string="SRS Document Line">
+                      <header>
+                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
+                      </header>
+                      <newline/>
+                      <group col="4">
+	                      <field name="sequence"/>
+	                      <field name="project_id" required="1"/>  
+                          <field name="create_date"/>
+                          <field name="plan_date"/>  
+                          <field name="approved"/>
+                          <field name="est_hour"/>
+                      </group>
+                      <newline/>
+                      <group col="4">
+                          <field name="desc" nolabel="1"/>
+                      </group>
+                      <newline/>
+                      <group col="4">
+	                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Categories"  editable="bottom">
+			                      <field name="category_id"/>
+			                      <field name="desc"/>
+			                  </tree>
+	                      </field>
+                     </group>
+                     <newline/>
+                      <group col="4">
+	                      <field name="doc_req_line" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
+	                          <tree string="Requirements" editable="bottom">
+			                      <field name="user_id" widget="selection"/>
+			                       <field name="req_id" widget="selection"/>
+			                      <button name="action_create_task" string="Create Task" icon="gtk-go-forward" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>
+			                      <field name="srequirement_ids" invisible="1"/>
+			                      <field name="created_task" invisible="1"/>
+			                  </tree>
+	                      </field>
+                     </group>
+                  </form>
+                  <tree string="SRS Document Line">
+                      <field name="desc"/>
+                      <field name="sequence"/>
+                      <field name="plan_date"/>
+                      <field name="project_id"/>
+                      <field name="approved"/>
+                      <field name="state"/>
+                 </tree>
+             </field>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers" />
+                <field name="message_ids" widget="mail_thread"/>
+             </div>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_srs_document" model ="ir.actions.act_window"> 
+        <field name="name">SRS Document</field>
+        <field name="res_model">srs.document</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar,gantt</field>
+        <field name="view_id" ref="view_srs_document_tree"/>
+    </record> 
+    
+    <!-- ***** Document Line ***** -->
+    
+    <record id="view_srs_document_line_gantt" model="ir.ui.view">
+        <field name="name">srs.document.line.gantt</field>
+        <field name="model">document.line</field>
+        <field name="arch" type="xml">
+           <gantt date_stop="plan_date" date_start="create_date"  string="Document Line" default_group_by="project_id">
+               <field name="project_id"/>
+               <field name="create_date"/>
+               <field name="plan_date"/>
+            </gantt>
+        </field>
+     </record>
+     
+     <record id="view_document_line_tree" model="ir.ui.view">
+        <field name="name">SRS Document Line</field>
+        <field name="model">document.line</field>
+        <field name="arch" type="xml">
+            <tree string="SRS Document Line">
+              <field name="sequence"/>
+              <field name="create_date"/>
+              <field name="plan_date"/>
+              <field name="project_id"/>
+              <field name="approved"/>
+              <field name="state"/>
+            </tree>
+        </field>
+     </record>
+    
+     <record id="view_document_line_form" model="ir.ui.view">
+		<field name="name">SRS Document Line</field>
+        <field name="model">document.line</field>
+        <field name="arch" type="xml">
+           <form string="SRS Document Line" version="7.0">
+            <sheet>
+                     <header>
+                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
+                      </header>
+                      <newline/>
+                      <group col="4">
+	                      <field name="sequence"/>
+	                      <field name="project_id" required="1"/>  
+                          <field name="plan_date"/> 
+                          <field name="create_date"/>
+                          <field name="approved"/>
+                          <field name="est_hour"/>
+                      </group>
+                      <newline/>
+                      <group col="4">
+	                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Categories"  editable="bottom">
+			                      <field name="name"/>
+			                      <field name="desc"/>
+			                  </tree>
+	                      </field>
+                     </group>
+                     <newline/>
+                      <group col="4">
+	                      <field name="doc_req_line"  colspan="4" nolabel="1"  widget="one2many_list">
+	                          <tree string="Requirements"  editable="bottom">
+			                      <field name="user_id" required="1"/>
+			                      <field name="srequirement_ids" widget="many2many_tags"/>
+			                  </tree>
+	                      </field>
+                     </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+    <record id="action_srs_document_line" model ="ir.actions.act_window"> 
+        <field name="name">SRS Document Line</field>
+        <field name="res_model">document.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,gantt</field>
+        <field name="view_id" ref="view_document_line_tree"/>
+    </record>   
+    
+    <!-- ************** Project Task ************ -->
+    
+    <record id="task_form_view_inherit" model="ir.ui.view">
+        <field name="name">project.task.form.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field eval="2" name="priority"/>
+        <field name="arch" type="xml">
+        <field name="project_id" position="before">
+             <field name="srs_code"/>
+        </field>
+        </field>
+     </record> 
+     
+     <!-- *********************************** User Categories ***************************** -->
+        
+    <record id="view_category_tree" model="ir.ui.view">
+        <field name="name">SRS Categories</field>
+        <field name="model">srs.categories</field>
+        <field name="arch" type="xml">
+            <tree string="SRS Categories">
+                <field name="name"/>
+                <field name="desc"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_category_form" model="ir.ui.view">
+		<field name="name">SRS Categories</field>
+        <field name="model">srs.categories</field>
+        <field name="arch" type="xml">
+            <form string="SRS Categories" version="7.0">
+            <sheet>
+            <group col="4">
+                <field name="name"/>
+            </group>
+            <group col="4">
+                <field name="desc"/>
+            </group>
+            </sheet>
+            </form>
+       </field>                         
+	</record>
+    
+     <record id="action_catgory" model ="ir.actions.act_window"> 
+        <field name="name">SRS Categories</field>
+        <field name="res_model">srs.categories</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_category_tree"/>
+    </record>    
+        
+    <menuitem  id="menu_srs" name="SRS" parent="base.menu_main_pm"  sequence="8"/>
+    <menuitem  id="submenu_srs" name="SRS Master"  parent="menu_srs" action="action_srs"  sequence="2"/>
+    <menuitem  id="submenu_srs_expend" name="SRS Expandable"  parent="menu_srs" action="action_catgory_expend" sequence="4"/>
+    <menuitem  id="menu_srs_document" name="SRS Documentation"  parent="menu_srs" action="action_srs_document" sequence="6"/>
+    <menuitem  id="menu_srs_document_line" name="Document Line"  parent="menu_srs" action="action_srs_document_line" sequence="7"/>
+    <menuitem  id="menu_conf" name="SRS Configuration"  parent="menu_srs"  sequence="9"/>
+    <menuitem  id="menu_category" name="Categories"  parent="menu_conf" action="action_catgory" sequence="1"/>
+    <menuitem  id="menu_pacakage" name="Software Package"  parent="menu_conf" action="action_srs_software_package" sequence="2"/>
+    <menuitem  id="menu_use_case" name="Use Cases"  parent="menu_conf" action="action_use_cases" sequence="3"/>
+    <menuitem  id="menu_user_guide" name="User Guides"  parent="menu_conf" action="action_user_guide"  sequence="4"/>
+      
+    </data>
+</openerp>
+    

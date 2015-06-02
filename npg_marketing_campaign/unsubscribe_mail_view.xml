@@ -3,25 +3,41 @@
 <data>
        
        <!-- ********************  Unsubscribe mail Button for res partner *********************** -->
+       
+        <record id="NPG_res_partner_opt_out_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="email_template.res_partner_opt_out_form"/>
+            <field name="arch" type="xml">
+   		         <field name="opt_out" position="replace"/>
+   			</field>
+   		</record>
         
 		 <record id="verts_view_partner_form_unsb_in" model="ir.ui.view">
             <field name="name">res.partner.form</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-             <field name="email" position="replace">
-            		<field name="email"/>
-			       <button name="check_mail" type="object" string="Unsubscribe Mail"/>
-			 </field> 
-			 <field name="website" position="after">
-            		<field name="inv_email" invisible="1"/>
-            		<field name="stamp_time" invisible="1"/>
-            		<field name="email_valid"/>   
-			 </field> 
+            <field name="email" position="replace"/>
+			<xpath expr="//sheet/group" position="inside">
+				<group>
+<!--            		<field name="inv_email" invisible="1"/>-->
+<!--            		<field name="stamp_time" invisible="1"/>-->
+						<label for="email"/>
+						<div>
+		            		<field name="email" class="oe_inline"/>
+				        	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/>
+				        </div>
+            		<field name="email_invalid" readonly="1"/>
+            		<field name="opt_out"/>
+
+            	</group>
+			 </xpath> 
 			 <xpath expr="//notebook/page[@string='History']" position="after">
 			 	<page string="Email open status">
 			 		<field name="email_status">
 			 			<tree editable="bottom">
+			 				<field name="marketing_workitem_id" string="Campaign--Activity"/>
 			 				<field name="email_opened"/> 
 			 				<field name="date_open"/> 
 			 			</tree>
@@ -30,6 +46,7 @@
 			 	<page string="Website Visit status">
 			 		<field name="website_visit_status">
 			 			<tree editable="bottom">
+			 				<field name="marketing_workitem_id" string="Campaign--Activity"/> 
 			 				<field name="website_visit"/> 
 			 				<field name="date_visit"/> 
 			 			</tree>
@@ -45,11 +62,78 @@
             <field name="inherit_id" ref="base.view_res_partner_filter" />
             <field name="arch" type="xml">
 		          <field name="name"  position="after">
-		            <field name="email_valid" />
-		            <filter string="Invalid Email" name="email_valid" domain="[('email_valid','=',1)]" help="Invalid Email"/>
+		            <field name="email_invalid" />
+		            <filter string="Invalid Email" name="email_invalid" domain="[('email_invalid','=',1)]" help="Invalid Email"/>
 		           </field>
 	        </field>
         </record>
    		
+
+
+   		
+        <!-- Email Template -->
+		<record model="ir.ui.view" id="npg_marketing_email_template_form_inherit">
+			<field name="name">npg.marketing.email.template.form.inherit</field>
+			<field name="model">email.template</field>
+			<field name="inherit_id" ref="email_template.email_template_form" />
+			<field name="arch" type="xml">
+				<field name="body_html" position="before">
+					<field name="header_html" width="250" height="300" nolabel="1" colspan="2" placeholder="Email contents (in raw HTML format) for Mail body header"/>
+				</field>
+				<field name="body_html" position="after">
+					<field name="footer_html" width="250" height="300" nolabel="1" colspan="2" placeholder="Email contents (in raw HTML format) for Mail body footer"/>
+				</field>
+				
+				<field name="model" position='after'>
+					<label for="marketing_email"/>
+					<field name="marketing_email" on_change="on_change_marketing_email(marketing_email,model_id,preview_work_item)"/>
+					<group attrs="{'invisible':[('marketing_email','=',False)]}" col="2" >
+						<field name="preview_work_item" />
+					</group>
+			    </field>
+			    
+			    <field name="model_id" position="attributes" >
+			    	<attribute name="attrs">{'readonly':[('marketing_email','=',True)]}</attribute>
+			    </field>
+			    
+			    <xpath expr="//button[@string='Preview']" position="replace">
+			          <button name="%(email_template.wizard_email_template_preview)d" string="Preview"
+                              type="action" target="new"
+                              context="{'template_id':active_id, 'default_res_id':preview_work_item}"/>
+			    </xpath>
+
+            </field>
+		</record>
+		
+		<record model="ir.ui.view" id="npg_view_marketing_campaign_workitem_form">
+	        <field name="name">npg.marketing.campaign.workitem.form</field>
+	        <field name="model">marketing.campaign.workitem</field>
+	        <field name="inherit_id" ref="marketing_campaign.view_marketing_campaign_workitem_form"/>
+	        <field name="arch" type="xml">
+	        	<xpath expr="//group[@string='Error Message']"  position = 'after'>
+	        		
+	        		<notebook>
+					 	<page string="Email open status">
+					 		<field name="email_status">
+					 			<tree>
+					 				<field name="email_opened"/> 
+					 				<field name="date_open"/> 
+					 			</tree>
+					 		</field>
+					 	</page>
+					 	<page string="Website Visit status">
+					 		<field name="website_visit_status">
+					 			<tree> 
+					 				<field name="website_visit"/> 
+					 				<field name="date_visit"/> 
+					 			</tree>
+					 		</field>
+					 	</page>
+					 	
+					 </notebook>
+	        	</xpath>
+	        </field>
+	     </record>
+        
 </data>
 </openerp>

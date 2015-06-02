@@ -24,21 +24,31 @@
     'version': '1.0',
     'category': 'Project Management',
     'description': """
-This module adds 
-        a additional tab for notes in task.
-        working hours by Date form
-        corrects issue with task created without project when project assigned creates analytic reocord
-
+        This module adds 
+        A additional tab for notes in task.
+        A new npg projects portal user group 
+        Makes Project required field on Task
+        
 ===================================================
     """,
     'author': 'NovaPoint Group LLC',
     'website': 'http://www.novapointgroup.com',
-    'depends': ['project', 'hr_timesheet_sheet','project_gtd','timesheet_task'],
+
+    'depends': ['project',
+                'project_gtd',
+                'portal_project',
+                'project_issue',
+                'project_timesheet',
+                'hr_timesheet','hr_timesheet_sheet'],
+
     'data': [ 'security/portal_security.xml',
               'security/ir.model.access.csv',
-             'project_task.xml',
              'task_sequence.xml',
-             'project_task_menus.xml',
+             'wizard/hr_timesheet_working_hours_wizard.xml',
+             'views/project_task_views.xml',
+             'views/issues_views.xml',
+             'views/project_view.xml',
+             'views/project_task_menus.xml',             
              ],
              
     'js': [

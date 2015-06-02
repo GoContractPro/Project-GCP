@@ -4,15 +4,17 @@ access_mail_mail_npg_portal,mail.mail.portal,mail.model_mail_mail,npg_group_port
 access_mail_notification_npg_portal,mail.notification.portal,mail.model_mail_notification,npg_group_portal,1,1,1,0
 access_mail_followers_npg_portal,mail.followers.portal,mail.model_mail_followers,npg_group_portal,1,1,0,0
 access_res_partner_npg_portal,res.partner,base.model_res_partner,npg_group_portal,1,0,0,0
+access_sequence_portal,ir.sequence,base.model_ir_sequence,npg_group_portal,1,1,1,0
 access_ir_attachment_npg_portal,ir.attachment group_portal,base.model_ir_attachment,npg_group_portal,1,0,1,0
 access_project_npg_portal,project,project.model_project_project,npg_group_portal,1,0,0,0
-access_task_npg_portal,task,project.model_project_task,npg_group_portal,1,0,0,0
+access_task_npg_portal,task,project.model_project_task,npg_group_portal,1,1,1,0
 access_task_type_npg_portal,task_type,project.model_project_task_type,npg_group_portal,1,0,0,0
-access_task_work_npg_portal,task_work,project.model_project_task_work,npg_group_portal,1,0,0,0
+access_task_history_npg_portal,task_history,project.model_project_task_history,npg_group_portal,1,1,1,0
+access_task_work_npg_portal,task_work,project.model_project_task_work,npg_group_portal,1,1,1,0
+access_project_gtd_npg_portal,project_gtd_timebox,project_gtd.model_project_gtd_timebox,npg_group_portal,1,0,0,0
+access_project_gtd_context_npg_portal,project_gtd_context,project_gtd.model_project_gtd_context,npg_group_portal,1,0,0,0
 access_project_category_npg_portal,project_category,project.model_project_category,npg_group_portal,1,0,0,0
 access_account_analytic_account_npg_portal,account_analytic_account,analytic.model_account_analytic_account,npg_group_portal,1,0,0,0
-access_sale_order_npg_portal,sale.order,sale.model_sale_order,npg_group_portal,1,0,0,0
-access_sale_order_line_npg_portal,sale.order.line,sale.model_sale_order_line,npg_group_portal,1,0,0,0
 access_account_invoice_npg_portal,account.invoice,account.model_account_invoice,npg_group_portal,1,0,0,0
 access_account_invoice_tax_npg_portal,account.invoice.tax,account.model_account_invoice_tax,npg_group_portal,1,0,0,0
 access_account_invoice_line_npg_portal,account.invoice.line,account.model_account_invoice_line,npg_group_portal,1,0,0,0
@@ -23,7 +25,6 @@ access_account_move_npg_portal,account.move,account.model_account_move,npg_group
 access_account_move_line_npg_portal,account.move.line,account.model_account_move_line,npg_group_portal,1,0,0,0
 access_account_move_reconcile_npg_portal,account.move.reconcile,account.model_account_move_reconcile,npg_group_portal,1,0,0,0
 access_account_fiscalyear_npg_portal,account.sequence.fiscalyear,account.model_account_sequence_fiscalyear,npg_group_portal,1,0,0,0
-access_sale_shop_npg_portal,sale.shop,sale.model_sale_shop,npg_group_portal,1,0,0,0
 access_product_list_npg_portal,product.pricelist,product.model_product_pricelist,npg_group_portal,1,0,0,0
 access_res_partner_npg_portal,res.partner,base.model_res_partner,npg_group_portal,1,0,0,0
 access_account_tax_npg_portal,account.tax,account.model_account_tax,npg_group_portal,1,0,0,0
@@ -31,3 +32,16 @@ access_account_fiscalyear_npg_portal,account.fiscalyear,account.model_account_fi
 access_res_partner_category_npg_portal,res.partner.category,base.model_res_partner_category,npg_group_portal,1,0,0,0
 access_account_period_npg_portal,account.period,account.model_account_period,npg_group_portal,1,0,0,0
 access_account_account_npg_portal,account.account,account.model_account_account,npg_group_portal,1,0,0,0
+access_account_seq_fiscal_years_portal,account.sequence.fiscal,account.model_account_sequence_fiscalyear,npg_group_portal,1,0,0,0
+access_project_issue_user,project.issue,project_issue.model_project_issue,npg_group_portal,1,1,1,0
+access_project_issue_version_project_user,project_issue_version user,project_issue.model_project_issue_version,npg_group_portal,1,0,0,0
+access_project_issue_report_user,project.issue.report user,project_issue.model_project_issue_report,npg_group_portal,1,0,0,0
+access_crm_case_section,crm.case.section,crm.model_crm_case_section,npg_group_portal,1,0,0,0
+access_hr_analytic_timesheet,hr.analytic.sheet,hr_timesheet.model_hr_analytic_timesheet,npg_group_portal,1,0,0,0
+access_ir_config_parameter,ir.config.parameter,base.model_ir_config_parameter,npg_group_portal,1,0,0,0
+access_res_partner_npg_portal,res.partner,base.model_res_partner,npg_group_portal,1,0,0,0
+access_res_groups_npg_portal,res.groups,base.model_res_groups,npg_group_portal,1,0,0,0
+access_project_scrum_release,project.scrum.release,project_scrum.model_project_scrum_release,npg_group_portal,1,0,0,0
+access_project_phase,project.phase,project_long_term.model_project_phase,npg_group_portal,1,0,0,0
+access_product_uom,product.uom,product.model_product_uom,npg_group_portal,1,0,0,0
+access_email_template,email.template,email_template.model_email_template,npg_group_portal,1,0,0,0

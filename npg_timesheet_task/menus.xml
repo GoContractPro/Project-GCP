@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+
+		<record id="npg_act_hr_timesheet_lines_tree" model="ir.actions.act_window">
+            <field name="name">Time Sheet Lines</field>
+            <field name="res_model">project.task.timesheet</field>
+            <field name="view_id" ref="npg_hr_task_timesheet_line_tree" />
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>     
+            <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
+            <field name="search_view_id" ref="npg_timesheet.hr_timesheet_line_date_search"/>
+            <field name="help">Through Working Hours you can register your working hours by task every day.</field>
+        </record>   
+        
+        <record id="npg_act_hr_timesheet_lines_calendar" model="ir.actions.act_window">
+            <field name="name">Task TimeSheet </field>
+            <field name="res_model">project.task.timesheet</field>
+            <field name="view_id" ref="npg_task_timesheet_activity_plan_calendar" />
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>     
+            <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
+            <field name="search_view_id" ref="npg_timesheet.hr_timesheet_line_date_search"/>
+            <field name="help">Calendar to view all Project Task Work.</field>
+        </record>          
+        
+
+        
+        <record id="menu_project_task_work_calendar" model="ir.ui.menu"> 
+        	<field name="name">Task Work Calendar</field>
+        	<field eval="0" name="sequence"/>
+        	<field name="action" ref="npg_act_hr_timesheet_lines_calendar"/>
+        	<field name="parent_id" ref="base.menu_project_management_time_tracking" />	
+        </record>	
+        
+        
+   		
+        
+     </data>
+</openerp>
+ 
