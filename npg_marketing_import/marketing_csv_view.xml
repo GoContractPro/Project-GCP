@@ -51,7 +51,7 @@
 		</record>
 
 		<record id="action_import_marketings" model="ir.actions.act_window">
-			<field name="name">Import marketings</field>
+			<field name="name">Import Marketing CSV</field>
 			<field name="res_model">import.marketing.csv</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="view_type">form</field>
