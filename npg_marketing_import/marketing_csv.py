@@ -304,7 +304,7 @@ class partner_csv(osv.osv):
                                 'x_averagehousevalue' :((headers_dict.get('x_averagehousevalue') > -1) and data[headers_dict['x_averagehousevalue']]) or None,
                                 'x_income'  :           ((headers_dict.get('x_income') > -1) and data[headers_dict['x_income']]) or None,
                                 'x_revenue'  :           ((headers_dict.get('x_revenue') > -1) and data[headers_dict['x_revenue']]) or None,
-                                'x_sic_code1'  :           ((headers_dict.get('x_sic_code_1') > -1) and data[headers_dict['x_sic_code_1']]) or None,                   
+                                'x_sic_code1'  :           ((headers_dict.get('x_sic_code1') > -1) and data[headers_dict['x_sic_code1']]) or None,                   
                                 'x_sic_code_description'  :((headers_dict.get('x_sic_code_description') > -1) and data[headers_dict['x_sic_code_description']]) or None,                   
                                 'x_employees'  :           ((headers_dict.get('x_employees') > -1) and data[headers_dict['x_employees']]) or None,
                                 'x_title'  :           ((headers_dict.get('x_title') > -1) and data[headers_dict['x_title']]) or None,

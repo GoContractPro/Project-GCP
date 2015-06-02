@@ -26,7 +26,7 @@
 						<label for="email"/>
 						<div>
 		            		<field name="email" class="oe_inline"/>
-				        	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/>
+<!--          	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/> -->
 				        </div>
             		<field name="email_invalid" readonly="1"/>
             		<field name="opt_out"/>
