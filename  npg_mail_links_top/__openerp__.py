@@ -21,7 +21,7 @@
 ##############################################################################
 
 {
-    'name': 'NPG Mail',
+    'name': 'Odoo link Top of Mail',
     'version': '1.0',
     'category': '',
     "sequence": 14,
@@ -30,21 +30,18 @@
     'description': """
        
      Enhancement to mail moves  Document links to top of email mailer from standard location after
-     Signature. This give link more visibility when viewed from email client and avoids links hidden. 
+     Signature. This give link more visibility when viewed on Emails  and avoids links hidden by folding 
+     Signature area on email.
       
     """,
     'author': 'NovaPoint Group Inc, Stephen  Levenhagen',
     'website': 'www.novapointgroup.com',
     'depends': ["base","mail"],
     'init_xml': [],
-    'data': [
-        "views/view.xml",
-    ],
+    'data': [],
     'demo_xml': [],
-    'test': [
-    ],
-    'qweb' : [
-    ],
+    'test': [],
+    'qweb' : [],
     'installable': True,
     'auto_install': False,
 }
