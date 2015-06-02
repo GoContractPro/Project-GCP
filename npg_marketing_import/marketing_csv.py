@@ -309,6 +309,7 @@ class partner_csv(osv.osv):
                                 'x_employees'  :           ((headers_dict.get('x_employees') > -1) and data[headers_dict['x_employees']]) or None,
                                 'x_title'  :           ((headers_dict.get('x_title') > -1) and data[headers_dict['x_title']]) or None,
                                 'x_marketing':     True,
+                                'use_parent_address': False,
                                                
                                                   
                                 }
