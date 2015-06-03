@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Nicolas Bessi
-#    Copyright 2013 Camptocamp SA
+#    Author: Stephen Levenhagen
+#    Copyright 2015 NovapointGroup.com
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -36,8 +36,39 @@ class project_task_timesheet(osv.osv):
             'hr_analytic_timesheet_id': fields.many2one('hr.analytic.timesheet', 'Timesheet Line', ondelete='cascade', required=True),
             'task_id':fields.many2one('project.task','Task',  required=True, ondelete='cascade', select=True,),
 #            'public_note': fields.text('Public Notes'),
-            'work_note': fields.text('Task Work Notes')
+            'work_note': fields.text('Task Work Notes'),
+
     }
+    
+    _defaults = {
+        'plan_time_amt':1.0,
+        'user_id': lambda obj, cr, uid, context: uid,
+        'plan_date_start': lambda *a: fields.datetime.now(),
+        'state': 'planned'
+        }
+
+    def create(self, cr, uid, vals, *args, **kwargs):
+        context = kwargs.get('context', {})
+        
+        
+        return super(project_task_timesheet,self).create(cr, uid, vals, *args, **kwargs)
+
+    
+    def default_get(self, cr, uid, feilds, context=None):
+        
+#        res = super(project_task_timesheet, self).default_get(cr, uid, fields, context)
+        res = {}   
+        if context is None:
+            context = {}
+            return res
+        
+        acc_id = False
+        if context.get('task_project',False):
+            project_obj = self.pool['project.project'].browse(cr, uid, context['task_project'], context=context)
+            acc_id = project_obj and project_obj.analytic_account_id.id or False
+            if acc_id:res['account_id'] = acc_id   
+            
+        return res
     
     def _getGeneralAccount(self, cr, uid, context=None):
         emp_obj = self.pool.get('hr.employee')
@@ -102,6 +133,7 @@ class project_task_timesheet(osv.osv):
             'product_uom_id': self._getEmployeeUnit(cr, uid, context),
             'general_account_id': self._getGeneralAccount(cr, uid, context),
             'journal_id': self._getAnalyticJournal(cr, uid, context),
+            'account_id':1829,
         }}
 
     def on_change_date(self, cr, uid, ids, date):
@@ -156,7 +188,7 @@ class project_task_timesheet(osv.osv):
         if not (task_id or proj):return {}
         prj = self.pool.get('project.project').browse(cr,uid,proj,context=context)
         if prj.analytic_account_id:
-            return {'value': {'account_id': prj.analytic_account_id.id} }
+            return {'value': {'account_id': prj.analytic_account_id.id, 'analy_test': prj.analytic_account_id.id} }
         res = self.pool.get('project.task').browse(cr,uid,task_id,context=context)
         if res.project_id.analytic_account_id:
             return {'value': {'account_id': res.project_id.analytic_account_id.id} }
