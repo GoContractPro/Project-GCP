@@ -27,11 +27,11 @@
 							<field name="company_id" invisible="1" />
 							<field name="general_account_id" invisible="1" />
 							<field name="account_id" invisible="1" />
-							<button name="button_start_working" string="Start" states="planned" type="workflow" icon="gtk-media-play"/>
-		                    <button name="button_resume" string="Resume" states="pause" type="workflow" icon="gtk-media-play"/>
-		                    <button name="button_pause" string="Pending" states="working" type="workflow" icon="gtk-media-pause"/>
-		                    <button name="button_done" string="Finished" states="working" icon="terp-check"/>
-		                    <button name="button_planned" string="Set Planned" type="workflow" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
+							<button name="npg_timesheet.button_start_working" string="Start" states="planned" type="workflow" icon="gtk-media-play"/>
+		                    <button name="npg_timesheet.button_resume" string="Resume" states="pause" type="workflow" icon="gtk-media-play"/>
+		                    <button name="npg_timesheet.button_pause" string="Pending" states="working" type="workflow" icon="gtk-media-pause"/>
+		                    <button name="npg_timesheet.button_done" string="Finished" states="working" icon="terp-check"/>
+		                    <button name="npg_timesheet.button_planned" string="Set Planned" type="workflow" states="cancel,done" icon="gtk-convert" help="Set to Planned"/>
 							<field name="state" readonly="1"/>
 	            		</tree>
 	            		<form  string="Task Work Activities" version="7.0"> 
