@@ -54,10 +54,10 @@ class project_task_timesheet(osv.osv):
         return super(project_task_timesheet,self).create(cr, uid, vals, *args, **kwargs)
 
     
-    def default_get(self, cr, uid, feilds, context=None):
+    def default_get(self, cr, uid, fields, context=None):
         
-#        res = super(project_task_timesheet, self).default_get(cr, uid, fields, context)
-        res = {}   
+        res = super(project_task_timesheet, self).default_get(cr, uid, fields, context)
+          
         if context is None:
             context = {}
             return res

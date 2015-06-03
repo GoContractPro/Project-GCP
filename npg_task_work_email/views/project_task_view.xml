@@ -7,7 +7,7 @@
             <field name="model">project.task</field>
             <field name="inherit_id" ref="npg_task_work_notes.npg_view_task_form_work_notes"/>
             <field name="arch" type="xml">
-            	<xpath expr="//field[@name='work_ids']/tree/field[@name='name']" position='before'>
+            	<xpath expr="//field[@name='task_ids']/tree/field[@name='name']" position='before'>
 	       			<button name="action_task_work_line_send" string="Email" type="object" icon="terp-mail-message-new"/>
 	       		</xpath>
        		</field>

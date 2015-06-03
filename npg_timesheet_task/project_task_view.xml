@@ -6,9 +6,8 @@
           <field name="model">project.task</field>
           <field name="inherit_id" ref="npg_project.view_task_form_npg"/>
           <field name="arch" type="xml">
-				<notebook position="inside">
-				   <page string="Time Sheet">	            
-	            
+                 <field name="work_ids" position="before">
+                    
 	         	 	<field name ="sheet_ids" context="{'default_task_id': active_id,'task_project':project_id}">
 	           		  	<tree >
 			                <field name="name" default_focus="1" />
@@ -72,10 +71,10 @@
 			            </sheet> 
 			            </form> 
 	            	</field>
-
-	            	</page>
-	            </notebook>
-	            
+                </field>
+                <field name="work_ids" position="attributes">
+                    <attribute name="attrs">{'invisible':1}</attribute>
+                </field>
 	        </field>
 		</record>  
         

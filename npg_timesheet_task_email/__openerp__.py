@@ -33,7 +33,7 @@
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ['npg_timesheet_task_work_notes'],
+    'depends': ['npg_timesheet_task','npg_timesheet_task_work_notes'],
     'init_xml': [],
     'data': [
         "views/project_task_view.xml",

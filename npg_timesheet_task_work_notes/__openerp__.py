@@ -39,7 +39,7 @@
     """,
     'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ['project'],
+    'depends': ['project','npg_timesheet_task'],
     'init_xml': [],
     'data': [
         "views/project_task_view.xml",

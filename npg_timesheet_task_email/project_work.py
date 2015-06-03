@@ -56,7 +56,7 @@ class project_task_timesheet(osv.osv):
        
         wdtl += 'Date : %s ' % (work_line_obj.date or '') +'<br>'
  
-        wdtl += 'Hours : %s ' % (work_line_obj.hours or 0) + '<br>'
+        wdtl += 'Hours : %s ' % (work_line_obj.unit_amount or 0) + '<br>'
         
         wdtl += separator
 

@@ -49,7 +49,7 @@ class task(osv.osv):
         return super(task, self).write(cr, uid, ids, vals, context=context)      
 # create a log of the task Work Updates in project.task work_notes 
     def generate_task_work_log(self,cr,uid,task_id,vals,context):       
-        if vals.get('work_ids'):
+        if vals.get('sheet_ids'):
             desc = ''
             al = []
             if task_id:
@@ -57,10 +57,10 @@ class task(osv.osv):
             else:
                 prev_work_obj = False
                 
-            work_line_obj = self.pool.get("project.task.work")
+            work_line_obj = self.pool.get("project.task.timesheet")
             separator = "\n\t--------------------------------------------------------------\n"
             separator2 = "==================================================================================================\n"
-            for wrk in vals.get('work_ids'):
+            for wrk in vals.get('sheet_ids'):
                 wrk_line = wrk[2]
                 
                 if not wrk_line : continue
@@ -99,11 +99,11 @@ class task(osv.osv):
                     date =  (prev_work_line and prev_work_line.date) or '' 
                     wdtl += '\tDate : %s \n' % date    
                 
-                if 'hours' in wrk_line:
-                    hrs = wrk_line['hours'] or 0 
+                if 'unit_amount' in wrk_line:
+                    hrs = wrk_line['unit_amount'] or 0 
                     wdtl += '\tHours : %s ' % hrs + updated + '\n'
                 else:
-                    hrs = (prev_work_line and prev_work_line.hours) or 0 
+                    hrs = (prev_work_line and prev_work_line.unit_amount) or 0 
                     wdtl += '\tHours : %s \n' % hrs                
                 
                 if 'work_note' in wrk_line:
