@@ -42,7 +42,8 @@ class task(osv.osv):
         return super(task, self).create(cr, uid,  vals, context=context)
     
     def write(self, cr, uid, ids, vals, context=None):
-        
+        if not isinstance(ids, list):
+            ids = [ids]
         if len(ids) >1 : return super(task, self).write(cr, uid, ids, vals, context=context)
         task_id = ids[0]
         vals = self.generate_task_work_log(cr, uid, task_id, vals, context)
