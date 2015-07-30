@@ -46,6 +46,8 @@
                 'portal_project',
                 'project_issue',
                 'project_timesheet',
+                'project_scrum',
+                'project_long_term',
                 'hr_timesheet','hr_timesheet_sheet'],
 
     'data': [ 'security/portal_security.xml',
