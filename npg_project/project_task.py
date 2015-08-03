@@ -9,10 +9,36 @@ import time
 class task(osv.osv):
     
     _inherit = "project.task"
+    
+    def _get_parent_task_number(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for line in self.browse(cr, uid, ids, context):
+            for rec in line.parent_ids: 
+                res[line.id]= rec.task_number or ''
+        
+        return res
+    
+    def _get_parent_task_id(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for line in self.browse(cr, uid, ids, context):
+            if line.parent_ids:
+                for rec in line.parent_ids: 
+                    res[line.id]= rec.id or False
+            else:
+                res[line.id]= False
+        
+        return res
+    
+    
     _columns = {
     'task_number':fields.char('Task Number', size=32),
 	'pub_descrip': fields.text('Public Notes'),
+    'parent_task_number': fields.function(_get_parent_task_number, string='Parent Task Number', type="char",store=True),
     
+    'parent_task_id':fields.function(_get_parent_task_id,type='many2one', relation='project.task', string="Parent Task", 
+            store=True, 
+            ), 
+    # 'child_id': fields.function(_get_child_ids, type='many2many', relation="account.account", string="Child Accounts"),
     }
 
            
