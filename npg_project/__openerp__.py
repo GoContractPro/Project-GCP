@@ -56,6 +56,7 @@
              'views/project_task_views.xml',
              'views/issues_views.xml',
              'views/project_view.xml',
+             'views/project_task_work_views.xml',
              'views/project_task_menus.xml',             
              ],
              

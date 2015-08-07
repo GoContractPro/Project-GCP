@@ -240,7 +240,14 @@
 				id="npg_project_menus_phases"
 				action="project_long_term.act_project_phase_list"  
 				parent="npg_project_menus" 
-				sequence="50"/> 	    	
+				sequence="50"/> 
+				 
+			<menuitem 
+                id="npg_project_menus_task_work"
+                action="npg_act_project_task_work"  
+                parent="npg_project_menus" 
+                name="Work Lines"
+                sequence="60"/> 	    	
             
  <!-- NPG Project Portal Menus -->
 

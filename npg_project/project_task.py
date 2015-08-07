@@ -84,4 +84,11 @@ class task(osv.osv):
         
         
 
+class project_task_work(osv.osv):
+    _inherit = "project.task.work"
+    
+    _columns = {
+                'search_from':fields.function(lambda *a,**k:{}, method=True, type='datetime',string="Search from"),
+                'search_to':fields.function(lambda *a,**k:{}, method=True, type='datetime',string="Search to"),
+                 }
     
