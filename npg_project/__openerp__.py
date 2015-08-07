@@ -50,7 +50,8 @@
                 'project_long_term',
                 'hr_timesheet','hr_timesheet_sheet'],
 
-    'data': [ 'security/portal_security.xml',
+    'data': [  'wizard/project_parent_selection_view.xml', 
+             'security/portal_security.xml',
               'security/ir.model.access.csv',
              'task_sequence.xml',
              'views/project_task_views.xml',
