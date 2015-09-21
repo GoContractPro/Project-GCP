@@ -9,9 +9,36 @@ import time
 class task(osv.osv):
     
     _inherit = "project.task"
+    
+    def _get_parent_task_number(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for line in self.browse(cr, uid, ids, context):
+            for rec in line.parent_ids: 
+                res[line.id]= rec.task_number or ''
+        
+        return res
+    
+    def _get_parent_task_id(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for line in self.browse(cr, uid, ids, context):
+            if line.parent_ids:
+                for rec in line.parent_ids: 
+                    res[line.id]= rec.id or False
+            else:
+                res[line.id]= False
+        
+        return res
+    
+    
     _columns = {
     'task_number':fields.char('Task Number', size=32),
 	'pub_descrip': fields.text('Public Notes'),
+    'parent_task_number': fields.function(_get_parent_task_number, string='Parent Task Number', type="char",store=True),
+    
+    'parent_task_id':fields.function(_get_parent_task_id,type='many2one', relation='project.task', string="Parent Task", 
+            store=True, 
+            ), 
+    # 'child_id': fields.function(_get_child_ids, type='many2many', relation="account.account", string="Child Accounts"),
     }
 
            
@@ -21,59 +48,72 @@ class task(osv.osv):
                     
         return super(task, self).create(cr, uid, vals, context=context)
     
-'''    def write(self, cr, uid, ids, vals, context=None):
-        if len(ids) >1 : return super(task, self).write(cr, uid, ids, vals, context=context)
-         
-        if vals.get('work_ids'):
-            desc = ''
-            al = []
-            prev_obj = self.browse(cr,uid,ids[0],context)
-            for wrk in vals.get('work_ids'):
-                wrk_line = wrk[2]
-                if not wrk_line : continue
-                if wrk_line.get('hours'):
-                    time_spent = ''
-                    hrs = wrk_line['hours']   #wline.hours
-                    h = math.floor(hrs)
-                    m = (hrs-h)*60
-                    wdtl = ""
-                    wdtl += 'Update Date : ' + time.strftime('%Y-%m-%d') #wline.date
-                    wdtl += '\tTime Spent : ' + str(int(h))+':'+str(int(m))
-                    
-                wdtl += '\tUpdated by : ' + self.pool.get('res.users').browse(cr,uid,uid).name #wline.user_id.name
-                summ = ''
-                if wrk_line.get('name'):
-                    summ = wrk_line['name'] or '' 
-#                 else:
-#                     summ = self.pool.get('').
-                wdtl += '\nSummary : ' + summ
-     #           wdtl += wline.wrk_dtl and ('\nWork Detail : ' + wline.wrk_dtl) or ''
-                al.append(wdtl)
-            desc = "\n\n===================================================\n\n".join(al)
-            if vals.get('description'):
-                vals['description'] += '\n\n===================================================\n\n' + desc
-            else: 
-                old_desc = prev_obj.description or ''
-                vals['description'] = old_desc + '\n\n===================================================\n\n' + desc
-        return super(task, self).write(cr, uid, ids, vals, context=context)
-'''
+    
+    def action_task_work_line_send(self, cr, uid, ids, context=None):
+        '''
+        This function opens a window to compose an email
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+        ir_model_data = self.pool.get('ir.model.data')
+        
+        work_line_obj = self.browse(cr,uid,ids[0],context=context)
+        
+        task_id = work_line_obj.task_id.id or False
+        task_obj = self.pool.get('project.task').browse(cr,uid,task_id,context)
+        separator= "----------------------------------------------------<br>"
+
+        wdtl = '<br>' + separator 
+        summary = work_line_obj.name or''
+
+        wdtl += 'Work Summary : ' + summary + '<br>' or ''
+                            
+        if  work_line_obj.user_id.id:
+            done_by_name = self.pool.get('res.users').browse(cr,uid,work_line_obj.user_id.id).name or ''
+            
+        wdtl += 'Done By : ' + done_by_name + '<br>' or ''
        
-class hr_timesheet_line(osv.osv):
-    _inherit = "hr.analytic.timesheet"
-    
-    _columns = {
-                'search_from':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search from"),
-                'search_to':fields.function(lambda *a,**k:{}, method=True, type='date',string="Search to"),
-                 }
-    
-class project_work(osv.osv):
+        wdtl += 'Date : %s ' % (work_line_obj.date or '') +'<br>'
+ 
+        wdtl += 'Hours : %s ' % (work_line_obj.hours or 0) + '<br>'
+        
+        wdtl += separator
+
+        wdtl += '<br>Detail :' '<br>' + (work_line_obj.work_note or ''+ '<br>') or ''
+
+        subject = 'Re:'+ task_obj.name + 'Work Summary : ' + summary + '<br>' or ''
+        
+        try:
+            compose_form_id = ir_model_data.get_object_reference(cr, uid, 'mail', 'email_compose_message_wizard_form')[1]
+        except ValueError:
+            compose_form_id = False 
+        ctx = dict(context)
+        ctx.update({
+            'default_model': 'project.task',
+            'default_res_id': task_id,
+            'default_body': wdtl,
+            'default_subject':subject,
+            'default_composition_mode': 'comment',
+            'mark_so_as_sent': True,
+            'mail_post_autofollow': True,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(compose_form_id, 'form')],
+            'view_id': compose_form_id,
+            'target': 'new',
+            'context': ctx,
+        }
+        
+        
+
+class project_task_work(osv.osv):
     _inherit = "project.task.work"
     
     _columns = {
-                'work_note': fields.text('Task Work Notes')
-                }
-
-
-
-
+                'search_from':fields.function(lambda *a,**k:{}, method=True, type='datetime',string="Search from"),
+                'search_to':fields.function(lambda *a,**k:{}, method=True, type='datetime',string="Search to"),
+                 }
     

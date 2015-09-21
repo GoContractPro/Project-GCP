@@ -24,14 +24,21 @@
     'version': '1.0',
     'category': 'Project Management',
     'description': """
-        This module adds 
-        A additional tab for notes in task.
-        A new npg projects portal user group 
-        Makes Project required field on Task
         
-===================================================
+        Project Functionality Enhancements
+        
+            * Additional tab for notes on tasks.
+            * A new Projects Portal user group 
+            * Add field for Task Number sequence Field
+            * Project is made as required field on Task
+            * New simplified Project menu removes kanbans as default view on tasks
+            * My Task opens group by Project 
+            * All Task opens in list view group by Projects
+            * Enhances Issues Form for Portal Users
+            *             
+       
     """,
-    'author': 'NovaPoint Group LLC',
+    'author': 'NovaPoint Group INC, Stephen Levenhagen',
     'website': 'http://www.novapointgroup.com',
 
     'depends': ['project',
@@ -39,15 +46,18 @@
                 'portal_project',
                 'project_issue',
                 'project_timesheet',
+                'project_scrum',
+                'project_long_term',
                 'hr_timesheet','hr_timesheet_sheet'],
 
-    'data': [ 'security/portal_security.xml',
+    'data': [  'wizard/project_parent_selection_view.xml', 
+             'security/portal_security.xml',
               'security/ir.model.access.csv',
              'task_sequence.xml',
-             'wizard/hr_timesheet_working_hours_wizard.xml',
              'views/project_task_views.xml',
              'views/issues_views.xml',
              'views/project_view.xml',
+             'views/project_task_work_views.xml',
              'views/project_task_menus.xml',             
              ],
              

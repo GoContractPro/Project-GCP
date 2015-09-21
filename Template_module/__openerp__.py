@@ -21,28 +21,24 @@
 ##############################################################################
 
 {
-    'name': 'Template Module',
+    'name': ' ',
     'version': '1.0',
     'category': '',
-    "sequence": 14,
     'complexity': "easy",
     'category': 'Generic Modules/Others',
     'description': """
-        
-        
+    
     """,
-    'author': 'NovaPoint Group Inc',
+    'author': 'NovaPoint Group Inc, Stephen Levenhagen',
     'website': 'www.novapointgroup.com',
-    'depends': ["base",],
+    'depends': [],
     'init_xml': [],
     'data': [
         "views/view.xml",
-    ],
+        ],
     'demo_xml': [],
-    'test': [
-    ],
-    'qweb' : [
-    ],
+    'test': [],
+    'qweb' : [],
     'installable': True,
     'auto_install': False,
 }

@@ -9,6 +9,8 @@ import time
 import smtplib
 from validate_email import validate_email
 from openerp import tools
+from openerp import netsvc
+import base64
 
 
 class email_status(osv.osv):
@@ -44,6 +46,19 @@ class res_partner(osv.osv):
               'email_invalid': fields.boolean("Invalid Email"),
               'email_status' : fields.one2many('email.status','partner_id', "Email Status"),
               'website_visit_status' : fields.one2many('website.visit.status','partner_id', "Website Visited"),
+              'x_contact_name' :fields.char('Contact', size=64),
+              'x_employees' :fields.integer('No. of Employees'),
+              'x_first_name' :fields.char('First Name', size=64),
+              'x_last_name' :fields.char('Last Name', size=64),  
+              'x_marketing' :fields.boolean( 'Marketing Lead'),    
+              'x_revenue'   :fields.float('Revenue'), 
+              'x_income'      :fields.float('Income'),
+              'x_averagehousevalue' : fields.float("Average House Value"),
+              'x_county'    :fields.char('County', size=32), 
+              'x_sic_code1' :fields.char('SIC Code 1' , size=10),
+              'x_sic_code_description': fields.char('SIC Description', size=64),   
+              'x_sic_code2' :fields.char( 'SIC Code 2' , size=10),    
+              'x_title'     :fields.char(  'Title' ,size=32),
               }
     
     def get_valid_mail(self, cr, uid, ids, context=None):

@@ -13,7 +13,7 @@
    			</field>
    		</record>
         
-		 <record id="verts_view_partner_form_unsb_in" model="ir.ui.view">
+		 <record id="npg_view_partner_form_unsb_in" model="ir.ui.view">
             <field name="name">res.partner.form</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
@@ -26,7 +26,7 @@
 						<label for="email"/>
 						<div>
 		            		<field name="email" class="oe_inline"/>
-				        	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/>
+<!--          	<button name="get_valid_mail" type="object" string="Check validity" class="oe_link"/> -->
 				        </div>
             		<field name="email_invalid" readonly="1"/>
             		<field name="opt_out"/>
@@ -52,6 +52,23 @@
 			 			</tree>
 			 		</field>
 			 	</page>
+			 	<page string="Marketing" col="4" name="marketing">
+                    <group>
+                            <field name="x_first_name" />
+                            <field name="x_last_name"/>   
+                            <field name="x_employees" />
+                            <field name="x_revenue"/>
+                            <field name="x_sic_code1"/>
+                            <field name="x_sic_code_description"/>   
+                            <field name="x_sic_code2"/>
+                            <field name="x_title"/>
+                            <field name="x_marketing"/>
+                            <field name="x_income"/>
+                            <field name="x_averagehousevalue"/> 
+                	</group>
+
+         		</page>
+			 	
 			 </xpath>
          </field>
         </record>
@@ -68,9 +85,24 @@
 	        </field>
         </record>
    		
-
-
-   		
+       <record id="marketing_view_res_partner_filter" model="ir.ui.view">
+            <field name="name">marketing.res.partner.select</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                
+                	<field name="user_id" position="after">
+                		<field name="email" />
+                		<field name="x_sic_code_description"/>
+                	</field>
+                	<xpath expr="//search/group/filter[@string='Country']" position="after">
+                		
+                		<filter string="SIC Description" context="{'group_by': 'x_sic_code_description'}"/> 
+                	</xpath>
+				
+			</field>
+		</record>
+		   		
         <!-- Email Template -->
 		<record model="ir.ui.view" id="npg_marketing_email_template_form_inherit">
 			<field name="name">npg.marketing.email.template.form.inherit</field>

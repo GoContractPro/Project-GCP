@@ -22,28 +22,6 @@
           </p>
         </field>
     </record>
-     
- <!--    <record  id="npg_action_issue_kanban_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_mode">kanban</field>
-        <field name="view_id" ref="project_issue.action_crm_tag_kanban_view0"/>
-        <field name="act_window_id" ref="npg_act_project_issue"/>
-    </record>
-    
-    <record id="npg_action_issue_tree_view" model="ir.actions.act_window.view" >
-        <field name="sequence" eval="2"/>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="project_issue.project_issue_tree_view"/>
-        <field name="act_window_id" ref="npg_act_project_issue"/>
-    </record>
-    
-    <record  id="npg_action_issue_form_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="3"/>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="npg_project_issue_form_view"/>
-        <field name="act_window_id" ref="npg_act_project_issue"/>
-    </record>
--->
  
 	<record model="ir.ui.view" id="npg_view_project_kanban">
 	    <field name="name">Project Kanban</field>
@@ -150,22 +128,7 @@
         <field name="view_id" ref="npg_view_project_kanban"/>
         <field name="act_window_id" ref="npg_portal_view_projects"/>
     </record>
-    
-    
-   	<record id="npg_act_hr_timesheet_lines_form" model="ir.actions.act_window">
-          <field name="name">Time Sheet Lines</field>
-          <field name="res_model">hr.analytic.timesheet</field>
-          <field name="view_id" ref="hr_timesheet.hr_timesheet_line_tree" />
-          <field name="view_type">form</field>
-          <field name="view_mode">tree,form,calendar,gantt</field>     
-          <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
-          <field name="search_view_id" ref="hr_timesheet_line_date_search"/>
-          <field name="help">Through Working Hours you can register your working hours by task every day.</field>
-	</record>   
-
- 	
-
-	      
+          
      <record id="npg_my_tasks_grouped_project" model="ir.actions.act_window" >
         <field name="name">My Tasks</field>
         <field name="res_model">project.task</field>
@@ -238,9 +201,7 @@
 	            parent="npg_my_dashboard_menu"
 	            action="board.open_board_my_dash_action"
 	            sequence="10"/>
-	    	
-    			<!--  Project Menu -->
-    			
+
     	<menuitem 
     		id="npg_project_menus"
     		name="Project"
@@ -280,65 +241,13 @@
 				action="project_long_term.act_project_phase_list"  
 				parent="npg_project_menus" 
 				sequence="50"/> 
-		
-		 		<!-- Time Sheet Menu -->
-		 		
-		<menuitem id="npg_project_menu_time_tracking" 
-            name="Time Tracking"
-            parent="npg_project_top_menu"
-         	sequence="30"/>
-
-        	<menuitem 
-        		id="npg_project_menu_time_tracking_working_hours_wizard"
-     			name="Working Hours by Date" 
-     			action="action_hr_timesheet_hours_open"
-     			parent="npg_project_menu_time_tracking" 
-     			sequence="10"/>
-        
-       		<menuitem 
-       			id="npg_project_menu_time_tracking_working_hours"
-       			name="Working Hours" 
-       			action="npg_act_hr_timesheet_lines_form"
-       			parent="npg_project_menu_time_tracking" 
-       			sequence="20"/>
-       			
-      		<menuitem 
-	        	id="npg_project_menu_time_tracking_timesheet_sheet_form"
-	            name="Current Timesheet"
-	            action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"
-	            parent="npg_project_menu_time_tracking"
-	            sequence="30"/>
-	 
-<!-- Time Tracking Menus in base project menu
-	puts time tracking in the base PM menu-->
-
-       <record id="npg_menu_main_pm_time_tracking" model="ir.ui.menu">
-            <field name="name">Time Tracking</field>
-         	<field eval="1" name="sequence"/>
-            <field name="parent_id" ref="base.menu_main_pm"/>
-        </record>
-        
-            <menuitem 
-        		id="npg_menu_main_pm_working_hours_wizard"
-     			name="Working Hours by Date" 
-     			action="action_hr_timesheet_hours_open"
-     			parent="npg_menu_main_pm_time_tracking" 
-     			sequence="10"/>
-        
-       		<menuitem 
-       			id="npg_menu_main_pm_working_hours"
-       			name="Working Hours" 
-       			action="npg_act_hr_timesheet_lines_form"
-       			parent="npg_menu_main_pm_time_tracking" 
-       			sequence="20"/>
-       			
-      		<menuitem 
-	        	id="npg_menu_main_pm_timesheet_sheet_form"
-	            name="Current Timesheet"
-	            action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet"
-	            parent="npg_menu_main_pm_time_tracking"
-	            sequence="30"/>
-        
+				 
+			<menuitem 
+                id="npg_project_menus_task_work"
+                action="npg_act_project_task_work"  
+                parent="npg_project_menus" 
+                name="Work Lines"
+                sequence="60"/> 	    	
             
  <!-- NPG Project Portal Menus -->
 

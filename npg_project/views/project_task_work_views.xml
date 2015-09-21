@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+    
+
+    <record id="npg_act_project_task_work_search" model="ir.ui.view">
+            <field name="name">npg.act.project.task.work.search</field>
+            <field name="model">project.task.work</field>
+            <field name="arch" type="xml">
+                <search string="Task Work">
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    
+                    <group expand="0" string="Group By..."><filter string="Analytic account" icon="terp-folder-green" domain="[]" context="{'group_by':'account_id'}"/>
+                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                        <field name="search_from" filter_domain="[('date','&gt;=',self)]"/>
+                        <field name="search_to" filter_domain="[('date','&lt;=',self)]"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+
+
+<!--  action for npg Project work form -->
+
+
+    <record id="npg_act_project_task_work" model="ir.actions.act_window" >
+        <field name="name">Task Work Lines</field>
+        <field name="res_model">project.task.work</field>
+        <field name="search_view_id" ref="npg_act_project_task_work_search"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            
+          </p><p>
+            The Work view allow you to enter your task work for different tasks and projects from 
+            one location or linked to time sheet
+          </p>
+        </field>
+    </record>
+    
+</data>
+</openerp>
+    

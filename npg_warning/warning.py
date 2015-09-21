@@ -20,20 +20,19 @@
 #
 ##############################################################################
 
-
-from osv import osv
-from osv import fields
+from openerp.osv import fields, osv
+from openerp import tools
 from openerp.tools.translate import _
 
 WARNING_TYPES = [('warning','Warning'),('info','Information'),('error','Error')]
 
 class warning(osv.osv_memory):
-    _name = 'warning'
+    _name = 'warning.warning'
     _description = 'warning'
     _columns = {
         'type': fields.selection(WARNING_TYPES, string='Type', readonly=True),
         'title': fields.char(string="Title", size=100, readonly=True),
-        'message': fields.text(string="Message", readonly=True),
+        'msg': fields.text(string="Message", readonly=True),
     }
     _req_name = 'title'
     
@@ -42,7 +41,7 @@ class warning(osv.osv_memory):
         @return: view id, or False if no view found
         """
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 
-            'osc_integ', 'warning_form')
+            'npg_warning', 'warning_form')
         return res and res[1] or False
     
     def message(self, cr, uid, id, context):
@@ -54,7 +53,7 @@ class warning(osv.osv_memory):
             'view_type': 'form',
             'view_mode': 'form',
             'view_id': self._get_view_id(cr, uid),
-            'res_model': 'warning',
+            'res_model': 'warning.warning',
             'domain': [],
             'context': context,
             'type': 'ir.actions.act_window',
@@ -64,16 +63,16 @@ class warning(osv.osv_memory):
         return res
     
     def warning(self, cr, uid, title, message, context=None):
-        id = self.create(cr, uid, {'title': title, 'message': message, 'type': 'warning'})
+        id = self.create(cr, uid, {'title': title, 'msg': message, 'type': 'warning'})
         res = self.message(cr, uid, id, context)
         return res
     
     def info(self, cr, uid, title, message, context=None):
-        id = self.create(cr, uid, {'title': title, 'message': message, 'type': 'info'})
+        id = self.create(cr, uid, {'title': title, 'msg': message, 'type': 'info'})
         res = self.message(cr, uid, id, context)
         return res
     
     def error(self, cr, uid, title, message, context=None):
-        id = self.create(cr, uid, {'title': title, 'message': message, 'type': 'error'})
+        id = self.create(cr, uid, {'title': title, 'msg': message, 'type': 'error'})
         res = self.message(cr, uid, id, context)
         return res

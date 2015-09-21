@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<!--Sale Warning Popup View-->
+		
+        <record id="view_project_parent_selection_form" model="ir.ui.view">
+            <field name="name">project.parent.selection.wizard</field>
+            <field name="model">project.parent.selection</field>
+            <field name="arch" type="xml">
+                <form string="Project Parent Selection">
+                    <field name="parent_id" domain="[('parent_task_id','=',False)]"/>  
+                    <separator colspan="4"/>
+                    <group colspan="2" col="4">
+                        <button special="cancel" string="Cancel"  icon="gtk-cancel"/>
+                        <button name="create_delegate" string="Confirm Selection" type="object" icon="gtk-apply"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+		<record id="action_view_project_parent_selection_form" model="ir.actions.act_window">
+			<field name="name">Project Parent Selection</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="src_model">project.parent.selection</field>
+			<field name="res_model">project.parent.selection</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_project_parent_selection_form"/>
+			<field name="context">{}</field>
+			<field name="target">new</field>
+		</record>
+		
+		
+
+	</data>
+</openerp>

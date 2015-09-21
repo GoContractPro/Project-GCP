@@ -10,7 +10,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>     
             <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
-            <field name="search_view_id" ref="npg_timesheet.hr_timesheet_line_date_search"/>
+            <field name="search_view_id" ref="npg_timesheet_search.npg_hr_timesheet_line_date_search"/>
             <field name="help">Through Working Hours you can register your working hours by task every day.</field>
         </record>   
         
@@ -21,7 +21,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">calendar,tree,form</field>     
             <field name="context">{'search_default_user_id':uid, 'search_default_today':1}</field>
-            <field name="search_view_id" ref="npg_timesheet.hr_timesheet_line_date_search"/>
+            <field name="search_view_id" ref="npg_timesheet_search.npg_hr_timesheet_line_date_search"/>
             <field name="help">Calendar to view all Project Task Work.</field>
         </record>          
         
@@ -31,7 +31,19 @@
         	<field name="name">Task Work Calendar</field>
         	<field eval="0" name="sequence"/>
         	<field name="action" ref="npg_act_hr_timesheet_lines_calendar"/>
-        	<field name="parent_id" ref="base.menu_project_management_time_tracking" />	
+        	<field name="parent_id" ref="npg_pm_timetracking_menu.npg_menu_main_pm_time_tracking" />	
+        </record>
+        <record id="menu_project_task_work_calendar2" model="ir.ui.menu"> 
+        	<field name="name">Task Work Calendar</field>
+        	<field eval="0" name="sequence"/>
+        	<field name="action" ref="npg_act_hr_timesheet_lines_calendar"/>
+        	<field name="parent_id" ref="hr_attendance.menu_hr_time_tracking" />	
+        </record>
+        <record id="menu_project_task_work_calendar3" model="ir.ui.menu"> 
+        	<field name="name">Task Work Calendar</field>
+        	<field eval="0" name="sequence"/>
+        	<field name="action" ref="npg_act_hr_timesheet_lines_calendar"/>
+        	<field name="parent_id" ref="npg_pm_timetracking_menu.npg_project_menu_time_tracking" />	
         </record>	
         
         

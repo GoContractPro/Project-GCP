@@ -11,6 +11,7 @@
                 <tree string="SRS">
                     <field name="name"/>
                     <field name="sname"/>
+                    <field name="category_id"/> 
                 </tree>
            </field>                         
 		</record>
@@ -22,7 +23,9 @@
             <field name="arch" type="xml">
                 <tree string="SRS">
                     <field name="name"/>
-                    <field name="parent_id" invisible="1"/>          
+                    <field name="sname" /> 
+                    <field name="parent_id" invisible="1"/> 
+                    <field name="category_id"/> 
                 </tree>
            </field>                         
 		</record>
@@ -34,17 +37,28 @@
                 <form string="SRS" version="7.0">
                 <sheet>
                <group col="4">
-                    <field name="name" /> 
-                    <field name="sname" /> 
-                    <field name="sequence"/> 
-                    <field name="parent_id"/> 
-                    <field name="task_id" readonly="1"/>
-                    <field name="est_time" widget="float_time"/> 
+               		<group col = "2" >
+	               		<field name="name" /> 
+	                    <field name="sname" /> 
+	               		<field name="parent_id"/> 
+               		</group>
+                    <group col ="2"> 
+	                    <field name="category_id"/> 
+	                    <field name="est_time" widget="float_time"/> 
+	                    <field name="sequence"/>
+                    </group>
                </group> 
+               <group col="4">      
+                   <field name="desc" placeholder="Requirement......" nolabel="1"/>  
+                 </group>
                <notebook>
+                    <page string="Child Requirements">
+                       <separator string="Child Requirements" colspan="2"/>
+                       <field name="srs_lines"  colspan="4" readonly="0" nolabel="1"  widget="one2many_list"/>
+                    </page>
                     <page string="Related Software">
                        <separator string="Related Software" colspan="2"/>
-                  	   <field name="srs_package_ids"  col="4"/>	
+                  	   <field name="srs_package_ids" col="4"/>	
                     </page>
                      <page string="Related Use Cases">
                        <separator string="Related Use Cases" colspan="2"/>
@@ -54,10 +68,11 @@
                        <separator string="Related User Guides" colspan="2"/>
                   	   <field name="srs_user_guides" col="4"/>	
                     </page>
+                    <page string="Related Tasks">
+                       <separator string="Related Tasks" colspan="2"/>
+                        <field name="task_ids" readonly="1"  colspan="4" nolabel="1"  widget="one2many_list"/>
+                    </page>
                  </notebook>
-                 <group col="4">      
-                   <field name="desc" placeholder="Requirement......" nolabel="1"/>  
-                 </group>
                 </sheet>
                 </form>
            </field>                         
@@ -95,6 +110,22 @@
             <field name="name">SRS Expendable</field>
             <field eval="'ir.actions.act_window,%d'%srs_normal_action_tree" name="value"/>
         </record>
+        
+         <record id="srs__search_form_npg" model="ir.ui.view">
+            <field name="name">srs.search.form.npg</field>
+            <field name="model">srs</field>
+            <field name="arch" type="xml">
+            	<search string="Search SRS">
+	    			<field name="name" />
+	            	<field name="sname"/> 
+	            	<field name="category_id"/>
+	           
+	            </search>
+            </field>
+        </record> 
+        
+        
+        
         
     <!-- *********************************** srs_software_package ***************************** -->
         
@@ -275,52 +306,68 @@
         <field name="model">srs.document</field>
         <field name="arch" type="xml">
             <form string="SRS Document" version="7.0">
-            <header>
-                <button name="action_create_task" invisible="1" string="Create Task" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>
-            </header>
+
             <sheet>
             <group col="4">
-                <field name="partner_id" required="1"/>
-                <field name="created_task" invisible="1"/>
+            	<group col = '2'>
+	            	<field name="name" required="1"/>
+	                <field name="partner_id" required="1"/>
+                </group>
+                <group col = '2'>
                 <field name="create_date"/>
-                <field name="plan_date"/>
+	                <field name="plan_date"/>
+	                 <field name="task_created" invisible="1"/>
+                 </group>
+                 
             </group>
-             <field name="doc_lines"  colspan="4" nolabel="1" attrs="{'readonly':[('created_task','=',True)]}" widget="one2many_list">
+             <field name="doc_lines"  colspan="4" nolabel="1"  widget="one2many_list">
                   <form string="SRS Document Line">
                       <header>
-                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
+                          <button name="action_get_requirement" attrs="{'invisible':[('state','!=','draft')]}" string="Get Requirement"  type="object" class="oe_highlight"/>
+                          <button name="action_approve" string="Appoved" attrs="{'invisible':[('state','!=','planning')]}" type="object" class="oe_highlight"/>
+                          <button name="action_done"  string="Done" attrs="{'invisible':[('state','!=','pending')]}" type="object" class="oe_highlight"/>
+                          <button name="action_cancel"  string="cancel" attrs="{'invisible':[('state','!=','pending')]}" type="object" class="oe_highlight"/>
+                          <button name="action_set_to_draft"  string="Set to Draft" attrs="{'invisible':[('state','!=','cancelled')]}" type="object" class="oe_highlight"/>
+                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,'pending',approved,done" />
                       </header>
                       <newline/>
                       <group col="4">
-	                      <field name="sequence"/>
-	                      <field name="project_id" required="1"/>  
-                          <field name="create_date"/>
-                          <field name="plan_date"/>  
-                          <field name="approved"/>
-                          <field name="est_hour"/>
+                      	  <group col='2' >
+	                      	  <field name="name" required="1"/>
+	                      	  <field name="project_id" required="1"/>
+	                      	   <field name="sequence"/>
+	                      	  <field name="doc_id" invisible="1"/> 
+                      	  </group>
+                      	  <group col ='2'>
+	                      	  <field name="sequence"/>
+		                      <field name="create_date"/>
+	                          <field name="plan_date"/>   
+	                          <field name="est_hour"/>
+                      	  </group>
+
+                          
+	                  </group>
+	                  <newline/>
+	                  <group col="4" string="Search Values">
+	                      <field name="category_id"/>
+	                      <field name="version_id"/>
                       </group>
                       <newline/>
                       <group col="4">
                           <field name="desc" nolabel="1"/>
                       </group>
-                      <newline/>
-                      <group col="4">
-	                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
-	                          <tree string="Categories"  editable="bottom">
-			                      <field name="category_id"/>
-			                      <field name="desc"/>
-			                  </tree>
-	                      </field>
-                     </group>
                      <newline/>
-                      <group col="4">
-	                      <field name="doc_req_line" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
-	                          <tree string="Requirements" editable="bottom">
-			                      <field name="user_id" widget="selection"/>
-			                       <field name="req_id" widget="selection"/>
-			                      <button name="action_create_task" string="Create Task" icon="gtk-go-forward" attrs="{'invisible':[('created_task','=',True)]}" type="object" class="oe_highlight"/>
-			                      <field name="srequirement_ids" invisible="1"/>
-			                      <field name="created_task" invisible="1"/>
+                     <group col="4">
+	                      <field name="doc_req_line" attrs="{'readonly':[('state','not in',('draft','planning','approved'))]}" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
+	                          <tree string="Requirements" >
+	                               <field name="req_id" on_change="onchange_req(req_id)"/>
+	                               <field name="name"/>
+	                               <field name="approved"/>
+	                               <field name="create_task"/>
+			                       <field name="user_id" widget="selection"/>
+			                       <field name="task_id" readonly="1"/>
+			                       <field name="ldoc_id" invisible="1"/>
+			                       <field name="srequirement_ids" invisible="1"/>
 			                  </tree>
 	                      </field>
                      </group>
@@ -330,7 +377,6 @@
                       <field name="sequence"/>
                       <field name="plan_date"/>
                       <field name="project_id"/>
-                      <field name="approved"/>
                       <field name="state"/>
                  </tree>
              </field>
@@ -371,12 +417,11 @@
         <field name="model">document.line</field>
         <field name="arch" type="xml">
             <tree string="SRS Document Line">
-              <field name="sequence"/>
-              <field name="create_date"/>
-              <field name="plan_date"/>
-              <field name="project_id"/>
-              <field name="approved"/>
-              <field name="state"/>
+               <field name="desc"/>
+               <field name="sequence"/>
+               <field name="plan_date"/>
+               <field name="project_id"/>
+               <field name="state"/>
             </tree>
         </field>
      </record>
@@ -386,37 +431,50 @@
         <field name="model">document.line</field>
         <field name="arch" type="xml">
            <form string="SRS Document Line" version="7.0">
-            <sheet>
-                     <header>
-                          <field name="state" widget="statusbar" statusbar_visible="draft,planning,done" />
-                      </header>
-                      <newline/>
-                      <group col="4">
-	                      <field name="sequence"/>
-	                      <field name="project_id" required="1"/>  
-                          <field name="plan_date"/> 
-                          <field name="create_date"/>
-                          <field name="approved"/>
-                          <field name="est_hour"/>
-                      </group>
-                      <newline/>
-                      <group col="4">
-	                      <field name="category_ids"  colspan="4" nolabel="1"  widget="one2many_list">
-	                          <tree string="Categories"  editable="bottom">
-			                      <field name="name"/>
-			                      <field name="desc"/>
-			                  </tree>
-	                      </field>
-                     </group>
-                     <newline/>
-                      <group col="4">
-	                      <field name="doc_req_line"  colspan="4" nolabel="1"  widget="one2many_list">
-	                          <tree string="Requirements"  editable="bottom">
-			                      <field name="user_id" required="1"/>
-			                      <field name="srequirement_ids" widget="many2many_tags"/>
-			                  </tree>
-	                      </field>
-                     </group>
+           <header>
+               <button name="action_get_requirement" attrs="{'invisible':[('state','!=','draft')]}" string="Add Requirements"  
+               			help="Adds all Requirments from master list for Selected Categories"
+               			type="object" class="oe_highlight"/>
+               <button name="action_approve" string="Appove" attrs="{'invisible':[('state','!=','planning')]}" type="object" class="oe_highlight"/>
+               <button name="action_done"  string="Done" attrs="{'invisible':[('state','!=','pending')]}" type="object" class="oe_highlight"/>
+               <button name="action_cancel"  string="cancel" attrs="{'invisible':[('state','!=','pending')]}" type="object" class="oe_highlight"/>
+               <button name="action_set_to_draft"  string="Set to Draft" attrs="{'invisible':[('state','!=','cancelled')]}" type="object" class="oe_highlight"/>
+               <field name="state" widget="statusbar" statusbar_visible="draft,planning,'pending',approved,done" />
+           </header>
+           <sheet>
+                  <newline/>
+                  <group col="4">
+                      <field name="name" required="1"/>
+                      <field name="sequence"/>
+	                  <field name="create_date"/>
+                      <field name="plan_date"/>
+                      <field name="project_id" required="1"/>   
+                      <field name="est_hour"/> 
+                      <field name="doc_id" invisible="1"/> 
+                 </group>
+                  <newline/>
+                  <group col="4" string="Search Values">
+                      <field name="category_id"/>
+                      <field name="version_id"/>
+                  </group>
+                  <newline/>
+                  <group col="4">
+                       <field name="desc" nolabel="1"/>
+                  </group>
+                  <newline/>
+                  <group col="4">
+	                  <field name="doc_req_line" attrs="{'readonly':[('state','not in',('draft','planning','approved'))]}" colspan="4" context="{'project_id':project_id}" nolabel="1"  widget="one2many_list">
+	                      <tree string="Requirements" >
+	                           <field name="req_id" on_change="onchange_req(req_id)"/>
+	                           <field name="name"/>
+	                           <field name="approved"/>
+	                           <field name="create_task"/>
+		                       <field name="user_id" widget="selection"/>
+		                       <field name="task_id" readonly="1"/>
+		                       <field name="srequirement_ids" invisible="1"/>
+		                  </tree>
+	                  </field>
+                 </group>
             </sheet>
             </form>
        </field>                         
@@ -429,7 +487,54 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,gantt</field>
         <field name="view_id" ref="view_document_line_tree"/>
-    </record>   
+    </record>  
+    
+    <record id="tree_expend_req" model="ir.ui.view">
+			<field name="name">doc.req.line.tree</field>
+            <field name="model">doc.req.line</field>
+            <field name="arch" type="xml">
+                <tree string="Un-Reconciled CAFs" >
+                   <field name="req_id"/>
+                    <field name="name"/>
+                    <field name="approved"/>
+                    <field name="create_task"/>
+                    <field name="task_id"/>
+                </tree>
+           </field>                         
+    </record> 
+    
+    <record id="view_filter_expend_req" model="ir.ui.view">
+            <field name="name">doc.req.line.filter</field>
+            <field name="model">doc.req.line</field>
+            <field name="arch" type="xml">
+                <search string="Search SRS Document">
+                    <field name="req_id"/>
+                    <field name="name"/>
+                    <field name="approved"/>
+                    <field name="create_task"/>
+                    <field name="task_id"/>
+                    <field name="ldoc_id"/>
+                    <field name="doc_id"/>
+                    <separator/>
+                     <group expand="0" string="Group By">
+                        <separator/>
+                        <filter name="group_srs_doc" string="SRS Document"  context="{'group_by':'doc_id'}"/>
+                        <filter name="group_srs_line" string="Document Line"  context="{'group_by':'ldoc_id'}"/>
+                    </group>
+                </search>
+            </field>
+     </record> 
+    
+     <record id="action_req_expend" model ="ir.actions.act_window"> 
+        <field name="name">Expendable Requirement</field>
+        <field name="res_model">doc.req.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="context">{'search_default_group_srs_doc':1}</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_filter_expend_req"/>
+        <field name="view_id" ref="tree_expend_req"/>
+     </record>
     
     <!-- ************** Project Task ************ -->
     
@@ -441,6 +546,7 @@
         <field name="arch" type="xml">
         <field name="project_id" position="before">
              <field name="srs_code"/>
+             <field name="sreq_id"/>
         </field>
         </field>
      </record> 
@@ -475,7 +581,7 @@
        </field>                         
 	</record>
     
-     <record id="action_catgory" model ="ir.actions.act_window"> 
+    <record id="action_catgory" model ="ir.actions.act_window"> 
         <field name="name">SRS Categories</field>
         <field name="res_model">srs.categories</field>
         <field name="type">ir.actions.act_window</field>
@@ -483,14 +589,15 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_category_tree"/>
     </record>    
-        
+    
     <menuitem  id="menu_srs" name="SRS" parent="base.menu_main_pm"  sequence="8"/>
     <menuitem  id="submenu_srs" name="SRS Master"  parent="menu_srs" action="action_srs"  sequence="2"/>
     <menuitem  id="submenu_srs_expend" name="SRS Expandable"  parent="menu_srs" action="action_catgory_expend" sequence="4"/>
     <menuitem  id="menu_srs_document" name="SRS Documentation"  parent="menu_srs" action="action_srs_document" sequence="6"/>
     <menuitem  id="menu_srs_document_line" name="Document Line"  parent="menu_srs" action="action_srs_document_line" sequence="7"/>
-    <menuitem  id="menu_conf" name="SRS Configuration"  parent="menu_srs"  sequence="9"/>
-    <menuitem  id="menu_category" name="Categories"  parent="menu_conf" action="action_catgory" sequence="1"/>
+    <menuitem  id="menu_srs_req_line_expend" name="SRS Requirement Expandable"  parent="menu_srs" action="action_req_expend" sequence="9"/>
+    <menuitem  id="menu_conf" name="SRS Configuration"  parent="menu_srs"  sequence="11"/>
+    <menuitem  id="menu_category" name="Category"  parent="menu_conf" action="action_catgory" sequence="1"/>
     <menuitem  id="menu_pacakage" name="Software Package"  parent="menu_conf" action="action_srs_software_package" sequence="2"/>
     <menuitem  id="menu_use_case" name="Use Cases"  parent="menu_conf" action="action_use_cases" sequence="3"/>
     <menuitem  id="menu_user_guide" name="User Guides"  parent="menu_conf" action="action_user_guide"  sequence="4"/>

@@ -20,8 +20,8 @@
 ##############################################################################
 {'name': 'Analytic Timesheet In Task',
  'version': '0.2.1',
- 'author': ' Novapoint Group , Stephen Levenhagen,  Camptocamp',
- 'maintainer': 'Novappoint Group Inc USA',
+ 'author': ' Novapoint Group , Stephen Levenhagen',
+ 'maintainer': 'Novapoint Group Inc USA',
  'category': 'Human Resources',
  'depends': ['project', 'npg_project','npg_timesheet','project_timesheet',],
  'description': """
@@ -41,6 +41,7 @@ task information through the timesheet sheet (hr.timesheet.sheet). 'website': 'h
  'data':[ 
          'project_task_view.xml',
           'menus.xml',
+          "security/ir.model.access.csv",
           ],
  'demo': [],
  'test': ['test/task_timesheet_indicators.yml'],

@@ -543,6 +543,7 @@ class sync_data(orm.TransientModel):
                        
                      try:             
                          project_task_work_id = task_work_pool.create(cr, uid ,work_data, context=context)
+                         _logger.info('Loaded %s Work Items',n)
                      except:
                              e = 'unable to create work' + sys.exc_info()
                              raise osv.except_osv(_('Error!'), _(e))
